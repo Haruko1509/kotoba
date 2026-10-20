@@ -21,26 +21,6 @@ public abstract class ViewModelBase : ObservableObject
     }
 }
 
-public class LibraryViewModel : ViewModelBase
-{
-    private readonly INavigationService _navigationService;
-
-    public LibraryViewModel(INavigationService navigationService)
-    {
-        _navigationService = navigationService;
-    }
-}
-
-public class ReaderViewModel : ViewModelBase
-{
-    private readonly INavigationService _navigationService;
-
-    public ReaderViewModel(INavigationService navigationService)
-    {
-        _navigationService = navigationService;
-    }
-}
-
 public class VocabularyViewModel : ViewModelBase
 {
     private readonly INavigationService _navigationService;

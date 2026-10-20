@@ -48,6 +48,14 @@ public class NovelRepository : INovelRepository
             .ToListAsync();
     }
 
+    public async Task<bool> ExistsWithTitleAsync(string title)
+    {
+        var normalized = title.Trim().ToLower();
+        return await _context.Novels.AnyAsync(n =>
+            n.Title.ToLower() == normalized ||
+            n.JapaneseTitle.ToLower() == normalized);
+    }
+
     public async Task<Novel> AddAsync(Novel novel)
     {
         _context.Novels.Add(novel);
@@ -63,10 +71,78 @@ public class NovelRepository : INovelRepository
 
     public async Task DeleteAsync(int id)
     {
-        var novel = await _context.Novels.FindAsync(id);
+        var novel = await _context.Novels
+            .Include(n => n.Chapters)
+            .FirstOrDefaultAsync(n => n.Id == id);
+
         if (novel != null)
         {
             _context.Novels.Remove(novel);
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    public async Task<Chapter?> GetChapterByIdAsync(int chapterId)
+    {
+        return await _context.Chapters
+            .Include(c => c.Bookmarks)
+            .Include(c => c.Novel)
+            .FirstOrDefaultAsync(c => c.Id == chapterId);
+    }
+
+    public async Task UpdateChapterProgressAsync(int chapterId, int lastReadPosition, bool isCompleted)
+    {
+        var chapter = await _context.Chapters
+            .Include(c => c.Novel)
+            .FirstOrDefaultAsync(c => c.Id == chapterId);
+
+        if (chapter != null)
+        {
+            var now = DateTime.UtcNow;
+            chapter.LastReadPosition = Math.Max(0, lastReadPosition);
+            chapter.IsCompleted = isCompleted || chapter.IsCompleted;
+            chapter.LastReadAt = now;
+
+            if (chapter.Novel != null)
+            {
+                chapter.Novel.LastReadAt = now;
+            }
+
+            await _context.SaveChangesAsync();
+        }
+    }
+}
+
+public class BookmarkRepository : IBookmarkRepository
+{
+    private readonly KotobaDbContext _context;
+
+    public BookmarkRepository(KotobaDbContext context)
+    {
+        _context = context;
+    }
+
+    public async Task<IReadOnlyList<Bookmark>> GetByChapterIdAsync(int chapterId)
+    {
+        return await _context.Bookmarks
+            .Where(b => b.ChapterId == chapterId)
+            .OrderBy(b => b.CharacterPosition)
+            .ToListAsync();
+    }
+
+    public async Task<Bookmark> AddAsync(Bookmark bookmark)
+    {
+        _context.Bookmarks.Add(bookmark);
+        await _context.SaveChangesAsync();
+        return bookmark;
+    }
+
+    public async Task DeleteAsync(int id)
+    {
+        var bookmark = await _context.Bookmarks.FindAsync(id);
+        if (bookmark != null)
+        {
+            _context.Bookmarks.Remove(bookmark);
             await _context.SaveChangesAsync();
         }
     }
@@ -187,6 +263,15 @@ public class UserProgressRepository : IUserProgressRepository
 
         progress.StreakDays = newStreak;
         progress.LastStudyDate = DateTime.UtcNow.Date;
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task AddStudyMinutesAsync(int minutes)
+    {
+        if (minutes <= 0) return;
+        var progress = await GetProgressAsync();
+        progress.TodayStudyMinutes += minutes;
+        progress.TotalStudyMinutes += minutes;
         await _context.SaveChangesAsync();
     }
 }

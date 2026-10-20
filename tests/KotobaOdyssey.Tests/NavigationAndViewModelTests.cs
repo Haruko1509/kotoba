@@ -1,6 +1,8 @@
 using KotobaOdyssey.Core.Interfaces;
+using KotobaOdyssey.Core.Models;
 using KotobaOdyssey.Data;
 using KotobaOdyssey.Data.Repositories;
+using KotobaOdyssey.Data.Services;
 using KotobaOdyssey.UI.Services;
 using KotobaOdyssey.UI.ViewModels;
 using Microsoft.Data.Sqlite;
@@ -29,6 +31,12 @@ public class NavigationAndViewModelTests : IDisposable
         });
 
         services.AddScoped<INovelRepository, NovelRepository>();
+        services.AddScoped<IBookmarkRepository, BookmarkRepository>();
+        services.AddScoped<INovelImportService, NovelImportService>(sp =>
+            new NovelImportService(
+                sp.GetRequiredService<INovelRepository>(),
+                NullLogger<NovelImportService>.Instance));
+
         services.AddScoped<IVocabularyRepository, VocabularyRepository>();
         services.AddScoped<IUserProgressRepository, UserProgressRepository>();
         services.AddScoped<IDailyQuestRepository, DailyQuestRepository>();
@@ -112,5 +120,53 @@ public class NavigationAndViewModelTests : IDisposable
 
         Assert.True(claimableQuest.IsClaimed);
         Assert.Equal(initialXp + claimableQuest.RewardXp, mainVm.CurrentXp);
+    }
+
+    [Fact]
+    public async Task LibraryViewModel_SearchAndFiltering_WorksCorrectly()
+    {
+        var libraryVm = _serviceProvider.GetRequiredService<LibraryViewModel>();
+        await libraryVm.LoadNovelsAsync();
+
+        Assert.True(libraryVm.FilteredNovels.Count >= 4);
+
+        // Search for '銀河'
+        libraryVm.SearchQuery = "銀河";
+        Assert.Single(libraryVm.FilteredNovels);
+        Assert.Equal("銀河鉄道の夜", libraryVm.FilteredNovels[0].Title);
+
+        // Clear search
+        libraryVm.SearchQuery = string.Empty;
+        Assert.True(libraryVm.FilteredNovels.Count >= 4);
+
+        // Filter by JLPT N5
+        libraryVm.SelectedJlptFilter = "N5";
+        Assert.All(libraryVm.FilteredNovels, n => Assert.Equal(Core.Enums.JlptLevel.N5, n.JlptLevel));
+    }
+
+    [Fact]
+    public async Task ReaderViewModel_LoadNovelAndBookmark_OperatesCorrectly()
+    {
+        var novelRepo = _serviceProvider.GetRequiredService<INovelRepository>();
+        var novels = await novelRepo.GetAllAsync();
+        var targetNovel = novels.First();
+
+        var readerVm = _serviceProvider.GetRequiredService<ReaderViewModel>();
+        await readerVm.LoadNovelAsync(targetNovel);
+
+        Assert.NotNull(readerVm.Novel);
+        Assert.NotNull(readerVm.CurrentChapter);
+        Assert.NotEmpty(readerVm.Chapters);
+
+        // Add Bookmark
+        readerVm.NewBookmarkNote = "Ghi nhớ cảnh học buổi chiều";
+        await readerVm.AddBookmark();
+
+        Assert.Single(readerVm.Bookmarks);
+        Assert.Equal("Ghi nhớ cảnh học buổi chiều", readerVm.Bookmarks[0].Note);
+
+        // Update progress
+        await readerVm.SaveCurrentProgressAsync(100);
+        Assert.True(readerVm.ReadingProgressPercent > 0);
     }
 }

@@ -3,6 +3,7 @@ using System.Windows;
 using KotobaOdyssey.Core.Interfaces;
 using KotobaOdyssey.Data;
 using KotobaOdyssey.Data.Repositories;
+using KotobaOdyssey.Data.Services;
 using KotobaOdyssey.UI.Services;
 using KotobaOdyssey.UI.ViewModels;
 using Microsoft.EntityFrameworkCore;
@@ -61,6 +62,8 @@ public partial class App : Application
 
         // Repositories & Services
         services.AddScoped<INovelRepository, NovelRepository>();
+        services.AddScoped<IBookmarkRepository, BookmarkRepository>();
+        services.AddScoped<INovelImportService, NovelImportService>();
         services.AddScoped<IVocabularyRepository, VocabularyRepository>();
         services.AddScoped<IUserProgressRepository, UserProgressRepository>();
         services.AddScoped<IDailyQuestRepository, DailyQuestRepository>();

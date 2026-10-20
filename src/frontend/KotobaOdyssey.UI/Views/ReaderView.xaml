@@ -3,20 +3,308 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" Background="Transparent">
-    <Grid Margin="32">
-        <Border Style="{StaticResource StyleCosmicCard}" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="40" MaxWidth="600">
-            <StackPanel HorizontalAlignment="Center">
-                <Border Width="64" Height="64" CornerRadius="32" Background="#1C2642" HorizontalAlignment="Center" Margin="0,0,0,16">
-                    <Path Data="{StaticResource GeomReader}" Fill="{StaticResource BrushStarlightCyan}" Width="32" Height="32" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                </Border>
-                <TextBlock Text="リーディング (Reading Workspace)" Style="{StaticResource TextHeaderLarge}" HorizontalAlignment="Center" />
-                <TextBlock Text="Không gian đọc tiếng Nhật tối ưu với bookmark, lưu vị trí tự động, tra cứu từ vựng tương tác và tùy chỉnh giao diện." 
-                           Style="{StaticResource TextSubheader}" TextAlignment="Center" TextWrapping="Wrap" Margin="0,8,0,20" />
-                <Border Background="#1C2138" CornerRadius="8" Padding="14,10" HorizontalAlignment="Center">
-                    <TextBlock Text="✦ Phase 2: Japanese Reader Workspace ✦" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource BrushStarlightCyan}" />
-                </Border>
-            </StackPanel>
+             xmlns:vm="clr-namespace:KotobaOdyssey.UI.ViewModels"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance vm:ReaderViewModel}"
+             Background="Transparent">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- ================= TOP READER ACTION BAR ================= -->
+        <Border Grid.Row="0" Background="#0C1220" BorderBrush="{StaticResource BrushBorder}" BorderThickness="0,0,0,1" Padding="20,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Left: Back Button & Novel Title -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Content="← Tủ sách" 
+                            Style="{StaticResource StyleSecondaryButton}" 
+                            Padding="10,5" FontSize="11" 
+                            Command="{Binding BackToLibraryCommand}" 
+                            Margin="0,0,16,0" />
+
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Novel.JapaneseTitle, FallbackValue='銀河鉄道の夜'}" 
+                                   Style="{StaticResource TextJapaneseTitle}" 
+                                   FontSize="15" FontWeight="Bold" />
+                        <TextBlock Text="{Binding Novel.Author, FallbackValue='宮沢賢治'}" 
+                                   Style="{StaticResource TextMuted}" 
+                                   FontSize="11" />
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Middle: Chapter Selector & Navigation -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Button Content="◀ Trước" 
+                            Style="{StaticResource StyleSecondaryButton}" 
+                            Padding="8,4" FontSize="11"
+                            Command="{Binding PreviousChapterCommand}" 
+                            IsEnabled="{Binding HasPreviousChapter}"
+                            Margin="0,0,8,0" />
+
+                    <ComboBox ItemsSource="{Binding Chapters}" 
+                              SelectedItem="{Binding CurrentChapter}" 
+                              DisplayMemberPath="Title" 
+                              Width="220" 
+                              Background="#161F36" 
+                              Foreground="{StaticResource BrushTextPrimary}" 
+                              Height="32" 
+                              VerticalContentAlignment="Center" />
+
+                    <Button Content="Sau ▶" 
+                            Style="{StaticResource StyleSecondaryButton}" 
+                            Padding="8,4" FontSize="11"
+                            Command="{Binding NextChapterCommand}" 
+                            IsEnabled="{Binding HasNextChapter}"
+                            Margin="8,0,0,0" />
+                </StackPanel>
+
+                <!-- Right: Session Timer, Bookmarks & Settings -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+
+                    <!-- Reading Session Timer -->
+                    <Border Background="#162038" CornerRadius="6" Padding="8,4" Margin="0,0,10,0">
+                        <StackPanel Orientation="Horizontal">
+                            <Path Data="{StaticResource GeomClock}" Fill="{StaticResource BrushStarlightCyan}" Width="12" Height="12" Stretch="Uniform" Margin="0,0,4,0" VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding SessionReadingTime, StringFormat='{}Thời gian: {0}'}" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource BrushStarlightCyan}" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Bookmark Drawer Toggle Button -->
+                    <Button Content="🔖 Dấu trang" 
+                            Style="{StaticResource StyleSecondaryButton}" 
+                            Padding="10,5" FontSize="11" 
+                            Command="{Binding ToggleBookmarkDrawerCommand}" 
+                            Margin="0,0,8,0" />
+
+                    <!-- Settings Drawer Toggle Button -->
+                    <Button Content="⚙ Tùy chỉnh" 
+                            Style="{StaticResource StyleSecondaryButton}" 
+                            Padding="10,5" FontSize="11" 
+                            Command="{Binding ToggleSettingsDrawerCommand}" />
+                </StackPanel>
+            </Grid>
         </Border>
+
+        <!-- ================= MAIN READING CANVAS ================= -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Scrollable Japanese Text Canvas -->
+            <Border Grid.Column="0" Background="{Binding ReaderBackgroundBrush}">
+                <ScrollViewer x:Name="ReadingScrollViewer" 
+                              VerticalScrollBarVisibility="Auto" 
+                              HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel MaxWidth="820" Margin="48,36,48,60" HorizontalAlignment="Center">
+
+                        <!-- Chapter Header Area -->
+                        <Border BorderBrush="{StaticResource BrushBorder}" BorderThickness="0,0,0,1" Padding="0,0,0,20" Margin="0,0,0,28">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                    <Border Style="{StaticResource StyleJlptBadge}" Margin="0,0,8,0">
+                                        <TextBlock Text="{Binding Novel.JlptLevel, StringFormat='{}JLPT {0}'}" FontSize="10" FontWeight="Bold" Foreground="{StaticResource BrushLavender}" />
+                                    </Border>
+                                    <TextBlock Text="{Binding Novel.Genre}" Style="{StaticResource TextMuted}" VerticalAlignment="Center" />
+                                </StackPanel>
+
+                                <TextBlock Text="{Binding CurrentChapter.Title, FallbackValue='一、午後の授業'}" 
+                                           FontFamily="{Binding SelectedFontFamily}" 
+                                           FontSize="26" FontWeight="Bold" 
+                                           Foreground="{Binding ReaderForegroundBrush}" 
+                                           Margin="0,4,0,4" />
+
+                                <TextBlock Text="{Binding CurrentChapter.WordCount, StringFormat='{}Độ dài: {0} ký tự Nhật ngữ'}" 
+                                           Style="{StaticResource TextMuted}" FontSize="12" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Japanese Reading Text Content -->
+                        <TextBlock Text="{Binding CurrentChapter.Content}" 
+                                   FontFamily="{Binding SelectedFontFamily}" 
+                                   FontSize="{Binding FontSize}" 
+                                   LineHeight="{Binding LineSpacing}" 
+                                   Foreground="{Binding ReaderForegroundBrush}" 
+                                   TextWrapping="Wrap" 
+                                   TextAlignment="Left" />
+
+                        <!-- End of Chapter Navigation Banner -->
+                        <Border Background="#141C30" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="12" Padding="24" Margin="0,40,0,0">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                    <TextBlock Text="Đã đọc xong chương này" Style="{StaticResource TextHeaderMedium}" FontSize="15" />
+                                    <TextBlock Text="Tiến độ đã được tự động lưu vào cơ sở dữ liệu." Style="{StaticResource TextMuted}" Margin="0,2,0,0" />
+                                </StackPanel>
+                                <Button Grid.Column="1" 
+                                        Content="Chương tiếp theo ▶" 
+                                        Style="{StaticResource StylePrimaryButton}" 
+                                        Command="{Binding NextChapterCommand}" 
+                                        IsEnabled="{Binding HasNextChapter}" />
+                            </Grid>
+                        </Border>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <!-- ================= BOOKMARKS SLIDING DRAWER ================= -->
+            <Border Grid.Column="1" 
+                    Width="320" 
+                    Background="#0D1322" 
+                    BorderBrush="{StaticResource BrushBorder}" 
+                    BorderThickness="1,0,0,0" 
+                    Padding="18"
+                    Visibility="{Binding IsBookmarkDrawerOpen, Converter={StaticResource BoolToVis}}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <!-- Drawer Header -->
+                    <DockPanel Grid.Row="0" Margin="0,0,0,14">
+                        <TextBlock Text="🔖 Dấu trang chương này" Style="{StaticResource TextHeaderMedium}" FontSize="15" />
+                        <Button Content="✕" Style="{StaticResource StyleSecondaryButton}" Padding="6,2" HorizontalAlignment="Right" Command="{Binding ToggleBookmarkDrawerCommand}" />
+                    </DockPanel>
+
+                    <!-- Add Bookmark Box -->
+                    <Border Grid.Row="1" Background="#141D33" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,14">
+                        <StackPanel>
+                            <TextBlock Text="GHI CHÚ DẤU TRANG" Style="{StaticResource TextMuted}" FontSize="10" FontWeight="Bold" Margin="0,0,0,4" />
+                            <TextBox Text="{Binding NewBookmarkNote, UpdateSourceTrigger=PropertyChanged}" 
+                                     Background="#0B1020" 
+                                     BorderBrush="{StaticResource BrushBorder}" 
+                                     BorderThickness="1" 
+                                     Foreground="{StaticResource BrushTextPrimary}" 
+                                     Padding="6,4" 
+                                     Margin="0,0,0,8" />
+                            <Button Content="＋ Thêm Bookmark vị trí này" 
+                                    Style="{StaticResource StylePrimaryButton}" 
+                                    Command="{Binding AddBookmarkCommand}" 
+                                    Padding="10,6" FontSize="11" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Bookmarks List -->
+                    <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding Bookmarks}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="#121A2E" BorderBrush="#1C2744" BorderThickness="1" CornerRadius="8" Padding="10" Margin="0,0,0,8">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+
+                                            <DockPanel Grid.Row="0">
+                                                <TextBlock Text="{Binding Note}" FontWeight="SemiBold" Foreground="{StaticResource BrushLavender}" FontSize="12" />
+                                                <Button Content="✕" Style="{StaticResource StyleSecondaryButton}" Padding="4,1" FontSize="9" HorizontalAlignment="Right" 
+                                                        Command="{Binding DataContext.DeleteBookmarkCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}" />
+                                            </DockPanel>
+
+                                            <TextBlock Grid.Row="1" Text="{Binding Snippet}" Style="{StaticResource TextMuted}" FontSize="11" TextWrapping="Wrap" Margin="0,4,0,4" />
+
+                                            <TextBlock Grid.Row="2" Text="{Binding CreatedAt, StringFormat='{}{0:dd/MM/yyyy HH:mm}'}" Style="{StaticResource TextMuted}" FontSize="10" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+
+            <!-- ================= SETTINGS SLIDING DRAWER ================= -->
+            <Border Grid.Column="1" 
+                    Width="300" 
+                    Background="#0D1322" 
+                    BorderBrush="{StaticResource BrushBorder}" 
+                    BorderThickness="1,0,0,0" 
+                    Padding="18"
+                    Visibility="{Binding IsSettingsOpen, Converter={StaticResource BoolToVis}}">
+                <StackPanel>
+                    <!-- Drawer Header -->
+                    <DockPanel Margin="0,0,0,18">
+                        <TextBlock Text="⚙ Tùy chỉnh đọc" Style="{StaticResource TextHeaderMedium}" FontSize="15" />
+                        <Button Content="✕" Style="{StaticResource StyleSecondaryButton}" Padding="6,2" HorizontalAlignment="Right" Command="{Binding ToggleSettingsDrawerCommand}" />
+                    </DockPanel>
+
+                    <!-- Font Size Slider -->
+                    <DockPanel Margin="0,0,0,4">
+                        <TextBlock Text="CỠ CHỮ" Style="{StaticResource TextMuted}" FontSize="10" FontWeight="Bold" />
+                        <TextBlock Text="{Binding FontSize, StringFormat='{}{0:F0} px'}" Style="{StaticResource TextBody}" FontSize="11" HorizontalAlignment="Right" />
+                    </DockPanel>
+                    <Slider Value="{Binding FontSize}" Minimum="14" Maximum="32" SmallChange="1" LargeChange="2" Margin="0,0,0,16" />
+
+                    <!-- Line Spacing Slider -->
+                    <DockPanel Margin="0,0,0,4">
+                        <TextBlock Text="KHOẢNG CÁCH DÒNG" Style="{StaticResource TextMuted}" FontSize="10" FontWeight="Bold" />
+                        <TextBlock Text="{Binding LineSpacing, StringFormat='{}{0:F0} px'}" Style="{StaticResource TextBody}" FontSize="11" HorizontalAlignment="Right" />
+                    </DockPanel>
+                    <Slider Value="{Binding LineSpacing}" Minimum="22" Maximum="46" SmallChange="2" LargeChange="4" Margin="0,0,0,16" />
+
+                    <!-- Font Family Selector -->
+                    <TextBlock Text="PHÔNG CHỮ NHẬT NGỮ" Style="{StaticResource TextMuted}" FontSize="10" FontWeight="Bold" Margin="0,0,0,6" />
+                    <ComboBox SelectedValue="{Binding SelectedFontFamily}" SelectedValuePath="Content" Background="#161F36" Foreground="{StaticResource BrushTextPrimary}" Margin="0,0,0,20">
+                        <ComboBoxItem Content="Yu Gothic" IsSelected="True" />
+                        <ComboBoxItem Content="Meiryo" />
+                        <ComboBoxItem Content="MS Mincho" />
+                        <ComboBoxItem Content="Segoe UI" />
+                    </ComboBox>
+
+                    <!-- Theme Colors Selector -->
+                    <TextBlock Text="GIAO DIỆN BẢNG MÀU" Style="{StaticResource TextMuted}" FontSize="10" FontWeight="Bold" Margin="0,0,0,8" />
+                    <Grid Margin="0,0,0,14">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="36" />
+                            <RowDefinition Height="36" />
+                        </Grid.RowDefinitions>
+
+                        <!-- Cosmic -->
+                        <Button Grid.Row="0" Grid.Column="0" Content="🌌 Cosmic" 
+                                Style="{StaticResource StyleSecondaryButton}" Margin="0,0,4,4"
+                                Command="{Binding SetThemeCommand}" CommandParameter="Cosmic" />
+
+                        <!-- Deep Night -->
+                        <Button Grid.Row="0" Grid.Column="1" Content="🌑 Deep Night" 
+                                Style="{StaticResource StyleSecondaryButton}" Margin="4,0,0,4"
+                                Command="{Binding SetThemeCommand}" CommandParameter="DeepNight" />
+
+                        <!-- Warm Sepia -->
+                        <Button Grid.Row="1" Grid.Column="0" Content="📜 Warm Sepia" 
+                                Style="{StaticResource StyleSecondaryButton}" Margin="0,4,4,0"
+                                Command="{Binding SetThemeCommand}" CommandParameter="WarmSepia" />
+
+                        <!-- Amethyst -->
+                        <Button Grid.Row="1" Grid.Column="1" Content="🔮 Amethyst" 
+                                Style="{StaticResource StyleSecondaryButton}" Margin="4,4,0,0"
+                                Command="{Binding SetThemeCommand}" CommandParameter="Amethyst" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+        </Grid>
     </Grid>
 </UserControl>

@@ -3,20 +3,412 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" Background="Transparent">
-    <Grid Margin="32">
-        <Border Style="{StaticResource StyleCosmicCard}" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="40" MaxWidth="600">
-            <StackPanel HorizontalAlignment="Center">
-                <Border Width="64" Height="64" CornerRadius="32" Background="#1C2642" HorizontalAlignment="Center" Margin="0,0,0,16">
-                    <Path Data="{StaticResource GeomLibrary}" Fill="{StaticResource BrushVioletLight}" Width="32" Height="32" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" />
+             xmlns:vm="clr-namespace:KotobaOdyssey.UI.ViewModels"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance vm:LibraryViewModel}"
+             Background="Transparent">
+
+    <Grid>
+        <!-- Main Library Content -->
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Margin="32,24,32,32">
+
+                <!-- Header & Action Buttons -->
+                <Grid Margin="0,0,0,20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="小説ライブラリ (Novel Library)" Style="{StaticResource TextHeaderLarge}" FontSize="24" />
+                        <TextBlock Text="Khám phá các kiệt tác văn học Nhật Bản kinh điển và quản lý truyện cá nhân của bạn." 
+                                   Style="{StaticResource TextSubheader}" Margin="0,4,0,0" />
+                    </StackPanel>
+
+                    <!-- Import Actions -->
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Content="＋ Nhập file JSON" 
+                                Style="{StaticResource StylePrimaryButton}" 
+                                Command="{Binding OpenImportModalCommand}" 
+                                CommandParameter="JSON"
+                                Margin="0,0,10,0" />
+                        <Button Content="＋ Nhập file TXT" 
+                                Style="{StaticResource StyleSecondaryButton}" 
+                                Command="{Binding OpenImportModalCommand}" 
+                                CommandParameter="TXT" />
+                    </StackPanel>
+                </Grid>
+
+                <!-- Filter & Search Bar Container -->
+                <Border Style="{StaticResource StyleCosmicCard}" Padding="16,14" Margin="0,0,0,24">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <!-- Row 1: Search Box & Stats Summary -->
+                        <Grid Grid.Row="0" Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="340" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Search Input -->
+                            <Border Grid.Column="0" Background="#0C1220" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="8" Padding="10,6">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="20" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Path Grid.Column="0" Data="{StaticResource GeomDashboard}" Fill="{StaticResource BrushTextMuted}" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center" />
+                                    <TextBox Grid.Column="1" 
+                                             Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" 
+                                             Background="Transparent" 
+                                             BorderThickness="0" 
+                                             Foreground="{StaticResource BrushTextPrimary}" 
+                                             CaretBrush="{StaticResource BrushVioletLight}"
+                                             FontFamily="{StaticResource FontPrimary}" 
+                                             FontSize="13" 
+                                             Margin="6,0,0,0" 
+                                             VerticalAlignment="Center" />
+                                    <!-- Placeholder -->
+                                    <TextBlock Grid.Column="1" 
+                                               Text="Tìm kiếm theo tiêu đề, tác giả..." 
+                                               Margin="6,0,0,0" 
+                                               IsHitTestVisible="False" 
+                                               VerticalAlignment="Center">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock" BasedOn="{StaticResource TextMuted}">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SearchQuery}" Value="">
+                                                        <Setter Property="Visibility" Value="Visible" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </Grid>
+                            </Border>
+
+                            <!-- Library Stats Badges -->
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                <Border Background="#1C243B" CornerRadius="6" Padding="8,4" Margin="0,0,8,0">
+                                    <TextBlock Text="{Binding TotalNovelsCount, StringFormat='{}Tổng cộng: {0} truyện'}" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource BrushTextSecondary}" />
+                                </Border>
+                                <Border Background="#251F3E" CornerRadius="6" Padding="8,4" Margin="0,0,8,0">
+                                    <TextBlock Text="{Binding DemoNovelsCount, StringFormat='{}Truyện mẫu: {0}'}" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource BrushLavender}" />
+                                </Border>
+                                <Border Background="#122B3E" CornerRadius="6" Padding="8,4">
+                                    <TextBlock Text="{Binding UserNovelsCount, StringFormat='{}Tự nhập: {0}'}" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource BrushStarlightCyan}" />
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Row 2: Filter Chips & Sort -->
+                        <DockPanel Grid.Row="1">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="Cấp độ:" Style="{StaticResource TextMuted}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                
+                                <ComboBox SelectedValue="{Binding SelectedJlptFilter}" SelectedValuePath="Content" Width="130" Margin="0,0,16,0" Background="#161F36" Foreground="{StaticResource BrushTextPrimary}">
+                                    <ComboBoxItem Content="Tất cả JLPT" IsSelected="True" />
+                                    <ComboBoxItem Content="N5" />
+                                    <ComboBoxItem Content="N4" />
+                                    <ComboBoxItem Content="N3" />
+                                    <ComboBoxItem Content="N2" />
+                                    <ComboBoxItem Content="N1" />
+                                </ComboBox>
+
+                                <TextBlock Text="Nguồn:" Style="{StaticResource TextMuted}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                <ComboBox SelectedValue="{Binding SelectedSourceFilter}" SelectedValuePath="Content" Width="150" Margin="0,0,16,0" Background="#161F36" Foreground="{StaticResource BrushTextPrimary}">
+                                    <ComboBoxItem Content="Tất cả" IsSelected="True" />
+                                    <ComboBoxItem Content="Truyện mẫu (Demo)" />
+                                    <ComboBoxItem Content="Truyện của tôi" />
+                                </ComboBox>
+
+                                <CheckBox Content="★ Chỉ hiện yêu thích" 
+                                          IsChecked="{Binding FavoritesOnly}" 
+                                          Foreground="{StaticResource BrushStarGold}" 
+                                          FontFamily="{StaticResource FontDisplay}" 
+                                          VerticalAlignment="Center" />
+                            </StackPanel>
+
+                            <!-- Sort Selector -->
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                <TextBlock Text="Sắp xếp:" Style="{StaticResource TextMuted}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                <ComboBox SelectedValue="{Binding SelectedSortOption}" SelectedValuePath="Content" Width="150" Background="#161F36" Foreground="{StaticResource BrushTextPrimary}">
+                                    <ComboBoxItem Content="Đọc gần đây" IsSelected="True" />
+                                    <ComboBoxItem Content="Tên truyện (A-Z)" />
+                                    <ComboBoxItem Content="Cấp độ JLPT" />
+                                    <ComboBoxItem Content="Mới thêm nhất" />
+                                </ComboBox>
+                            </StackPanel>
+                        </DockPanel>
+                    </Grid>
                 </Border>
-                <TextBlock Text="小説ライブラリ (Novel Library)" Style="{StaticResource TextHeaderLarge}" HorizontalAlignment="Center" />
-                <TextBlock Text="Mô-đun quản lý tiểu thuyết, lọc theo cấp độ JLPT, tìm kiếm và nhập khẩu file truyện JSON/TXT sẽ được hoàn thiện trong Phase 2." 
-                           Style="{StaticResource TextSubheader}" TextAlignment="Center" TextWrapping="Wrap" Margin="0,8,0,20" />
-                <Border Background="#1C2138" CornerRadius="8" Padding="14,10" HorizontalAlignment="Center">
-                    <TextBlock Text="✦ Phase 2: Novel Library &amp; Reader Engine ✦" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource BrushLavender}" />
+
+                <!-- Novel Cards Grid -->
+                <ItemsControl ItemsSource="{Binding FilteredNovels}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Width="380" Margin="0,0,20,20" Style="{StaticResource StyleCosmicCard}" Padding="16">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="105" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Novel Cover Art Graphic -->
+                                    <Border Grid.Column="0" Height="145" CornerRadius="8" BorderBrush="{StaticResource BrushBorderGlow}" BorderThickness="1">
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                <GradientStop Color="#1A1836" Offset="0" />
+                                                <GradientStop Color="#2B1D4F" Offset="0.6" />
+                                                <GradientStop Color="#1E284A" Offset="1" />
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                        <Grid>
+                                            <Path Data="{StaticResource GeomVisualNovel}" Fill="{StaticResource BrushLavender}" Opacity="0.12" Width="60" Height="60" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            
+                                            <StackPanel VerticalAlignment="Bottom" Margin="8,0,8,8">
+                                                <Border Style="{StaticResource StyleJlptBadge}" HorizontalAlignment="Left" Margin="0,0,0,4">
+                                                    <TextBlock Text="{Binding JlptLevel, StringFormat='{}JLPT {0}'}" FontSize="9" FontWeight="Bold" Foreground="{StaticResource BrushLavender}" />
+                                                </Border>
+                                                <TextBlock Text="{Binding Title}" FontSize="12" FontWeight="Bold" Foreground="#FFFFFF" FontFamily="{StaticResource FontJapanese}" TextTrimming="CharacterEllipsis" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- Novel Metadata & Actions -->
+                                    <Grid Grid.Column="1" Margin="14,0,0,0">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="*" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+
+                                        <!-- Top Row: Source Badge & Favorite Star Button -->
+                                        <DockPanel Grid.Row="0" Margin="0,0,0,4">
+                                            <!-- Demo or User Badge -->
+                                            <Border CornerRadius="4" Padding="5,2" HorizontalAlignment="Left">
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+                                                        <Setter Property="Background" Value="#251F3E" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsDemoData}" Value="False">
+                                                                <Setter Property="Background" Value="#0F2D3E" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Border.Style>
+                                                <TextBlock FontSize="10" FontWeight="Bold">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Text" Value="DEMO" />
+                                                            <Setter Property="Foreground" Value="{StaticResource BrushLavender}" />
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding IsDemoData}" Value="False">
+                                                                    <Setter Property="Text" Value="USER" />
+                                                                    <Setter Property="Foreground" Value="{StaticResource BrushStarlightCyan}" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </Border>
+
+                                            <!-- Favorite Star Button -->
+                                            <Button Style="{StaticResource StyleSecondaryButton}" 
+                                                    Padding="6,2" 
+                                                    HorizontalAlignment="Right" 
+                                                    Command="{Binding DataContext.ToggleFavoriteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}">
+                                                <TextBlock FontSize="14">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Text" Value="☆" />
+                                                            <Setter Property="Foreground" Value="{StaticResource BrushTextMuted}" />
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding IsFavorite}" Value="True">
+                                                                    <Setter Property="Text" Value="★" />
+                                                                    <Setter Property="Foreground" Value="{StaticResource BrushStarGold}" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </Button>
+                                        </DockPanel>
+
+                                        <!-- Middle Row: Titles & Author & Description -->
+                                        <StackPanel Grid.Row="1">
+                                            <TextBlock Text="{Binding JapaneseTitle}" 
+                                                       FontFamily="{StaticResource FontJapanese}" 
+                                                       FontSize="15" FontWeight="Bold" 
+                                                       Foreground="{StaticResource BrushTextPrimary}" 
+                                                       TextTrimming="CharacterEllipsis" />
+                                            
+                                            <TextBlock Text="{Binding Author}" 
+                                                       Style="{StaticResource TextMuted}" 
+                                                       FontSize="11" Margin="0,2,0,4" />
+
+                                            <TextBlock Text="{Binding Description}" 
+                                                       Style="{StaticResource TextMuted}" 
+                                                       FontSize="11" 
+                                                       MaxHeight="36" 
+                                                       TextTrimming="CharacterEllipsis" 
+                                                       TextWrapping="Wrap" />
+                                        </StackPanel>
+
+                                        <!-- Bottom Row: Chapter count & Action Buttons -->
+                                        <DockPanel Grid.Row="2" Margin="0,8,0,0">
+                                            <TextBlock Text="{Binding Chapters.Count, StringFormat='{}{0} chương'}" 
+                                                       Style="{StaticResource TextMuted}" 
+                                                       FontSize="11" 
+                                                       VerticalAlignment="Center" />
+
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                                <!-- Delete button for user imported novels -->
+                                                <Button Content="Xóa" 
+                                                        Style="{StaticResource StyleSecondaryButton}" 
+                                                        Padding="8,4" FontSize="11" 
+                                                        Margin="0,0,6,0"
+                                                        Command="{Binding DataContext.DeleteNovelCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}"
+                                                        Visibility="{Binding IsDemoData, Converter={StaticResource InverseBoolToVis}}" />
+
+                                                <!-- Read Button -->
+                                                <Button Content="Đọc truyện ▶" 
+                                                        Style="{StaticResource StylePrimaryButton}" 
+                                                        Padding="12,5" FontSize="11"
+                                                        Command="{Binding DataContext.OpenNovelCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}" />
+                                            </StackPanel>
+                                        </DockPanel>
+
+                                    </Grid>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- Empty State when list is empty -->
+                <Border Style="{StaticResource StyleCosmicCard}" 
+                        Padding="40" Margin="0,40,0,0" 
+                        HorizontalAlignment="Center" 
+                        MaxWidth="500"
+                        Visibility="{Binding FilteredNovels.Count, Converter={StaticResource InverseBoolToVis}}">
+                    <StackPanel HorizontalAlignment="Center">
+                        <Path Data="{StaticResource GeomLibrary}" Fill="{StaticResource BrushLavender}" Width="48" Height="48" Stretch="Uniform" HorizontalAlignment="Center" Margin="0,0,0,16" />
+                        <TextBlock Text="Không tìm thấy tác phẩm phù hợp" Style="{StaticResource TextHeaderMedium}" HorizontalAlignment="Center" />
+                        <TextBlock Text="Hãy thử xóa bộ lọc tìm kiếm hoặc nhập thêm truyện mới từ file JSON / TXT." Style="{StaticResource TextMuted}" TextAlignment="Center" Margin="0,8,0,16" />
+                        <Button Content="Nhập truyện mới ngay" Style="{StaticResource StylePrimaryButton}" Command="{Binding OpenImportModalCommand}" CommandParameter="JSON" HorizontalAlignment="Center" />
+                    </StackPanel>
                 </Border>
+
             </StackPanel>
-        </Border>
+        </ScrollViewer>
+
+        <!-- ================= IMPORT MODAL OVERLAY ================= -->
+        <Grid Background="#B0050811" 
+              Visibility="{Binding IsImportModalOpen, Converter={StaticResource BoolToVis}}">
+            <Border Style="{StaticResource StyleHeroCard}" 
+                    Width="560" 
+                    HorizontalAlignment="Center" 
+                    VerticalAlignment="Center" 
+                    Padding="28">
+                <StackPanel>
+                    <!-- Modal Header -->
+                    <DockPanel Margin="0,0,0,18">
+                        <StackPanel Orientation="Horizontal">
+                            <Path Data="{StaticResource GeomLibrary}" Fill="{StaticResource BrushVioletLight}" Width="20" Height="20" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,8,0" />
+                            <TextBlock Text="{Binding ImportType, StringFormat='{}Nhập tiểu thuyết từ file {0}'}" Style="{StaticResource TextHeaderMedium}" FontSize="18" />
+                        </StackPanel>
+                        <Button Content="✕" Style="{StaticResource StyleSecondaryButton}" Padding="8,4" HorizontalAlignment="Right" Command="{Binding CloseImportModalCommand}" />
+                    </DockPanel>
+
+                    <!-- File Picker Row -->
+                    <TextBlock Text="ĐƯỜNG DẪN TẬP TIN" Style="{StaticResource TextMuted}" FontSize="11" FontWeight="Bold" Margin="0,0,0,6" />
+                    <Grid Margin="0,0,0,14">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" Background="#0F162A" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="8" Padding="10,6">
+                            <TextBlock Text="{Binding ImportFilePath, FallbackValue='Chưa chọn file...'}" Style="{StaticResource TextBody}" TextTrimming="CharacterEllipsis" />
+                        </Border>
+                        <Button Grid.Column="1" Content="Chọn tệp..." Style="{StaticResource StyleSecondaryButton}" Margin="8,0,0,0" Command="{Binding BrowseFileCommand}" />
+                    </Grid>
+
+                    <!-- Extra fields for TXT import -->
+                    <StackPanel Visibility="{Binding ImportType, Converter={x:Null}}">
+                        <!-- Title -->
+                        <TextBlock Text="TIÊU ĐỀ TÁC PHẨM" Style="{StaticResource TextMuted}" FontSize="11" FontWeight="Bold" Margin="0,0,0,6" />
+                        <Border Background="#0F162A" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="8" Padding="10,6" Margin="0,0,0,12">
+                            <TextBox Text="{Binding ImportTitle, UpdateSourceTrigger=PropertyChanged}" Background="Transparent" BorderThickness="0" Foreground="{StaticResource BrushTextPrimary}" />
+                        </Border>
+
+                        <!-- Author & JLPT -->
+                        <Grid Margin="0,0,0,14">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="16" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="TÁC GIẢ" Style="{StaticResource TextMuted}" FontSize="11" FontWeight="Bold" Margin="0,0,0,6" />
+                                <Border Background="#0F162A" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="8" Padding="10,6">
+                                    <TextBox Text="{Binding ImportAuthor, UpdateSourceTrigger=PropertyChanged}" Background="Transparent" BorderThickness="0" Foreground="{StaticResource BrushTextPrimary}" />
+                                </Border>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="CẤP ĐỘ JLPT DỰ KIẾN" Style="{StaticResource TextMuted}" FontSize="11" FontWeight="Bold" Margin="0,0,0,6" />
+                                <ComboBox SelectedValue="{Binding ImportJlptLevel}" SelectedValuePath="Tag" Background="#0F162A" Foreground="{StaticResource BrushTextPrimary}" Height="34">
+                                    <ComboBoxItem Content="JLPT N5 (Cơ bản)" Tag="{x:Static CoreEnums:JlptLevel.N5}" xmlns:CoreEnums="clr-namespace:KotobaOdyssey.Core.Enums;assembly=KotobaOdyssey.Core" />
+                                    <ComboBoxItem Content="JLPT N4 (Sơ cấp)" Tag="{x:Static CoreEnums:JlptLevel.N4}" IsSelected="True" xmlns:CoreEnums="clr-namespace:KotobaOdyssey.Core.Enums;assembly=KotobaOdyssey.Core" />
+                                    <ComboBoxItem Content="JLPT N3 (Trung cấp)" Tag="{x:Static CoreEnums:JlptLevel.N3}" xmlns:CoreEnums="clr-namespace:KotobaOdyssey.Core.Enums;assembly=KotobaOdyssey.Core" />
+                                    <ComboBoxItem Content="JLPT N2 (Thượng cấp)" Tag="{x:Static CoreEnums:JlptLevel.N2}" xmlns:CoreEnums="clr-namespace:KotobaOdyssey.Core.Enums;assembly=KotobaOdyssey.Core" />
+                                    <ComboBoxItem Content="JLPT N1 (Cao cấp)" Tag="{x:Static CoreEnums:JlptLevel.N1}" xmlns:CoreEnums="clr-namespace:KotobaOdyssey.Core.Enums;assembly=KotobaOdyssey.Core" />
+                                </ComboBox>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+
+                    <!-- Error Alert Box -->
+                    <Border Background="#3B151E" BorderBrush="#832838" BorderThickness="1" CornerRadius="8" Padding="12,10" Margin="0,0,0,16"
+                            Visibility="{Binding ImportErrorMessage, Converter={x:Null}}">
+                        <StackPanel>
+                            <TextBlock Text="{Binding ImportErrorMessage}" Foreground="#F87171" FontWeight="SemiBold" FontSize="12" />
+                            <ItemsControl ItemsSource="{Binding ImportValidationErrors}" Margin="0,4,0,0">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding StringFormat='• {0}'}" Foreground="#FCA5A5" FontSize="11" Margin="0,2" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Modal Actions -->
+                    <DockPanel>
+                        <TextBlock Text="Tự động phân tách chương theo tiêu đề tiếng Nhật" Style="{StaticResource TextMuted}" VerticalAlignment="Center" />
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Content="Hủy bỏ" Style="{StaticResource StyleSecondaryButton}" Margin="0,0,10,0" Command="{Binding CloseImportModalCommand}" />
+                            <Button Content="Bắt đầu nhập khẩu" Style="{StaticResource StylePrimaryButton}" Command="{Binding ConfirmImportCommand}" />
+                        </StackPanel>
+                    </DockPanel>
+                </StackPanel>
+            </Border>
+        </Grid>
     </Grid>
 </UserControl>

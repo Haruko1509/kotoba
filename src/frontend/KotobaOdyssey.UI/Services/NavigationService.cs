@@ -1,4 +1,5 @@
 using KotobaOdyssey.Core.Interfaces;
+using KotobaOdyssey.Core.Models;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace KotobaOdyssey.UI.Services;
@@ -55,6 +56,36 @@ public class NavigationService : INavigationService
             "settings" => _serviceProvider.GetRequiredService<ViewModels.SettingsViewModel>(),
             _ => _serviceProvider.GetRequiredService<ViewModels.DashboardViewModel>()
         };
+
+        if (vm is ViewModels.ReaderViewModel readerVm)
+        {
+            if (parameter is Novel novel)
+            {
+                _ = readerVm.LoadNovelAsync(novel);
+            }
+            else
+            {
+                // Auto-load latest read novel
+                _ = Task.Run(async () =>
+                {
+                    using var scope = _serviceProvider.CreateScope();
+                    var repo = scope.ServiceProvider.GetRequiredService<INovelRepository>();
+                    var latest = await repo.GetLatestReadAsync();
+                    if (latest != null)
+                    {
+                        await readerVm.LoadNovelAsync(latest);
+                    }
+                });
+            }
+        }
+        else if (vm is ViewModels.LibraryViewModel libVm)
+        {
+            _ = libVm.LoadNovelsAsync();
+        }
+        else if (vm is ViewModels.DashboardViewModel dashVm)
+        {
+            _ = dashVm.LoadDashboardAsync();
+        }
 
         CurrentView = vm;
     }

@@ -1,3 +1,5 @@
+using KotobaOdyssey.Core.DTOs;
+using KotobaOdyssey.Core.Enums;
 using KotobaOdyssey.Core.Models;
 
 namespace KotobaOdyssey.Core.Interfaces;
@@ -8,9 +10,25 @@ public interface INovelRepository
     Task<Novel?> GetByIdAsync(int id);
     Task<Novel?> GetLatestReadAsync();
     Task<IReadOnlyList<Novel>> GetFavoritesAsync();
+    Task<bool> ExistsWithTitleAsync(string title);
     Task<Novel> AddAsync(Novel novel);
     Task UpdateAsync(Novel novel);
     Task DeleteAsync(int id);
+    Task<Chapter?> GetChapterByIdAsync(int chapterId);
+    Task UpdateChapterProgressAsync(int chapterId, int lastReadPosition, bool isCompleted);
+}
+
+public interface IBookmarkRepository
+{
+    Task<IReadOnlyList<Bookmark>> GetByChapterIdAsync(int chapterId);
+    Task<Bookmark> AddAsync(Bookmark bookmark);
+    Task DeleteAsync(int id);
+}
+
+public interface INovelImportService
+{
+    Task<NovelImportResult> ImportFromJsonAsync(string jsonContent);
+    Task<NovelImportResult> ImportFromTxtAsync(string textContent, string title, string? author, JlptLevel jlptLevel, string? genre);
 }
 
 public interface IVocabularyRepository
@@ -31,6 +49,7 @@ public interface IUserProgressRepository
     Task UpdateProgressAsync(UserProgress progress);
     Task AddXpAsync(int xp);
     Task UpdateStreakAsync();
+    Task AddStudyMinutesAsync(int minutes);
 }
 
 public interface IDailyQuestRepository
