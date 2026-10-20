@@ -21,9 +21,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\KotobaOdyssey.Core\KotobaOdyssey.Core.csproj" />
-    <ProjectReference Include="..\..\src\KotobaOdyssey.Data\KotobaOdyssey.Data.csproj" />
-    <ProjectReference Include="..\..\src\KotobaOdyssey.UI\KotobaOdyssey.UI.csproj" />
+    <ProjectReference Include="..\..\src\backend\KotobaOdyssey.Core\KotobaOdyssey.Core.csproj" />
+    <ProjectReference Include="..\..\src\backend\KotobaOdyssey.Data\KotobaOdyssey.Data.csproj" />
+    <ProjectReference Include="..\..\src\frontend\KotobaOdyssey.UI\KotobaOdyssey.UI.csproj" />
   </ItemGroup>
 
 </Project>

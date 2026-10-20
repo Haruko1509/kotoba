@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\KotobaOdyssey.Core\KotobaOdyssey.Core.csproj" />
-    <ProjectReference Include="..\KotobaOdyssey.Data\KotobaOdyssey.Data.csproj" />
+    <ProjectReference Include="..\..\backend\KotobaOdyssey.Core\KotobaOdyssey.Core.csproj" />
+    <ProjectReference Include="..\..\backend\KotobaOdyssey.Data\KotobaOdyssey.Data.csproj" />
   </ItemGroup>
 
   <ItemGroup>
