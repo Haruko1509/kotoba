@@ -1,0 +1,363 @@
+<UserControl x:Class="KotobaOdyssey.UI.Views.DashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:KotobaOdyssey.UI.ViewModels"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance vm:DashboardViewModel}"
+             Background="Transparent">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="32,24,32,32">
+
+            <!-- Welcome Header -->
+            <Grid Margin="0,0,0,24">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="おかえりなさい、旅人" 
+                               Style="{StaticResource TextHeaderLarge}" 
+                               FontSize="26" />
+                    <TextBlock Text="Tiếp tục chuyến hành trình khám phá văn học Nhật Bản và mở rộng vốn từ của bạn." 
+                               Style="{StaticResource TextSubheader}" 
+                               Margin="0,4,0,0" />
+                </StackPanel>
+
+                <!-- Quick Action Button -->
+                <Button Grid.Column="1" 
+                        Content="Khám phá Thư viện" 
+                        Style="{StaticResource StyleSecondaryButton}" 
+                        Command="{Binding OpenLibraryCommand}"
+                        VerticalAlignment="Center" />
+            </Grid>
+
+            <!-- Hero Section: Continue Reading Card -->
+            <Border Style="{StaticResource StyleHeroCard}" Margin="0,0,0,28">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="140" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Novel Cover Placeholder / Visual Art -->
+                    <Border Grid.Column="0" 
+                            Width="120" Height="170" 
+                            CornerRadius="10" 
+                            BorderBrush="{StaticResource BrushBorderGlow}" 
+                            BorderThickness="1"
+                            HorizontalAlignment="Left">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#1E1B4B" Offset="0" />
+                                <GradientStop Color="#312E81" Offset="0.5" />
+                                <GradientStop Color="#4C1D95" Offset="1" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Grid>
+                            <!-- Starry galaxy overlay effect -->
+                            <Path Data="{StaticResource GeomVisualNovel}" 
+                                  Fill="#60A5FA" Opacity="0.15" 
+                                  Width="80" Height="80" 
+                                  Stretch="Uniform" 
+                                  HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            
+                            <StackPanel VerticalAlignment="Bottom" Margin="10,0,10,12">
+                                <Border Style="{StaticResource StyleJlptBadge}" HorizontalAlignment="Left" Margin="0,0,0,4">
+                                    <TextBlock Text="JLPT N3" FontSize="10" FontWeight="Bold" Foreground="{StaticResource BrushLavender}" />
+                                </Border>
+                                <TextBlock Text="銀河鉄道" FontSize="14" FontWeight="Bold" Foreground="#FFFFFF" FontFamily="{StaticResource FontJapanese}" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- Novel Details & Progress -->
+                    <StackPanel Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                            <Border Background="#2A1B4E" CornerRadius="4" Padding="6,2" Margin="0,0,8,0">
+                                <TextBlock Text="ĐANG ĐỌC GẦN ĐÂY" FontSize="11" FontWeight="Bold" Foreground="{StaticResource BrushVioletLight}" />
+                            </Border>
+                            <TextBlock Text="{Binding CurrentNovel.Genre, FallbackValue='Cosmic Fantasy'}" 
+                                       Style="{StaticResource TextMuted}" 
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+
+                        <!-- Title and Author -->
+                        <TextBlock Text="{Binding CurrentNovel.JapaneseTitle, FallbackValue='銀河鉄道の夜 (Ginga Tetsudou no Yoru)'}" 
+                                   Style="{StaticResource TextJapaneseTitle}" 
+                                   FontSize="22" Margin="0,0,0,2" />
+                        
+                        <TextBlock Text="{Binding CurrentNovel.Author, FallbackValue='宮沢賢治 (Miyazawa Kenji)'}" 
+                                   Style="{StaticResource TextSubheader}" 
+                                   Foreground="{StaticResource BrushLavender}" 
+                                   Margin="0,0,0,10" />
+
+                        <!-- Reading Progress Bar -->
+                        <Grid Margin="0,0,0,14" MaxWidth="520" HorizontalAlignment="Left" Width="520">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <DockPanel Grid.Row="0" Margin="0,0,0,6">
+                                <TextBlock Text="{Binding CurrentChapter.Title, FallbackValue='二、活版所 (Xưởng in)'}" 
+                                           Style="{StaticResource TextBody}" 
+                                           FontWeight="SemiBold" />
+                                <TextBlock HorizontalAlignment="Right" 
+                                           Text="{Binding CurrentChapterProgressPercent, StringFormat='{}Tiến độ: {0}%'}" 
+                                           Style="{StaticResource TextMuted}" />
+                            </DockPanel>
+
+                            <ProgressBar Grid.Row="1" 
+                                         Value="{Binding CurrentChapterProgressPercent, FallbackValue=35}" 
+                                         Maximum="100" 
+                                         Style="{StaticResource StyleCosmicProgressBar}" 
+                                         Height="8" />
+                        </Grid>
+
+                        <!-- Action Buttons -->
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="▶ Tiếp tục đọc ngay" 
+                                    Style="{StaticResource StylePrimaryButton}" 
+                                    Command="{Binding ContinueReadingCommand}" 
+                                    Margin="0,0,12,0" />
+                            <Button Content="Tủ sách cá nhân" 
+                                    Style="{StaticResource StyleSecondaryButton}" 
+                                    Command="{Binding OpenLibraryCommand}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Quick Stats 4-Column Grid -->
+            <Grid Margin="0,0,0,28">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="16" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="16" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="16" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Stat 1: Novels -->
+                <Border Grid.Column="0" Style="{StaticResource StyleCosmicCard}">
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,10">
+                            <TextBlock Text="TRUYỆN ĐANG ĐỌC" Style="{StaticResource TextMuted}" FontSize="11" FontWeight="Bold" />
+                            <Path Data="{StaticResource GeomLibrary}" Fill="{StaticResource BrushVioletLight}" Width="16" Height="16" Stretch="Uniform" HorizontalAlignment="Right" />
+                        </DockPanel>
+                        <TextBlock Text="{Binding ActiveNovelsCount, FallbackValue=4}" FontSize="24" FontWeight="Bold" Foreground="{StaticResource BrushTextPrimary}" />
+                        <TextBlock Text="Đã sẵn sàng trong thư viện" Style="{StaticResource TextMuted}" Margin="0,4,0,0" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Stat 2: Saved Words -->
+                <Border Grid.Column="2" Style="{StaticResource StyleCosmicCard}">
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,10">
+                            <TextBlock Text="TỪ VỰNG ĐÃ LƯU" Style="{StaticResource TextMuted}" FontSize="11" FontWeight="Bold" />
+                            <Path Data="{StaticResource GeomVocab}" Fill="{StaticResource BrushStarlightCyan}" Width="16" Height="16" Stretch="Uniform" HorizontalAlignment="Right" />
+                        </DockPanel>
+                        <TextBlock Text="{Binding SavedWordsCount, FallbackValue=48}" FontSize="24" FontWeight="Bold" Foreground="{StaticResource BrushStarlightCyan}" />
+                        <TextBlock Text="Từ vựng trong sổ tay" Style="{StaticResource TextMuted}" Margin="0,4,0,0" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Stat 3: Due Reviews -->
+                <Border Grid.Column="4" Style="{StaticResource StyleCosmicCard}">
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,10">
+                            <TextBlock Text="CẦN ÔN TẬP HÔM NAY" Style="{StaticResource TextMuted}" FontSize="11" FontWeight="Bold" />
+                            <Path Data="{StaticResource GeomClock}" Fill="{StaticResource BrushStarGold}" Width="16" Height="16" Stretch="Uniform" HorizontalAlignment="Right" />
+                        </DockPanel>
+                        <DockPanel>
+                            <TextBlock Text="{Binding DueReviewsCount, FallbackValue=3}" FontSize="24" FontWeight="Bold" Foreground="{StaticResource BrushStarGold}" />
+                            <Button Content="Ôn ngay" 
+                                    Style="{StaticResource StyleClaimButton}" 
+                                    Command="{Binding OpenVocabularyCommand}" 
+                                    HorizontalAlignment="Right" 
+                                    Padding="10,4" />
+                        </DockPanel>
+                        <TextBlock Text="Thuật toán SM-2 Spaced Repetition" Style="{StaticResource TextMuted}" Margin="0,4,0,0" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Stat 4: Streak -->
+                <Border Grid.Column="6" Style="{StaticResource StyleCosmicCard}">
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,10">
+                            <TextBlock Text="CHUỖI HỌC TẬP" Style="{StaticResource TextMuted}" FontSize="11" FontWeight="Bold" />
+                            <Path Data="{StaticResource GeomFlame}" Fill="{StaticResource BrushFlameOrange}" Width="16" Height="16" Stretch="Uniform" HorizontalAlignment="Right" />
+                        </DockPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding StreakDays, FallbackValue=5}" FontSize="24" FontWeight="Bold" Foreground="{StaticResource BrushFlameOrange}" />
+                            <TextBlock Text=" ngày liên tục" FontSize="14" Foreground="{StaticResource BrushTextSecondary}" VerticalAlignment="Bottom" Margin="4,0,0,2" />
+                        </StackPanel>
+                        <TextBlock Text="{Binding TodayStudyMinutes, StringFormat='{}Hôm nay đã học: {0} phút'}" Style="{StaticResource TextMuted}" Margin="0,4,0,0" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Bottom Split Section: Daily Quests & Recent Shelf -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.2*" />
+                    <ColumnDefinition Width="24" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Left Column: Daily Quests -->
+                <Border Grid.Column="0" Style="{StaticResource StyleCosmicCard}" Padding="20">
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,16">
+                            <StackPanel Orientation="Horizontal">
+                                <Path Data="{StaticResource GeomTrophy}" Fill="{StaticResource BrushStarGold}" Width="18" Height="18" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                <TextBlock Text="Nhiệm vụ hàng ngày (デイリークエスト)" Style="{StaticResource TextHeaderMedium}" FontSize="16" />
+                            </StackPanel>
+                            <TextBlock Text="Làm mới mỗi 0:00 UTC" Style="{StaticResource TextMuted}" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                        </DockPanel>
+
+                        <!-- ItemsControl of Daily Quests -->
+                        <ItemsControl ItemsSource="{Binding DailyQuests}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="#101728" BorderBrush="#1F2A47" BorderThickness="1" CornerRadius="10" Padding="14,12" Margin="0,0,0,10">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- Quest Info & Progress -->
+                                            <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                                                <DockPanel Margin="0,0,0,4">
+                                                    <TextBlock Text="{Binding Title}" Style="{StaticResource TextBody}" FontWeight="SemiBold" />
+                                                    <Border Background="#2B2113" CornerRadius="4" Padding="6,2" HorizontalAlignment="Right">
+                                                        <TextBlock Text="{Binding RewardXp, StringFormat='+{0} XP'}" FontSize="11" FontWeight="Bold" Foreground="{StaticResource BrushStarGold}" />
+                                                    </Border>
+                                                </DockPanel>
+
+                                                <TextBlock Text="{Binding Description}" Style="{StaticResource TextMuted}" Margin="0,0,0,8" />
+
+                                                <!-- Progress Bar and fraction -->
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <ProgressBar Grid.Column="0" 
+                                                                 Value="{Binding CurrentCount}" 
+                                                                 Maximum="{Binding TargetCount}" 
+                                                                 Style="{StaticResource StyleCosmicProgressBar}" 
+                                                                 Height="6" 
+                                                                 VerticalAlignment="Center" />
+                                                    <TextBlock Grid.Column="1" Margin="8,0,0,0" Style="{StaticResource TextMuted}" FontSize="11">
+                                                        <TextBlock.Text>
+                                                            <MultiBinding StringFormat="{}{0} / {1}">
+                                                                <Binding Path="CurrentCount" />
+                                                                <Binding Path="TargetCount" />
+                                                            </MultiBinding>
+                                                        </TextBlock.Text>
+                                                    </TextBlock>
+                                                </Grid>
+                                            </StackPanel>
+
+                                            <!-- Quest Action / Claim Button -->
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <!-- Claimable Button -->
+                                                <Button Content="Nhận thưởng" 
+                                                        Command="{Binding DataContext.ClaimQuestCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}"
+                                                        Visibility="{Binding IsCompleted, Converter={StaticResource BoolToVis}}">
+                                                    <Button.Style>
+                                                        <Style TargetType="Button" BasedOn="{StaticResource StyleClaimButton}">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding IsClaimed}" Value="True">
+                                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Button.Style>
+                                                </Button>
+
+                                                <!-- Already Claimed Badge -->
+                                                <Border Background="#132E27" CornerRadius="6" Padding="8,4"
+                                                        Visibility="{Binding IsClaimed, Converter={StaticResource BoolToVis}}">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <Path Data="{StaticResource GeomCheck}" Fill="{StaticResource BrushEmerald}" Width="12" Height="12" Stretch="Uniform" Margin="0,0,4,0" />
+                                                        <TextBlock Text="Đã nhận" FontSize="11" FontWeight="Bold" Foreground="{StaticResource BrushEmerald}" />
+                                                    </StackPanel>
+                                                </Border>
+
+                                                <!-- In Progress Badge -->
+                                                <Border Background="#1C243B" CornerRadius="6" Padding="8,4"
+                                                        Visibility="{Binding IsCompleted, Converter={StaticResource InverseBoolToVis}}">
+                                                    <TextBlock Text="Đang tiến hành" FontSize="11" Foreground="{StaticResource BrushTextMuted}" />
+                                                </Border>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <!-- Right Column: Recent Library Shelf -->
+                <Border Grid.Column="2" Style="{StaticResource StyleCosmicCard}" Padding="20">
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,16">
+                            <StackPanel Orientation="Horizontal">
+                                <Path Data="{StaticResource GeomLibrary}" Fill="{StaticResource BrushLavender}" Width="18" Height="18" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                <TextBlock Text="Tủ sách gần đây" Style="{StaticResource TextHeaderMedium}" FontSize="16" />
+                            </StackPanel>
+                            <Button Content="Tất cả →" Style="{StaticResource StyleSecondaryButton}" Padding="8,3" FontSize="11" Command="{Binding OpenLibraryCommand}" HorizontalAlignment="Right" />
+                        </DockPanel>
+
+                        <!-- Items of Recent Novels -->
+                        <ItemsControl ItemsSource="{Binding RecentNovels}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="#111827" BorderBrush="#1E2742" BorderThickness="1" CornerRadius="8" Padding="10" Margin="0,0,0,8">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- JLPT Tag -->
+                                            <Border Grid.Column="0" Style="{StaticResource StyleJlptBadge}" Margin="0,0,10,0" Padding="6,2">
+                                                <TextBlock Text="{Binding JlptLevel, StringFormat='{}JLPT {0}'}" FontSize="10" FontWeight="Bold" Foreground="{StaticResource BrushLavender}" />
+                                            </Border>
+
+                                            <!-- Titles -->
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Title}" Style="{StaticResource TextBody}" FontWeight="SemiBold" FontFamily="{StaticResource FontJapanese}" />
+                                                <TextBlock Text="{Binding Author}" Style="{StaticResource TextMuted}" FontSize="11" />
+                                            </StackPanel>
+
+                                            <!-- Read Button -->
+                                            <Button Grid.Column="2" 
+                                                    Content="Đọc" 
+                                                    Style="{StaticResource StyleSecondaryButton}" 
+                                                    Padding="10,4" FontSize="11"
+                                                    Command="{Binding DataContext.SelectNovelCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
