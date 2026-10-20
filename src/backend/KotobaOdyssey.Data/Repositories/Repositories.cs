@@ -1,3 +1,4 @@
+using KotobaOdyssey.Core.Enums;
 using KotobaOdyssey.Core.Interfaces;
 using KotobaOdyssey.Core.Models;
 using KotobaOdyssey.Core.Services;
@@ -191,6 +192,12 @@ public class VocabularyRepository : IVocabularyRepository
             .FirstOrDefaultAsync(v => v.Id == id);
     }
 
+    public async Task<bool> ExistsAsync(string word)
+    {
+        var normalized = word.Trim().ToLower();
+        return await _context.VocabularyItems.AnyAsync(v => v.Word.ToLower() == normalized);
+    }
+
     public async Task<VocabularyItem> AddAsync(VocabularyItem item)
     {
         _context.VocabularyItems.Add(item);
@@ -212,6 +219,32 @@ public class VocabularyRepository : IVocabularyRepository
             _context.VocabularyItems.Remove(item);
             await _context.SaveChangesAsync();
         }
+    }
+
+    public async Task<ReviewLog> RecordReviewAsync(int vocabularyItemId, ReviewRating rating, SpacedRepetitionResult result)
+    {
+        var item = await _context.VocabularyItems.FindAsync(vocabularyItemId);
+        if (item == null) throw new InvalidOperationException($"VocabularyItem {vocabularyItemId} not found.");
+
+        int oldInterval = item.IntervalDays;
+        item.IntervalDays = result.NewIntervalDays;
+        item.EaseFactor = result.NewEaseFactor;
+        item.Repetitions = result.NewRepetitions;
+        item.NextReviewDate = result.NextReviewDate;
+
+        var log = new ReviewLog
+        {
+            VocabularyItemId = vocabularyItemId,
+            Rating = rating,
+            ReviewedAt = DateTime.UtcNow,
+            OldIntervalDays = oldInterval,
+            NewIntervalDays = result.NewIntervalDays,
+            EaseFactorAfter = result.NewEaseFactor
+        };
+
+        _context.ReviewLogs.Add(log);
+        await _context.SaveChangesAsync();
+        return log;
     }
 }
 
@@ -274,6 +307,13 @@ public class UserProgressRepository : IUserProgressRepository
         progress.TotalStudyMinutes += minutes;
         await _context.SaveChangesAsync();
     }
+
+    public async Task IncrementWordsLearnedAsync()
+    {
+        var progress = await GetProgressAsync();
+        progress.TotalWordsLearned++;
+        await _context.SaveChangesAsync();
+    }
 }
 
 public class DailyQuestRepository : IDailyQuestRepository
@@ -314,5 +354,20 @@ public class DailyQuestRepository : IDailyQuestRepository
         await _userProgressRepository.AddXpAsync(quest.RewardXp);
         await _context.SaveChangesAsync();
         return true;
+    }
+
+    public async Task IncrementQuestProgressAsync(QuestType type, int count = 1)
+    {
+        var today = DateTime.UtcNow.Date;
+        var quests = await _context.DailyQuests
+            .Where(q => q.QuestDate == today && q.Type == type && !q.IsClaimed)
+            .ToListAsync();
+
+        foreach (var q in quests)
+        {
+            q.CurrentCount = Math.Min(q.TargetCount, q.CurrentCount + count);
+        }
+
+        await _context.SaveChangesAsync();
     }
 }

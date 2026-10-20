@@ -37,6 +37,8 @@ public class NavigationAndViewModelTests : IDisposable
                 sp.GetRequiredService<INovelRepository>(),
                 NullLogger<NovelImportService>.Instance));
 
+        services.AddSingleton<IJapaneseDictionaryService, JapaneseDictionaryService>();
+        services.AddScoped<IJapaneseTextAnalyzer, JapaneseTextAnalyzer>();
         services.AddScoped<IVocabularyRepository, VocabularyRepository>();
         services.AddScoped<IUserProgressRepository, UserProgressRepository>();
         services.AddScoped<IDailyQuestRepository, DailyQuestRepository>();

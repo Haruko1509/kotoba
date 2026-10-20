@@ -1,6 +1,7 @@
 using KotobaOdyssey.Core.DTOs;
 using KotobaOdyssey.Core.Enums;
 using KotobaOdyssey.Core.Models;
+using KotobaOdyssey.Core.Services;
 
 namespace KotobaOdyssey.Core.Interfaces;
 
@@ -31,6 +32,18 @@ public interface INovelImportService
     Task<NovelImportResult> ImportFromTxtAsync(string textContent, string title, string? author, JlptLevel jlptLevel, string? genre);
 }
 
+public interface IJapaneseDictionaryService
+{
+    Task<DictionaryEntry?> LookupAsync(string term);
+    Task<IReadOnlyList<DictionaryEntry>> SearchSuggestionsAsync(string prefix, int limit = 10);
+    Task<IReadOnlyList<DictionaryEntry>> LookupBatchAsync(IEnumerable<string> terms);
+}
+
+public interface IJapaneseTextAnalyzer
+{
+    Task<IReadOnlyList<TextToken>> AnalyzeTextAsync(string text);
+}
+
 public interface IVocabularyRepository
 {
     Task<IReadOnlyList<VocabularyItem>> GetAllAsync();
@@ -38,9 +51,11 @@ public interface IVocabularyRepository
     Task<int> GetCountAsync();
     Task<int> GetDueCountAsync();
     Task<VocabularyItem?> GetByIdAsync(int id);
+    Task<bool> ExistsAsync(string word);
     Task<VocabularyItem> AddAsync(VocabularyItem item);
     Task UpdateAsync(VocabularyItem item);
     Task DeleteAsync(int id);
+    Task<ReviewLog> RecordReviewAsync(int vocabularyItemId, ReviewRating rating, SpacedRepetitionResult result);
 }
 
 public interface IUserProgressRepository
@@ -50,6 +65,7 @@ public interface IUserProgressRepository
     Task AddXpAsync(int xp);
     Task UpdateStreakAsync();
     Task AddStudyMinutesAsync(int minutes);
+    Task IncrementWordsLearnedAsync();
 }
 
 public interface IDailyQuestRepository
@@ -57,6 +73,7 @@ public interface IDailyQuestRepository
     Task<IReadOnlyList<DailyQuest>> GetTodayQuestsAsync();
     Task UpdateQuestAsync(DailyQuest quest);
     Task<bool> ClaimRewardAsync(int questId);
+    Task IncrementQuestProgressAsync(QuestType type, int count = 1);
 }
 
 public interface IDatabaseInitializer

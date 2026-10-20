@@ -64,6 +64,8 @@ public partial class App : Application
         services.AddScoped<INovelRepository, NovelRepository>();
         services.AddScoped<IBookmarkRepository, BookmarkRepository>();
         services.AddScoped<INovelImportService, NovelImportService>();
+        services.AddSingleton<IJapaneseDictionaryService, JapaneseDictionaryService>();
+        services.AddScoped<IJapaneseTextAnalyzer, JapaneseTextAnalyzer>();
         services.AddScoped<IVocabularyRepository, VocabularyRepository>();
         services.AddScoped<IUserProgressRepository, UserProgressRepository>();
         services.AddScoped<IDailyQuestRepository, DailyQuestRepository>();

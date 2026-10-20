@@ -21,16 +21,6 @@ public abstract class ViewModelBase : ObservableObject
     }
 }
 
-public class VocabularyViewModel : ViewModelBase
-{
-    private readonly INavigationService _navigationService;
-
-    public VocabularyViewModel(INavigationService navigationService)
-    {
-        _navigationService = navigationService;
-    }
-}
-
 public class VisualNovelViewModel : ViewModelBase
 {
     private readonly INavigationService _navigationService;

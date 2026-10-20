@@ -3,20 +3,431 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" Background="Transparent">
-    <Grid Margin="32">
-        <Border Style="{StaticResource StyleCosmicCard}" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="40" MaxWidth="600">
-            <StackPanel HorizontalAlignment="Center">
-                <Border Width="64" Height="64" CornerRadius="32" Background="#1C2642" HorizontalAlignment="Center" Margin="0,0,0,16">
-                    <Path Data="{StaticResource GeomVocab}" Fill="{StaticResource BrushStarGold}" Width="32" Height="32" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                </Border>
-                <TextBlock Text="語彙と復習 (Vocabulary &amp; Review)" Style="{StaticResource TextHeaderLarge}" HorizontalAlignment="Center" />
-                <TextBlock Text="Hệ thống thẻ ghi nhớ Flashcard thông minh, đánh giá Again / Hard / Good / Easy và lập lịch lặp lại ngắt quãng (SM-2 Spaced Repetition)." 
-                           Style="{StaticResource TextSubheader}" TextAlignment="Center" TextWrapping="Wrap" Margin="0,8,0,20" />
-                <Border Background="#1C2138" CornerRadius="8" Padding="14,10" HorizontalAlignment="Center">
-                    <TextBlock Text="✦ Phase 3: Spaced Repetition &amp; Flashcards ✦" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource BrushStarGold}" />
-                </Border>
-            </StackPanel>
+             xmlns:vm="clr-namespace:KotobaOdyssey.UI.ViewModels"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance vm:VocabularyViewModel}"
+             Background="Transparent">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Top Header & Tabs Bar -->
+        <Border Grid.Row="0" Background="#0C1220" BorderBrush="{StaticResource BrushBorder}" BorderThickness="0,0,0,1" Padding="32,20">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Titles & Tabs -->
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="語彙と復習 (Vocabulary &amp; Review)" Style="{StaticResource TextHeaderLarge}" FontSize="24" />
+                    <TextBlock Text="Quản lý sổ tay từ vựng và luyện tập ghi nhớ lâu dài với thuật toán SM-2 Spaced Repetition." 
+                               Style="{StaticResource TextSubheader}" Margin="0,4,0,14" />
+
+                    <!-- Mode Tab Switchers -->
+                    <StackPanel Orientation="Horizontal">
+                        <!-- Notebook Tab Button -->
+                        <RadioButton Content="🗂 Sổ tay từ vựng" 
+                                     Style="{StaticResource StyleNavButton}" 
+                                     IsChecked="{Binding ActiveTab, Converter={x:Null}, FallbackValue=True}"
+                                     Command="{Binding SwitchToNotebookCommand}" 
+                                     Margin="0,0,10,0" Width="160" />
+
+                        <!-- Review Tab Button -->
+                        <Button Style="{StaticResource StylePrimaryButton}" 
+                                Command="{Binding SwitchToReviewCommand}"
+                                Padding="16,8">
+                            <StackPanel Orientation="Horizontal">
+                                <Path Data="{StaticResource GeomClock}" Fill="#FFFFFF" Width="14" Height="14" Stretch="Uniform" Margin="0,0,6,0" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding DueWordsCount, StringFormat='{}⚡ Ôn tập Flashcard ({0} từ)'}" FontWeight="Bold" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Action Button: Manual Add -->
+                <Button Grid.Column="1" 
+                        Content="＋ Thêm từ mới" 
+                        Style="{StaticResource StyleSecondaryButton}" 
+                        Command="{Binding OpenAddModalCommand}"
+                        VerticalAlignment="Top" />
+            </Grid>
         </Border>
+
+        <!-- Main Content Area: Notebook vs Review -->
+        <Grid Grid.Row="1" Margin="32,24,32,32">
+
+            <!-- ================= TAB 1: NOTEBOOK VIEW ================= -->
+            <Grid>
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ActiveTab}" Value="Notebook">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.4*" />
+                    <ColumnDefinition Width="24" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Left Column: Search & Words List -->
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <!-- Filter & Search Toolbar -->
+                    <Border Grid.Row="0" Style="{StaticResource StyleCosmicCard}" Padding="14" Margin="0,0,0,16">
+                        <DockPanel>
+                            <!-- Search Input -->
+                            <Border Background="#0C1220" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="8" Padding="10,6" Width="260">
+                                <TextBox Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" 
+                                         Background="Transparent" BorderThickness="0" 
+                                         Foreground="{StaticResource BrushTextPrimary}" 
+                                         CaretBrush="{StaticResource BrushVioletLight}"
+                                         FontFamily="{StaticResource FontPrimary}" />
+                            </Border>
+
+                            <!-- JLPT Filter -->
+                            <ComboBox SelectedValue="{Binding SelectedJlptFilter}" SelectedValuePath="Content" Width="120" Margin="10,0,0,0" Background="#161F36" Foreground="{StaticResource BrushTextPrimary}">
+                                <ComboBoxItem Content="Tất cả JLPT" IsSelected="True" />
+                                <ComboBoxItem Content="N5" />
+                                <ComboBoxItem Content="N4" />
+                                <ComboBoxItem Content="N3" />
+                                <ComboBoxItem Content="N2" />
+                                <ComboBoxItem Content="N1" />
+                            </ComboBox>
+
+                            <!-- Due Only Checkbox -->
+                            <CheckBox Content="Đến hạn ôn" 
+                                      IsChecked="{Binding DueOnlyFilter}" 
+                                      Foreground="{StaticResource BrushStarGold}" 
+                                      FontFamily="{StaticResource FontDisplay}" 
+                                      VerticalAlignment="Center" 
+                                      Margin="14,0,0,0" />
+
+                            <!-- Word Count -->
+                            <TextBlock Text="{Binding FilteredWords.Count, StringFormat='{}{0} từ'}" 
+                                       Style="{StaticResource TextMuted}" 
+                                       HorizontalAlignment="Right" 
+                                       VerticalAlignment="Center" />
+                        </DockPanel>
+                    </Border>
+
+                    <!-- Words List -->
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding FilteredWords}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="#131B30" BorderBrush="#202A44" BorderThickness="1" CornerRadius="10" Padding="14" Margin="0,0,0,10" Cursor="Hand">
+                                        <Border.InputBindings>
+                                            <MouseBinding Gesture="LeftClick" 
+                                                          Command="{Binding DataContext.SelectWordCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                                          CommandParameter="{Binding}" />
+                                        </Border.InputBindings>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- Kanji & Reading & Meaning -->
+                                            <StackPanel Grid.Column="0">
+                                                <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                                    <TextBlock Text="{Binding Word}" FontSize="18" FontWeight="Bold" Foreground="{StaticResource BrushTextPrimary}" FontFamily="{StaticResource FontJapanese}" Margin="0,0,10,0" />
+                                                    <TextBlock Text="{Binding Reading, StringFormat='【{0}】'}" FontSize="14" Foreground="{StaticResource BrushLavender}" FontFamily="{StaticResource FontJapanese}" VerticalAlignment="Center" />
+                                                </StackPanel>
+                                                <TextBlock Text="{Binding Meaning}" Style="{StaticResource TextBody}" Margin="0,0,0,4" />
+                                                <TextBlock Text="{Binding SourceNovelTitle, StringFormat='Nguồn: {0}'}" Style="{StaticResource TextMuted}" FontSize="11" />
+                                            </StackPanel>
+
+                                            <!-- Badges & Status -->
+                                            <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                                <Border Style="{StaticResource StyleJlptBadge}" Margin="0,0,0,6" HorizontalAlignment="Right">
+                                                    <TextBlock Text="{Binding JlptLevel, StringFormat='{}JLPT {0}'}" FontSize="10" FontWeight="Bold" Foreground="{StaticResource BrushLavender}" />
+                                                </Border>
+                                                <TextBlock Text="{Binding Repetitions, StringFormat='{}Đã ôn: {0} lần'}" Style="{StaticResource TextMuted}" FontSize="10" HorizontalAlignment="Right" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+
+                <!-- Right Column: Selected Word Detail Card -->
+                <Border Grid.Column="2" Style="{StaticResource StyleCosmicCard}" Padding="24">
+                    <StackPanel DataContext="{Binding SelectedWord}">
+                        <DockPanel Margin="0,0,0,16">
+                            <Border Style="{StaticResource StyleJlptBadge}" Padding="8,3">
+                                <TextBlock Text="{Binding JlptLevel, StringFormat='{}JLPT {0}'}" FontSize="11" FontWeight="Bold" Foreground="{StaticResource BrushLavender}" />
+                            </Border>
+                            <Button Content="Xóa từ" Style="{StaticResource StyleSecondaryButton}" Padding="8,3" FontSize="11" HorizontalAlignment="Right"
+                                    Command="{Binding DataContext.DeleteWordCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}" />
+                        </DockPanel>
+
+                        <!-- Huge Word Display -->
+                        <TextBlock Text="{Binding Word}" FontSize="36" FontWeight="Bold" Foreground="#FFFFFF" FontFamily="{StaticResource FontJapanese}" Margin="0,0,0,2" />
+                        <TextBlock Text="{Binding Reading, StringFormat='Đọc là: 【{0}】'}" FontSize="16" Foreground="{StaticResource BrushLavender}" FontFamily="{StaticResource FontJapanese}" Margin="0,0,0,14" />
+
+                        <Separator Background="{StaticResource BrushBorder}" Margin="0,0,0,14" />
+
+                        <!-- Meaning -->
+                        <TextBlock Text="Ý NGHĨA TIẾNG VIỆT" Style="{StaticResource TextMuted}" FontSize="10" FontWeight="Bold" Margin="0,0,0,4" />
+                        <TextBlock Text="{Binding Meaning}" Style="{StaticResource TextBody}" FontSize="15" Margin="0,0,0,16" />
+
+                        <!-- Context Sentence -->
+                        <TextBlock Text="CÂU VĂN NGỮ CẢNH" Style="{StaticResource TextMuted}" FontSize="10" FontWeight="Bold" Margin="0,0,0,4" />
+                        <Border Background="#101728" BorderBrush="#1C2744" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,16">
+                            <TextBlock Text="{Binding ContextSentence, FallbackValue='(Chưa có câu ví dụ)'}" Style="{StaticResource TextJapaneseBody}" FontSize="14" LineHeight="22" />
+                        </Border>
+
+                        <!-- SRS Stats -->
+                        <TextBlock Text="THÔNG TIN ÔN TẬP SM-2" Style="{StaticResource TextMuted}" FontSize="10" FontWeight="Bold" Margin="0,0,0,8" />
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Khoảng cách:" Style="{StaticResource TextMuted}" FontSize="11" />
+                                <TextBlock Text="{Binding IntervalDays, StringFormat='{}{0} ngày'}" Style="{StaticResource TextBody}" FontWeight="SemiBold" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="Hệ số ghi nhớ (EF):" Style="{StaticResource TextMuted}" FontSize="11" />
+                                <TextBlock Text="{Binding EaseFactor, StringFormat='{}{0:F2}'}" Style="{StaticResource TextBody}" FontWeight="SemiBold" />
+                            </StackPanel>
+                        </Grid>
+
+                        <DockPanel Margin="0,6,0,0">
+                            <TextBlock Text="Ngày ôn tiếp theo:" Style="{StaticResource TextMuted}" FontSize="11" />
+                            <TextBlock Text="{Binding NextReviewDate, StringFormat='{}{0:dd/MM/yyyy HH:mm}'}" Style="{StaticResource TextBody}" FontWeight="Bold" Foreground="{StaticResource BrushStarGold}" HorizontalAlignment="Right" />
+                        </DockPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- ================= TAB 2: FLASHCARD SRS REVIEW VIEW ================= -->
+            <Grid>
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ActiveTab}" Value="Review">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+
+                <!-- When Session is In Progress -->
+                <Grid Visibility="{Binding IsReviewSessionCompleted, Converter={StaticResource InverseBoolToVis}}">
+                    <StackPanel MaxWidth="680" HorizontalAlignment="Center" VerticalAlignment="Center">
+
+                        <!-- Header Progress Bar & Counter -->
+                        <DockPanel Margin="0,0,0,16">
+                            <TextBlock Text="{Binding CurrentCardIndex, StringFormat='{}Thẻ {0}'}" Style="{StaticResource TextHeaderMedium}" FontSize="16" />
+                            <TextBlock Text="{Binding TotalReviewSessionCards, StringFormat='{}Tổng cộng: {0} thẻ'}" Style="{StaticResource TextMuted}" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                        </DockPanel>
+
+                        <!-- Big Cosmic Flashcard Container -->
+                        <Border Style="{StaticResource StyleHeroCard}" Padding="36" MinHeight="340">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <!-- Card Top Badges -->
+                                <DockPanel Grid.Row="0">
+                                    <Border Style="{StaticResource StyleJlptBadge}">
+                                        <TextBlock Text="{Binding CurrentCard.JlptLevel, StringFormat='{}JLPT {0}'}" FontSize="11" FontWeight="Bold" Foreground="{StaticResource BrushLavender}" />
+                                    </Border>
+                                    <TextBlock Text="{Binding CurrentCard.SourceNovelTitle, StringFormat='Nguồn: {0}'}" Style="{StaticResource TextMuted}" HorizontalAlignment="Right" />
+                                </DockPanel>
+
+                                <!-- Front / Question Area -->
+                                <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,20">
+                                    <TextBlock Text="{Binding CurrentCard.Word}" FontSize="54" FontWeight="Bold" Foreground="#FFFFFF" FontFamily="{StaticResource FontJapanese}" TextAlignment="Center" Margin="0,0,0,10" />
+
+                                    <!-- Context snippet -->
+                                    <TextBlock Text="{Binding CurrentCard.ContextSentence}" 
+                                               Style="{StaticResource TextJapaneseBody}" 
+                                               FontSize="15" 
+                                               Foreground="{StaticResource BrushTextSecondary}" 
+                                               TextAlignment="Center" 
+                                               MaxWidth="560" />
+
+                                    <!-- Answer Revealed Section -->
+                                    <StackPanel Visibility="{Binding IsAnswerRevealed, Converter={StaticResource BoolToVis}}" Margin="0,24,0,0">
+                                        <TextBlock Text="{Binding CurrentCard.Reading, StringFormat='【{0}】'}" FontSize="22" FontWeight="SemiBold" Foreground="{StaticResource BrushLavender}" FontFamily="{StaticResource FontJapanese}" TextAlignment="Center" Margin="0,0,0,8" />
+                                        <TextBlock Text="{Binding CurrentCard.Meaning}" FontSize="18" FontWeight="Bold" Foreground="{StaticResource BrushStarGold}" TextAlignment="Center" />
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <!-- Reveal Button (Before Reveal) -->
+                                <Button Grid.Row="2" 
+                                        Content="👁 Xem đáp án (Reveal)" 
+                                        Style="{StaticResource StylePrimaryButton}" 
+                                        Command="{Binding RevealAnswerCommand}"
+                                        HorizontalAlignment="Center" 
+                                        Padding="28,12" FontSize="14"
+                                        Visibility="{Binding IsAnswerRevealed, Converter={StaticResource InverseBoolToVis}}" />
+
+                                <!-- 4 SRS Rating Buttons (After Reveal) -->
+                                <Grid Grid.Row="2" Visibility="{Binding IsAnswerRevealed, Converter={StaticResource BoolToVis}}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="10" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="10" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="10" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- 1. Again (Red) -->
+                                    <Button Grid.Column="0" Content="🔴 Again&#x0a;(Quên • 1 ngày)" 
+                                            Style="{StaticResource StyleSecondaryButton}"
+                                            Command="{Binding SubmitRatingCommand}" CommandParameter="Again" />
+
+                                    <!-- 2. Hard (Orange) -->
+                                    <Button Grid.Column="2" Content="🟠 Hard&#x0a;(Khó nhớ)" 
+                                            Style="{StaticResource StyleSecondaryButton}"
+                                            Command="{Binding SubmitRatingCommand}" CommandParameter="Hard" />
+
+                                    <!-- 3. Good (Green) -->
+                                    <Button Grid.Column="4" Content="🟢 Good&#x0a;(Nhớ tốt)" 
+                                            Style="{StaticResource StylePrimaryButton}"
+                                            Command="{Binding SubmitRatingCommand}" CommandParameter="Good" />
+
+                                    <!-- 4. Easy (Cyan/Blue) -->
+                                    <Button Grid.Column="6" Content="🔵 Easy&#x0a;(Rất dễ)" 
+                                            Style="{StaticResource StyleSecondaryButton}"
+                                            Command="{Binding SubmitRatingCommand}" CommandParameter="Easy" />
+                                </Grid>
+                            </Grid>
+                        </Border>
+
+                    </StackPanel>
+                </Grid>
+
+                <!-- When Session Completed -->
+                <Border Style="{StaticResource StyleHeroCard}" 
+                        MaxWidth="520" MaxHeight="400" 
+                        HorizontalAlignment="Center" VerticalAlignment="Center" 
+                        Padding="36"
+                        Visibility="{Binding IsReviewSessionCompleted, Converter={StaticResource BoolToVis}}">
+                    <StackPanel HorizontalAlignment="Center">
+                        <Path Data="{StaticResource GeomTrophy}" Fill="{StaticResource BrushStarGold}" Width="64" Height="64" Stretch="Uniform" HorizontalAlignment="Center" Margin="0,0,0,16" />
+                        <TextBlock Text="Chúc mừng! Bạn đã hoàn thành phiên ôn tập" Style="{StaticResource TextHeaderLarge}" FontSize="20" HorizontalAlignment="Center" TextAlignment="Center" />
+                        <TextBlock Text="Toàn bộ kết quả đã được cập nhật vào lịch ôn tập lặp lại ngắt quãng SM-2." Style="{StaticResource TextMuted}" TextAlignment="Center" Margin="0,8,0,24" />
+
+                        <Border Background="#1A2542" CornerRadius="10" Padding="18" Margin="0,0,0,24">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                                    <TextBlock Text="TỪ ĐÃ ÔN" Style="{StaticResource TextMuted}" FontSize="11" FontWeight="Bold" />
+                                    <TextBlock Text="{Binding SessionReviewedCount}" FontSize="22" FontWeight="Bold" Foreground="{StaticResource BrushTextPrimary}" HorizontalAlignment="Center" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                                    <TextBlock Text="XP NHẬN ĐƯỢC" Style="{StaticResource TextMuted}" FontSize="11" FontWeight="Bold" />
+                                    <TextBlock Text="{Binding SessionXpEarned, StringFormat='+{0} XP'}" FontSize="22" FontWeight="Bold" Foreground="{StaticResource BrushStarGold}" HorizontalAlignment="Center" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Button Content="Trở lại Sổ tay" Style="{StaticResource StyleSecondaryButton}" Command="{Binding SwitchToNotebookCommand}" Margin="0,0,12,0" />
+                            <Button Content="Ôn tập tiếp" Style="{StaticResource StylePrimaryButton}" Command="{Binding StartReviewSessionCommand}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+            </Grid>
+
+        </Grid>
+
+        <!-- ================= ADD WORD MODAL OVERLAY ================= -->
+        <Grid Grid.RowSpan="2" Background="#B0050811" Visibility="{Binding IsAddModalOpen, Converter={StaticResource BoolToVis}}">
+            <Border Style="{StaticResource StyleHeroCard}" Width="480" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="28">
+                <StackPanel>
+                    <DockPanel Margin="0,0,0,16">
+                        <TextBlock Text="＋ Thêm từ vựng vào Sổ tay" Style="{StaticResource TextHeaderMedium}" FontSize="16" />
+                        <Button Content="✕" Style="{StaticResource StyleSecondaryButton}" Padding="6,2" HorizontalAlignment="Right" Command="{Binding CloseAddModalCommand}" />
+                    </DockPanel>
+
+                    <!-- Word & Reading -->
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="14" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="TỪ VỰNG (KANJI/KANA)" Style="{StaticResource TextMuted}" FontSize="10" FontWeight="Bold" Margin="0,0,0,4" />
+                            <Border Background="#0E162A" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="6" Padding="8,5">
+                                <TextBox Text="{Binding NewWord, UpdateSourceTrigger=PropertyChanged}" Background="Transparent" BorderThickness="0" Foreground="{StaticResource BrushTextPrimary}" />
+                            </Border>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="CÁCH ĐỌC (FURIGANA)" Style="{StaticResource TextMuted}" FontSize="10" FontWeight="Bold" Margin="0,0,0,4" />
+                            <Border Background="#0E162A" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="6" Padding="8,5">
+                                <TextBox Text="{Binding NewReading, UpdateSourceTrigger=PropertyChanged}" Background="Transparent" BorderThickness="0" Foreground="{StaticResource BrushTextPrimary}" />
+                            </Border>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Meaning -->
+                    <TextBlock Text="ĐỊNH NGHĨA TIẾNG VIỆT" Style="{StaticResource TextMuted}" FontSize="10" FontWeight="Bold" Margin="0,0,0,4" />
+                    <Border Background="#0E162A" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="6" Padding="8,5" Margin="0,0,0,12">
+                        <TextBox Text="{Binding NewMeaning, UpdateSourceTrigger=PropertyChanged}" Background="Transparent" BorderThickness="0" Foreground="{StaticResource BrushTextPrimary}" />
+                    </Border>
+
+                    <!-- JLPT Level -->
+                    <TextBlock Text="CẤP ĐỘ JLPT" Style="{StaticResource TextMuted}" FontSize="10" FontWeight="Bold" Margin="0,0,0,4" />
+                    <ComboBox SelectedValue="{Binding NewJlptLevel}" SelectedValuePath="Tag" Background="#0E162A" Foreground="{StaticResource BrushTextPrimary}" Height="32" Margin="0,0,0,14">
+                        <ComboBoxItem Content="JLPT N5" Tag="{x:Static CoreEnums:JlptLevel.N5}" IsSelected="True" xmlns:CoreEnums="clr-namespace:KotobaOdyssey.Core.Enums;assembly=KotobaOdyssey.Core" />
+                        <ComboBoxItem Content="JLPT N4" Tag="{x:Static CoreEnums:JlptLevel.N4}" xmlns:CoreEnums="clr-namespace:KotobaOdyssey.Core.Enums;assembly=KotobaOdyssey.Core" />
+                        <ComboBoxItem Content="JLPT N3" Tag="{x:Static CoreEnums:JlptLevel.N3}" xmlns:CoreEnums="clr-namespace:KotobaOdyssey.Core.Enums;assembly=KotobaOdyssey.Core" />
+                        <ComboBoxItem Content="JLPT N2" Tag="{x:Static CoreEnums:JlptLevel.N2}" xmlns:CoreEnums="clr-namespace:KotobaOdyssey.Core.Enums;assembly=KotobaOdyssey.Core" />
+                        <ComboBoxItem Content="JLPT N1" Tag="{x:Static CoreEnums:JlptLevel.N1}" xmlns:CoreEnums="clr-namespace:KotobaOdyssey.Core.Enums;assembly=KotobaOdyssey.Core" />
+                    </ComboBox>
+
+                    <!-- Context Sentence -->
+                    <TextBlock Text="CÂU VÍ DỤ NGỮ CẢNH" Style="{StaticResource TextMuted}" FontSize="10" FontWeight="Bold" Margin="0,0,0,4" />
+                    <Border Background="#0E162A" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="6" Padding="8,5" Margin="0,0,0,16">
+                        <TextBox Text="{Binding NewContextSentence, UpdateSourceTrigger=PropertyChanged}" Background="Transparent" BorderThickness="0" Foreground="{StaticResource BrushTextPrimary}" Height="40" TextWrapping="Wrap" />
+                    </Border>
+
+                    <!-- Error Alert -->
+                    <TextBlock Text="{Binding AddWordErrorMessage}" Foreground="#F87171" FontSize="11" Margin="0,0,0,10" />
+
+                    <!-- Actions -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Content="Hủy" Style="{StaticResource StyleSecondaryButton}" Command="{Binding CloseAddModalCommand}" Margin="0,0,10,0" />
+                        <Button Content="Lưu vào sổ tay" Style="{StaticResource StylePrimaryButton}" Command="{Binding ConfirmAddWordCommand}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Grid>
+
     </Grid>
 </UserControl>

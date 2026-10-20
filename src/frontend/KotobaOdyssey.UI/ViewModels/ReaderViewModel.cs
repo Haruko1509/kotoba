@@ -3,6 +3,8 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using KotobaOdyssey.Core.DTOs;
+using KotobaOdyssey.Core.Enums;
 using KotobaOdyssey.Core.Interfaces;
 using KotobaOdyssey.Core.Models;
 
@@ -13,7 +15,11 @@ public partial class ReaderViewModel : ViewModelBase
     private readonly INovelRepository _novelRepository;
     private readonly IBookmarkRepository _bookmarkRepository;
     private readonly IUserProgressRepository _userProgressRepository;
+    private readonly IJapaneseDictionaryService _dictionaryService;
+    private readonly IVocabularyRepository _vocabularyRepository;
+    private readonly IDailyQuestRepository _dailyQuestRepository;
     private readonly INavigationService _navigationService;
+    private readonly MainViewModel _mainViewModel;
 
     private DispatcherTimer? _studyTimer;
     private int _elapsedSeconds;
@@ -47,7 +53,7 @@ public partial class ReaderViewModel : ViewModelBase
     private string _selectedFontFamily = "Yu Gothic";
 
     [ObservableProperty]
-    private string _selectedTheme = "Cosmic"; // Cosmic, DeepNight, WarmSepia, Amethyst
+    private string _selectedTheme = "Cosmic";
 
     [ObservableProperty]
     private Brush _readerBackgroundBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0C1120"));
@@ -68,6 +74,25 @@ public partial class ReaderViewModel : ViewModelBase
     [ObservableProperty]
     private string _selectedSnippet = string.Empty;
 
+    // Dictionary Quick Lookup Drawer
+    [ObservableProperty]
+    private bool _isLookupOpen;
+
+    [ObservableProperty]
+    private string _lookupInputText = string.Empty;
+
+    [ObservableProperty]
+    private string _lookupTerm = string.Empty;
+
+    [ObservableProperty]
+    private DictionaryEntry? _lookupResult;
+
+    [ObservableProperty]
+    private bool _isLookupNotFound;
+
+    [ObservableProperty]
+    private bool _isWordAlreadySaved;
+
     // Progress and Session stats
     [ObservableProperty]
     private int _readingProgressPercent = 0;
@@ -82,12 +107,20 @@ public partial class ReaderViewModel : ViewModelBase
         INovelRepository novelRepository,
         IBookmarkRepository bookmarkRepository,
         IUserProgressRepository userProgressRepository,
-        INavigationService navigationService)
+        IJapaneseDictionaryService dictionaryService,
+        IVocabularyRepository vocabularyRepository,
+        IDailyQuestRepository dailyQuestRepository,
+        INavigationService navigationService,
+        MainViewModel mainViewModel)
     {
         _novelRepository = novelRepository;
         _bookmarkRepository = bookmarkRepository;
         _userProgressRepository = userProgressRepository;
+        _dictionaryService = dictionaryService;
+        _vocabularyRepository = vocabularyRepository;
+        _dailyQuestRepository = dailyQuestRepository;
         _navigationService = navigationService;
+        _mainViewModel = mainViewModel;
 
         SetupStudyTimer();
         ApplyTheme();
@@ -139,7 +172,6 @@ public partial class ReaderViewModel : ViewModelBase
             }
             else
             {
-                // Default to last read chapter or first chapter
                 CurrentChapter = Chapters.OrderByDescending(c => c.LastReadAt ?? DateTime.MinValue).FirstOrDefault()
                     ?? Chapters.FirstOrDefault();
             }
@@ -183,7 +215,6 @@ public partial class ReaderViewModel : ViewModelBase
             Bookmarks.Add(b);
         }
 
-        // Record initial read timestamp
         await _novelRepository.UpdateChapterProgressAsync(chapter.Id, chapter.LastReadPosition, chapter.IsCompleted);
     }
 
@@ -240,6 +271,63 @@ public partial class ReaderViewModel : ViewModelBase
         await _novelRepository.UpdateChapterProgressAsync(CurrentChapter.Id, pos, isCompleted);
     }
 
+    // Dictionary Lookup Actions
+    [RelayCommand]
+    public async Task LookupWord(string? term = null)
+    {
+        string lookupText = term ?? LookupInputText;
+        if (string.IsNullOrWhiteSpace(lookupText)) return;
+
+        LookupTerm = lookupText.Trim();
+        LookupResult = await _dictionaryService.LookupAsync(LookupTerm);
+
+        IsLookupNotFound = LookupResult == null;
+        IsWordAlreadySaved = await _vocabularyRepository.ExistsAsync(LookupTerm);
+
+        IsLookupOpen = true;
+        IsSettingsOpen = false;
+        IsBookmarkDrawerOpen = false;
+    }
+
+    [RelayCommand]
+    public void CloseLookup()
+    {
+        IsLookupOpen = false;
+    }
+
+    [RelayCommand]
+    public async Task SaveWordFromReader()
+    {
+        if (LookupResult == null || IsWordAlreadySaved) return;
+
+        string context = CurrentChapter != null
+            ? (CurrentChapter.Content.Length > 80 ? CurrentChapter.Content.Substring(0, 80) + "..." : CurrentChapter.Content)
+            : "";
+
+        var item = new VocabularyItem
+        {
+            Word = LookupResult.Term,
+            Reading = LookupResult.Reading,
+            Meaning = LookupResult.Meaning,
+            JlptLevel = LookupResult.JlptLevel,
+            ContextSentence = string.IsNullOrWhiteSpace(LookupResult.ExampleSentence) ? context : LookupResult.ExampleSentence,
+            SourceNovelTitle = Novel?.Title ?? "Reading Workspace",
+            SourceChapterId = CurrentChapter?.Id,
+            CreatedAt = DateTime.UtcNow,
+            NextReviewDate = DateTime.UtcNow.AddHours(4),
+            IntervalDays = 0,
+            EaseFactor = 2.5,
+            Repetitions = 0
+        };
+
+        await _vocabularyRepository.AddAsync(item);
+        await _userProgressRepository.IncrementWordsLearnedAsync();
+        await _dailyQuestRepository.IncrementQuestProgressAsync(QuestType.AddVocabulary, 1);
+        await _mainViewModel.LoadUserProgressAsync();
+
+        IsWordAlreadySaved = true;
+    }
+
     [RelayCommand]
     public async Task AddBookmark()
     {
@@ -278,14 +366,22 @@ public partial class ReaderViewModel : ViewModelBase
     public void ToggleSettingsDrawer()
     {
         IsSettingsOpen = !IsSettingsOpen;
-        if (IsSettingsOpen) IsBookmarkDrawerOpen = false;
+        if (IsSettingsOpen)
+        {
+            IsBookmarkDrawerOpen = false;
+            IsLookupOpen = false;
+        }
     }
 
     [RelayCommand]
     public void ToggleBookmarkDrawer()
     {
         IsBookmarkDrawerOpen = !IsBookmarkDrawerOpen;
-        if (IsBookmarkDrawerOpen) IsSettingsOpen = false;
+        if (IsBookmarkDrawerOpen)
+        {
+            IsSettingsOpen = false;
+            IsLookupOpen = false;
+        }
     }
 
     [RelayCommand]
