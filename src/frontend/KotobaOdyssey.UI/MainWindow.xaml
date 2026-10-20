@@ -88,7 +88,7 @@
                         <!-- 1. Dashboard -->
                         <RadioButton Style="{StaticResource StyleNavButton}"
                                      GroupName="SidebarNav"
-                                     IsChecked="{Binding CurrentPageKey, Converter={x:Null}, FallbackValue=True}"
+                                     IsChecked="{Binding CurrentPageKey, Converter={StaticResource EqualityToBool}, ConverterParameter=Dashboard, Mode=OneWay}"
                                      Command="{Binding NavigateCommand}" CommandParameter="Dashboard">
                             <RadioButton.Tag>
                                 <Path Data="{StaticResource GeomDashboard}" Fill="{StaticResource BrushVioletLight}" Width="18" Height="18" Stretch="Uniform" />
@@ -102,6 +102,7 @@
                         <!-- 2. Novel Library -->
                         <RadioButton Style="{StaticResource StyleNavButton}"
                                      GroupName="SidebarNav"
+                                     IsChecked="{Binding CurrentPageKey, Converter={StaticResource EqualityToBool}, ConverterParameter=Library, Mode=OneWay}"
                                      Command="{Binding NavigateCommand}" CommandParameter="Library">
                             <RadioButton.Tag>
                                 <Path Data="{StaticResource GeomLibrary}" Fill="{StaticResource BrushLavender}" Width="18" Height="18" Stretch="Uniform" />
@@ -115,6 +116,7 @@
                         <!-- 3. Reading Workspace -->
                         <RadioButton Style="{StaticResource StyleNavButton}"
                                      GroupName="SidebarNav"
+                                     IsChecked="{Binding CurrentPageKey, Converter={StaticResource EqualityToBool}, ConverterParameter=Reader, Mode=OneWay}"
                                      Command="{Binding NavigateCommand}" CommandParameter="Reader">
                             <RadioButton.Tag>
                                 <Path Data="{StaticResource GeomReader}" Fill="{StaticResource BrushStarlightCyan}" Width="18" Height="18" Stretch="Uniform" />
@@ -128,6 +130,7 @@
                         <!-- 4. Vocabulary & Review -->
                         <RadioButton Style="{StaticResource StyleNavButton}"
                                      GroupName="SidebarNav"
+                                     IsChecked="{Binding CurrentPageKey, Converter={StaticResource EqualityToBool}, ConverterParameter=Vocabulary, Mode=OneWay}"
                                      Command="{Binding NavigateCommand}" CommandParameter="Vocabulary">
                             <RadioButton.Tag>
                                 <Path Data="{StaticResource GeomVocab}" Fill="{StaticResource BrushStarGold}" Width="18" Height="18" Stretch="Uniform" />
@@ -141,6 +144,7 @@
                         <!-- 5. Visual Novel Mode -->
                         <RadioButton Style="{StaticResource StyleNavButton}"
                                      GroupName="SidebarNav"
+                                     IsChecked="{Binding CurrentPageKey, Converter={StaticResource EqualityToBool}, ConverterParameter=VisualNovel, Mode=OneWay}"
                                      Command="{Binding NavigateCommand}" CommandParameter="VisualNovel">
                             <RadioButton.Tag>
                                 <Path Data="{StaticResource GeomVisualNovel}" Fill="{StaticResource BrushCherryPink}" Width="18" Height="18" Stretch="Uniform" />
@@ -160,6 +164,7 @@
                     <!-- Settings -->
                     <RadioButton Style="{StaticResource StyleNavButton}"
                                  GroupName="SidebarNav"
+                                 IsChecked="{Binding CurrentPageKey, Converter={StaticResource EqualityToBool}, ConverterParameter=Settings, Mode=OneWay}"
                                  Command="{Binding NavigateCommand}" CommandParameter="Settings">
                         <RadioButton.Tag>
                             <Path Data="{StaticResource GeomSettings}" Fill="{StaticResource BrushTextSecondary}" Width="18" Height="18" Stretch="Uniform" />

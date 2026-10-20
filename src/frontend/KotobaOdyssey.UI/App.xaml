@@ -16,6 +16,7 @@
             <converters:BoolToVisibilityConverter x:Key="InverseBoolToVis" Invert="True" />
             <converters:NullToVisibilityConverter x:Key="NullToVis" />
             <converters:PercentageConverter x:Key="PercentageConverter" />
+            <converters:EqualityToBoolConverter x:Key="EqualityToBool" />
 
         </ResourceDictionary>
     </Application.Resources>

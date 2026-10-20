@@ -22,21 +22,77 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
-        var services = new ServiceCollection();
-        ConfigureServices(services);
+        // Prevent premature shutdown while awaiting async initialization
+        ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
-        _serviceProvider = services.BuildServiceProvider();
-
-        // 1. Initialize SQLite Database & Seed Data
-        using (var scope = _serviceProvider.CreateScope())
+        DispatcherUnhandledException += (s, args) =>
         {
-            var dbInitializer = scope.ServiceProvider.GetRequiredService<IDatabaseInitializer>();
-            await dbInitializer.InitializeAsync();
-        }
+            try
+            {
+                File.AppendAllText(@"d:\kotoba\app_startup.log", $"[{DateTime.Now:HH:mm:ss.fff}] DispatcherUnhandledException: {args.Exception}\n");
+                MessageBox.Show($"Dispatcher Error: {args.Exception.Message}\n{args.Exception.StackTrace}", "Kotoba Odyssey Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                args.Handled = true;
+            }
+            catch { }
+        };
 
-        // 2. Launch Main Window
-        var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
-        mainWindow.Show();
+        AppDomain.CurrentDomain.UnhandledException += (s, args) =>
+        {
+            try
+            {
+                File.AppendAllText(@"d:\kotoba\app_startup.log", $"[{DateTime.Now:HH:mm:ss.fff}] AppDomain UnhandledException: {args.ExceptionObject}\n");
+                File.WriteAllText("crash.log", args.ExceptionObject?.ToString() ?? "Unknown error");
+            }
+            catch { }
+        };
+
+        try
+        {
+            File.WriteAllText(@"d:\kotoba\app_startup.log", $"[{DateTime.Now:HH:mm:ss.fff}] Starting Kotoba Odyssey...\n");
+
+            var services = new ServiceCollection();
+            ConfigureServices(services);
+
+            _serviceProvider = services.BuildServiceProvider();
+            File.AppendAllText(@"d:\kotoba\app_startup.log", $"[{DateTime.Now:HH:mm:ss.fff}] ServiceProvider built.\n");
+
+            // 1. Initialize SQLite Database & Seed Data
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var dbInitializer = scope.ServiceProvider.GetRequiredService<IDatabaseInitializer>();
+                File.AppendAllText(@"d:\kotoba\app_startup.log", $"[{DateTime.Now:HH:mm:ss.fff}] Initializing DB...\n");
+                await dbInitializer.InitializeAsync();
+                File.AppendAllText(@"d:\kotoba\app_startup.log", $"[{DateTime.Now:HH:mm:ss.fff}] DB initialized.\n");
+            }
+
+            // 2. Launch Main Window
+            File.AppendAllText(@"d:\kotoba\app_startup.log", $"[{DateTime.Now:HH:mm:ss.fff}] Creating MainWindow...\n");
+            var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
+            MainWindow = mainWindow;
+            mainWindow.Closing += (s, args) =>
+            {
+                File.AppendAllText(@"d:\kotoba\app_startup.log", $"[{DateTime.Now:HH:mm:ss.fff}] MainWindow.Closing called! Cancel={args.Cancel}\n");
+            };
+            mainWindow.Closed += (s, args) =>
+            {
+                File.AppendAllText(@"d:\kotoba\app_startup.log", $"[{DateTime.Now:HH:mm:ss.fff}] MainWindow.Closed called!\n");
+            };
+            // Keep ShutdownMode as OnExplicitShutdown until window is actually shown!
+            File.AppendAllText(@"d:\kotoba\app_startup.log", $"[{DateTime.Now:HH:mm:ss.fff}] Showing MainWindow...\n");
+            mainWindow.Show();
+            File.AppendAllText(@"d:\kotoba\app_startup.log", $"[{DateTime.Now:HH:mm:ss.fff}] MainWindow.Show() called successfully! Handle={new System.Windows.Interop.WindowInteropHelper(mainWindow).Handle}\n");
+        }
+        catch (Exception ex)
+        {
+            try
+            {
+                File.AppendAllText(@"d:\kotoba\app_startup.log", $"[{DateTime.Now:HH:mm:ss.fff}] EXCEPTION: {ex}\n");
+                MessageBox.Show($"Lỗi khởi động Kotoba Odyssey:\n\n{ex.Message}\n\nXem chi tiết tại crash.log", 
+                    "Kotoba Odyssey - Khởi động thất bại", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            catch { }
+            Shutdown();
+        }
     }
 
     private void ConfigureServices(IServiceCollection services)
@@ -89,6 +145,7 @@ public partial class App : Application
 
     protected override void OnExit(ExitEventArgs e)
     {
+        File.AppendAllText(@"d:\kotoba\app_startup.log", $"[{DateTime.Now:HH:mm:ss.fff}] App.OnExit called! ExitCode={e.ApplicationExitCode}\nEnvironment.StackTrace:\n{Environment.StackTrace}\n");
         _serviceProvider?.Dispose();
         base.OnExit(e);
     }
