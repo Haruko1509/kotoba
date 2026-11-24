@@ -12,6 +12,8 @@ public class DictionaryEntry
     public string ExampleSentence { get; set; } = string.Empty;
     public string ExampleMeaning { get; set; } = string.Empty;
     public bool IsKnown { get; set; } = true;
+    public string? OriginalSurface { get; set; }
+    public string? InflectionNote { get; set; }
 }
 
 public class TextToken

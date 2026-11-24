@@ -203,6 +203,102 @@
                 </Border>
             </Grid>
 
+            <!-- Learning Analytics & Mastery Section -->
+            <Border Style="{StaticResource StyleCosmicCard}" Padding="20" Margin="0,0,0,28">
+                <StackPanel>
+                    <DockPanel Margin="0,0,0,16">
+                        <StackPanel Orientation="Horizontal">
+                            <Path Data="{StaticResource GeomDashboard}" Fill="{StaticResource BrushStarlightCyan}" Width="18" Height="18" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,8,0" />
+                            <TextBlock Text="Phân tích Tiến độ &amp; Năng lực Học tập (学習分析)" Style="{StaticResource TextHeaderMedium}" FontSize="16" />
+                        </StackPanel>
+                        <TextBlock Text="Đồng bộ hóa dữ liệu SQLite thực tế" Style="{StaticResource TextMuted}" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                    </DockPanel>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Panel 1: Đọc & Trắc nghiệm -->
+                        <Border Grid.Column="0" Background="#101728" BorderBrush="#1F2A47" BorderThickness="1" CornerRadius="10" Padding="14">
+                            <StackPanel>
+                                <TextBlock Text="TIẾN ĐỘ ĐỌC &amp; QUIZ" Style="{StaticResource TextMuted}" FontSize="11" FontWeight="Bold" Margin="0,0,0,8" />
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                    <TextBlock Text="Chương hoàn thành: " Style="{StaticResource TextBody}" />
+                                    <TextBlock Text="{Binding CompletedChaptersCount}" FontWeight="Bold" Foreground="{StaticResource BrushVioletLight}" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                    <TextBlock Text="Quiz đã làm: " Style="{StaticResource TextBody}" />
+                                    <TextBlock FontWeight="Bold" Foreground="{StaticResource BrushTextPrimary}">
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="{}{0} đạt / {1}">
+                                                <Binding Path="QuizzesPassed" />
+                                                <Binding Path="TotalQuizzesAttempted" />
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Điểm TB / Độ chính xác: " Style="{StaticResource TextMuted}" FontSize="11" />
+                                    <TextBlock FontSize="11" FontWeight="Bold" Foreground="{StaticResource BrushStarGold}">
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="{}{0}% / {1}%">
+                                                <Binding Path="AverageQuizScore" />
+                                                <Binding Path="OverallAccuracyPercent" />
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Panel 2: SRS Vocabulary Mastery -->
+                        <Border Grid.Column="2" Background="#101728" BorderBrush="#1F2A47" BorderThickness="1" CornerRadius="10" Padding="14">
+                            <StackPanel>
+                                <TextBlock Text="LÀM CHỦ TỪ VỰNG (SRS)" Style="{StaticResource TextMuted}" FontSize="11" FontWeight="Bold" Margin="0,0,0,8" />
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                    <TextBlock Text="Đã thuần thục (Mastered): " Style="{StaticResource TextBody}" />
+                                    <TextBlock Text="{Binding MasteredWordsCount}" FontWeight="Bold" Foreground="{StaticResource BrushEmerald}" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                    <TextBlock Text="Đang ôn luyện: " Style="{StaticResource TextBody}" />
+                                    <TextBlock Text="{Binding LearningWordsCount}" FontWeight="Bold" Foreground="{StaticResource BrushStarlightCyan}" />
+                                    <TextBlock Text=" | Mới: " Style="{StaticResource TextMuted}" Margin="4,0,0,0" />
+                                    <TextBlock Text="{Binding NewWordsCount}" FontWeight="Bold" Foreground="{StaticResource BrushLavender}" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Tỷ lệ ghi nhớ dự kiến: " Style="{StaticResource TextMuted}" FontSize="11" />
+                                    <TextBlock Text="{Binding VocabularyRetentionRate, StringFormat='{}{0:F1}%'}" FontSize="11" FontWeight="Bold" Foreground="{StaticResource BrushEmerald}" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Panel 3: Sư phạm & Lời khuyên -->
+                        <Border Grid.Column="4" Background="#101728" BorderBrush="#1F2A47" BorderThickness="1" CornerRadius="10" Padding="14">
+                            <StackPanel>
+                                <TextBlock Text="ĐÁNH GIÁ SƯ PHẠM" Style="{StaticResource TextMuted}" FontSize="11" FontWeight="Bold" Margin="0,0,0,8" />
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                    <TextBlock Text="✨ Mạnh: " FontSize="11" FontWeight="Bold" Foreground="{StaticResource BrushEmerald}" />
+                                    <TextBlock Text="{Binding PrimaryStrength}" Style="{StaticResource TextBody}" FontSize="11" TextTrimming="CharacterEllipsis" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                    <TextBlock Text="⚠️ Rèn: " FontSize="11" FontWeight="Bold" Foreground="{StaticResource BrushStarGold}" />
+                                    <TextBlock Text="{Binding PrimaryWeakness}" Style="{StaticResource TextBody}" FontSize="11" TextTrimming="CharacterEllipsis" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="💡 Gợi ý: " FontSize="11" FontWeight="Bold" Foreground="{StaticResource BrushStarlightCyan}" />
+                                    <TextBlock Text="{Binding PrimaryRecommendation}" Style="{StaticResource TextBody}" FontSize="11" TextTrimming="CharacterEllipsis" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
             <!-- Bottom Split Section: Daily Quests & Recent Shelf -->
             <Grid>
                 <Grid.ColumnDefinitions>

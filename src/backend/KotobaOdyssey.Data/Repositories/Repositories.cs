@@ -18,6 +18,7 @@ public class NovelRepository : INovelRepository
     public async Task<IReadOnlyList<Novel>> GetAllAsync()
     {
         return await _context.Novels
+            .AsNoTracking()
             .Include(n => n.Chapters)
             .OrderByDescending(n => n.LastReadAt ?? n.CreatedAt)
             .ToListAsync();
@@ -26,6 +27,7 @@ public class NovelRepository : INovelRepository
     public async Task<Novel?> GetByIdAsync(int id)
     {
         return await _context.Novels
+            .AsNoTracking()
             .Include(n => n.Chapters)
                 .ThenInclude(c => c.Bookmarks)
             .FirstOrDefaultAsync(n => n.Id == id);
@@ -34,15 +36,17 @@ public class NovelRepository : INovelRepository
     public async Task<Novel?> GetLatestReadAsync()
     {
         return await _context.Novels
+            .AsNoTracking()
             .Include(n => n.Chapters)
             .OrderByDescending(n => n.LastReadAt)
             .FirstOrDefaultAsync(n => n.LastReadAt != null)
-            ?? await _context.Novels.Include(n => n.Chapters).FirstOrDefaultAsync();
+            ?? await _context.Novels.AsNoTracking().Include(n => n.Chapters).FirstOrDefaultAsync();
     }
 
     public async Task<IReadOnlyList<Novel>> GetFavoritesAsync()
     {
         return await _context.Novels
+            .AsNoTracking()
             .Include(n => n.Chapters)
             .Where(n => n.IsFavorite)
             .OrderByDescending(n => n.CreatedAt)
@@ -66,6 +70,11 @@ public class NovelRepository : INovelRepository
 
     public async Task UpdateAsync(Novel novel)
     {
+        var local = _context.Novels.Local.FirstOrDefault(entry => entry.Id == novel.Id);
+        if (local != null)
+        {
+            _context.Entry(local).State = EntityState.Detached;
+        }
         _context.Novels.Update(novel);
         await _context.SaveChangesAsync();
     }
@@ -161,6 +170,7 @@ public class VocabularyRepository : IVocabularyRepository
     public async Task<IReadOnlyList<VocabularyItem>> GetAllAsync()
     {
         return await _context.VocabularyItems
+            .AsNoTracking()
             .OrderByDescending(v => v.CreatedAt)
             .ToListAsync();
     }
@@ -169,6 +179,7 @@ public class VocabularyRepository : IVocabularyRepository
     {
         var now = DateTime.UtcNow;
         return await _context.VocabularyItems
+            .AsNoTracking()
             .Where(v => v.NextReviewDate <= now)
             .OrderBy(v => v.NextReviewDate)
             .ToListAsync();
@@ -188,8 +199,18 @@ public class VocabularyRepository : IVocabularyRepository
     public async Task<VocabularyItem?> GetByIdAsync(int id)
     {
         return await _context.VocabularyItems
+            .AsNoTracking()
             .Include(v => v.ReviewHistory)
             .FirstOrDefaultAsync(v => v.Id == id);
+    }
+
+    public async Task<VocabularyItem?> GetByWordAsync(string word)
+    {
+        if (string.IsNullOrWhiteSpace(word)) return null;
+        var normalized = word.Trim().ToLower();
+        return await _context.VocabularyItems
+            .Include(v => v.ReviewHistory)
+            .FirstOrDefaultAsync(v => v.Word.ToLower() == normalized);
     }
 
     public async Task<bool> ExistsAsync(string word)
@@ -207,6 +228,11 @@ public class VocabularyRepository : IVocabularyRepository
 
     public async Task UpdateAsync(VocabularyItem item)
     {
+        var local = _context.VocabularyItems.Local.FirstOrDefault(entry => entry.Id == item.Id);
+        if (local != null)
+        {
+            _context.Entry(local).State = EntityState.Detached;
+        }
         _context.VocabularyItems.Update(item);
         await _context.SaveChangesAsync();
     }

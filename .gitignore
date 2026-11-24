@@ -33,3 +33,11 @@ bld/
 *.suo
 *.user
 *.userprefs
+
+## Temp and Scratch
+web-preview/temp_browser_profile/
+web-preview/temp_chrome_profile/
+web-preview/scratch/
+scratch/
+*.log
+

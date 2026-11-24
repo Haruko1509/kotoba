@@ -1,5 +1,4 @@
 using CommunityToolkit.Mvvm.ComponentModel;
-using KotobaOdyssey.Core.Interfaces;
 
 namespace KotobaOdyssey.UI.ViewModels;
 
@@ -18,25 +17,5 @@ public abstract class ViewModelBase : ObservableObject
     {
         get => _statusText;
         set => SetProperty(ref _statusText, value);
-    }
-}
-
-public class VisualNovelViewModel : ViewModelBase
-{
-    private readonly INavigationService _navigationService;
-
-    public VisualNovelViewModel(INavigationService navigationService)
-    {
-        _navigationService = navigationService;
-    }
-}
-
-public class SettingsViewModel : ViewModelBase
-{
-    private readonly INavigationService _navigationService;
-
-    public SettingsViewModel(INavigationService navigationService)
-    {
-        _navigationService = navigationService;
     }
 }

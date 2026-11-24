@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 480" width="320" height="480">
+  <defs>
+    <linearGradient id="campHair" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#E2E8F0"/>
+      <stop offset="40%" stop-color="#93C5FD"/>
+      <stop offset="100%" stop-color="#60A5FA"/>
+    </linearGradient>
+    <linearGradient id="campSkin" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#FED7AA"/>
+    </linearGradient>
+    <linearGradient id="campCoat" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1E1B4B"/>
+      <stop offset="50%" stop-color="#312E81"/>
+      <stop offset="100%" stop-color="#4338CA"/>
+    </linearGradient>
+    <linearGradient id="starlightFoil" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FEF08A"/>
+      <stop offset="100%" stop-color="#F59E0B"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Ethereal Starry Aura -->
+  <ellipse cx="160" cy="240" rx="145" ry="210" fill="#818CF8" opacity="0.12" filter="blur(22px)"/>
+
+  <!-- Body / Starry Vest & Coat -->
+  <path d="M70 330 C 70 280, 110 270, 160 270 C 210 270, 250 280, 250 330 L 265 480 L 55 480 Z" fill="url(#campCoat)"/>
+  
+  <!-- Star Constellation Emblems on Vest -->
+  <circle cx="95" cy="360" r="3" fill="#FDE68A"/>
+  <circle cx="115" cy="380" r="2.5" fill="#FDE68A"/>
+  <circle cx="105" cy="410" r="3" fill="#FDE68A"/>
+  <line x1="95" y1="360" x2="115" y2="380" stroke="#FDE68A" stroke-width="1" opacity="0.6"/>
+  <line x1="115" y1="380" x2="105" y2="410" stroke="#FDE68A" stroke-width="1" opacity="0.6"/>
+
+  <!-- Crisp White Ruffled Collar & Ribbon -->
+  <polygon points="160,275 130,330 190,330" fill="#F8FAFC"/>
+  <!-- Velvet Ribbon Bow -->
+  <path d="M150 285 Q 135 295, 140 310 Q 155 305, 160 295" fill="#4F46E5"/>
+  <path d="M170 285 Q 185 295, 180 310 Q 165 305, 160 295" fill="#4F46E5"/>
+  <circle cx="160" cy="295" r="4" fill="url(#starlightFoil)"/>
+
+  <!-- Neck -->
+  <rect x="144" y="225" width="32" height="45" fill="url(#campSkin)"/>
+
+  <!-- Head Base / Chin (Gentle, refined) -->
+  <path d="M108 160 C 108 230, 132 255, 160 255 C 188 255, 212 230, 212 160 C 212 105, 108 105, 108 160 Z" fill="url(#campSkin)"/>
+
+  <!-- Ears -->
+  <ellipse cx="105" cy="175" rx="9" ry="15" fill="#FDBA74"/>
+  <ellipse cx="215" cy="175" rx="9" ry="15" fill="#FDBA74"/>
+
+  <!-- Eyes (Gentle, Celestial Amethyst / Cyan Eyes) -->
+  <!-- Left Eye -->
+  <ellipse cx="137" cy="175" rx="14" ry="18" fill="#FFF"/>
+  <ellipse cx="138" cy="175" rx="9" ry="14" fill="#6366F1"/>
+  <ellipse cx="139" cy="175" rx="5" ry="8" fill="#312E81"/>
+  <circle cx="135" cy="170" r="4" fill="#FFF"/>
+  <circle cx="140" cy="180" r="2" fill="#C7D2FE"/>
+  <path d="M124 160 Q 138 153, 150 160" stroke="#312E81" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+  <!-- Right Eye -->
+  <ellipse cx="183" cy="175" rx="14" ry="18" fill="#FFF"/>
+  <ellipse cx="182" cy="175" rx="9" ry="14" fill="#6366F1"/>
+  <ellipse cx="181" cy="175" rx="5" ry="8" fill="#312E81"/>
+  <circle cx="179" cy="170" r="4" fill="#FFF"/>
+  <circle cx="184" cy="180" r="2" fill="#C7D2FE"/>
+  <path d="M170 160 Q 182 153, 196 160" stroke="#312E81" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+  <!-- Eyebrows (Gentle curve) -->
+  <path d="M125 146 Q 138 140, 148 145" stroke="#4F46E5" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M172 145 Q 182 140, 195 146" stroke="#4F46E5" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+  <!-- Nose & Mouth (Thoughtful, slightly sad gentle smile) -->
+  <path d="M160 188 L 158 196 L 162 196" stroke="#F97316" stroke-width="1.2" fill="none"/>
+  <path d="M150 214 Q 160 220, 170 214" stroke="#831843" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <!-- Blush -->
+  <ellipse cx="128" cy="195" rx="10" ry="4" fill="#F472B6" opacity="0.35"/>
+  <ellipse cx="192" cy="195" rx="10" ry="4" fill="#F472B6" opacity="0.35"/>
+
+  <!-- Anime Hair (Soft Silver Blue Flowing Locks) -->
+  <path d="M96 160 C 80 90, 120 50, 160 50 C 200 50, 240 90, 224 160 C 235 125, 230 80, 205 65 C 160 55, 120 70, 96 160 Z" fill="url(#campHair)"/>
+  
+  <!-- Flowing Bangs -->
+  <polygon points="120,70 132,145 145,85" fill="url(#campHair)"/>
+  <polygon points="142,75 160,152 172,85" fill="url(#campHair)"/>
+  <polygon points="168,78 184,142 198,85" fill="url(#campHair)"/>
+  <polygon points="98,110 114,175 124,120" fill="url(#campHair)"/>
+  <polygon points="222,110 206,175 196,120" fill="url(#campHair)"/>
+</svg>

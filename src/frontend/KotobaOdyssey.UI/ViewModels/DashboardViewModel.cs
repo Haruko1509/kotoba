@@ -1,3 +1,4 @@
+using KotobaOdyssey.Core.DTOs;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -14,6 +15,7 @@ public partial class DashboardViewModel : ViewModelBase
     private readonly IDailyQuestRepository _dailyQuestRepository;
     private readonly INavigationService _navigationService;
     private readonly MainViewModel _mainViewModel;
+    private readonly IChapterPracticeService? _practiceService;
 
     [ObservableProperty]
     private Novel? _currentNovel;
@@ -39,6 +41,45 @@ public partial class DashboardViewModel : ViewModelBase
     [ObservableProperty]
     private int _streakDays;
 
+    // Learning Analytics & Mastery Properties
+    [ObservableProperty]
+    private int _completedChaptersCount;
+
+    [ObservableProperty]
+    private int _masteredWordsCount;
+
+    [ObservableProperty]
+    private int _learningWordsCount;
+
+    [ObservableProperty]
+    private int _newWordsCount;
+
+    [ObservableProperty]
+    private double _vocabularyRetentionRate = 100.0;
+
+    [ObservableProperty]
+    private int _totalQuizzesAttempted;
+
+    [ObservableProperty]
+    private int _quizzesPassed;
+
+    [ObservableProperty]
+    private int _averageQuizScore;
+
+    [ObservableProperty]
+    private int _overallAccuracyPercent;
+
+    [ObservableProperty]
+    private string _primaryStrength = string.Empty;
+
+    [ObservableProperty]
+    private string _primaryWeakness = string.Empty;
+
+    [ObservableProperty]
+    private string _primaryRecommendation = string.Empty;
+
+    public ObservableCollection<RecentQuizAttemptDto> RecentQuizzes { get; } = new();
+
     public ObservableCollection<DailyQuest> DailyQuests { get; } = new();
     public ObservableCollection<Novel> RecentNovels { get; } = new();
 
@@ -48,7 +89,8 @@ public partial class DashboardViewModel : ViewModelBase
         IUserProgressRepository userProgressRepository,
         IDailyQuestRepository dailyQuestRepository,
         INavigationService navigationService,
-        MainViewModel mainViewModel)
+        MainViewModel mainViewModel,
+        IChapterPracticeService? practiceService = null)
     {
         _novelRepository = novelRepository;
         _vocabularyRepository = vocabularyRepository;
@@ -56,6 +98,7 @@ public partial class DashboardViewModel : ViewModelBase
         _dailyQuestRepository = dailyQuestRepository;
         _navigationService = navigationService;
         _mainViewModel = mainViewModel;
+        _practiceService = practiceService;
     }
 
     public async Task LoadDashboardAsync()
@@ -106,6 +149,33 @@ public partial class DashboardViewModel : ViewModelBase
             foreach (var q in quests)
             {
                 DailyQuests.Add(q);
+            }
+
+            // 5. Load Real Learning Analytics
+            if (_practiceService != null)
+            {
+                var analytics = await _practiceService.GetLearningAnalyticsAsync();
+                CompletedChaptersCount = analytics.CompletedChapters;
+                MasteredWordsCount = analytics.MasteredWords;
+                LearningWordsCount = analytics.LearningWords;
+                NewWordsCount = analytics.NewWords;
+                VocabularyRetentionRate = analytics.VocabularyRetentionRate;
+                TotalQuizzesAttempted = analytics.TotalQuizzesAttempted;
+                QuizzesPassed = analytics.QuizzesPassed;
+                AverageQuizScore = analytics.AverageQuizScorePercent;
+                OverallAccuracyPercent = analytics.OverallAccuracyPercent;
+
+                PrimaryStrength = analytics.Strengths.FirstOrDefault() ?? "Đang tích lũy vốn từ vựng văn học.";
+                PrimaryWeakness = analytics.Weaknesses.FirstOrDefault(w => w.Contains("Ngữ pháp") || w.Contains("Từ vựng") || w.Contains("Đọc hiểu"))
+                                  ?? analytics.Weaknesses.FirstOrDefault()
+                                  ?? "Duy trì ôn tập đều đặn hàng ngày.";
+                PrimaryRecommendation = analytics.ActionableRecommendations.FirstOrDefault() ?? "Đọc tiếp chương mới để rèn luyện.";
+
+                RecentQuizzes.Clear();
+                foreach (var q in analytics.RecentQuizHistory)
+                {
+                    RecentQuizzes.Add(q);
+                }
             }
         }
         finally

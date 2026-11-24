@@ -30,6 +30,7 @@ public interface INovelImportService
 {
     Task<NovelImportResult> ImportFromJsonAsync(string jsonContent);
     Task<NovelImportResult> ImportFromTxtAsync(string textContent, string title, string? author, JlptLevel jlptLevel, string? genre);
+    Task<NovelImportResult> ImportFromUrlAsync(string url, JlptLevel jlptLevel, string? genre, string? customTitle = null);
 }
 
 public interface IJapaneseDictionaryService
@@ -42,6 +43,7 @@ public interface IJapaneseDictionaryService
 public interface IJapaneseTextAnalyzer
 {
     Task<IReadOnlyList<TextToken>> AnalyzeTextAsync(string text);
+    string ExtractSentence(string text, string targetWord, int approximateIndex = -1);
 }
 
 public interface IVocabularyRepository
@@ -51,6 +53,7 @@ public interface IVocabularyRepository
     Task<int> GetCountAsync();
     Task<int> GetDueCountAsync();
     Task<VocabularyItem?> GetByIdAsync(int id);
+    Task<VocabularyItem?> GetByWordAsync(string word);
     Task<bool> ExistsAsync(string word);
     Task<VocabularyItem> AddAsync(VocabularyItem item);
     Task UpdateAsync(VocabularyItem item);

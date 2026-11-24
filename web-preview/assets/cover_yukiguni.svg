@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" width="400" height="600">
+  <defs>
+    <!-- Background Gradient: Deep Northern Winter Twilight -->
+    <linearGradient id="snowSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0A1128"/>
+      <stop offset="45%" stop-color="#14213D"/>
+      <stop offset="75%" stop-color="#243B55"/>
+      <stop offset="100%" stop-color="#4B6584"/>
+    </linearGradient>
+
+    <!-- Silver Moon Glow -->
+    <radialGradient id="silverMoon" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="1"/>
+      <stop offset="50%" stop-color="#E0F2FE" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#38BDF8" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Mountain Gradient -->
+    <linearGradient id="mtnGrad1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="30%" stop-color="#BAE6FD"/>
+      <stop offset="100%" stop-color="#0F172A"/>
+    </linearGradient>
+    <linearGradient id="mtnGrad2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F8FAFC"/>
+      <stop offset="40%" stop-color="#93C5FD"/>
+      <stop offset="100%" stop-color="#0B132B"/>
+    </linearGradient>
+
+    <!-- Platinum Foil -->
+    <linearGradient id="platinumFoil" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#E2E8F0"/>
+      <stop offset="50%" stop-color="#94A3B8"/>
+      <stop offset="100%" stop-color="#CBD5E1"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Deep Night Winter Sky -->
+  <rect width="400" height="600" fill="url(#snowSky)"/>
+
+  <!-- Distant Winter Stars -->
+  <circle cx="70" cy="50" r="1.5" fill="#FFF" opacity="0.8"/>
+  <circle cx="150" cy="35" r="1.2" fill="#E0F2FE" opacity="0.9"/>
+  <circle cx="310" cy="65" r="1.5" fill="#FFF" opacity="0.8"/>
+  <circle cx="230" cy="80" r="1" fill="#BAE6FD" opacity="0.7"/>
+
+  <!-- Pale Winter Crescent Moon -->
+  <circle cx="300" cy="110" r="45" fill="url(#silverMoon)"/>
+  <circle cx="300" cy="110" r="30" fill="#F0F9FF"/>
+  <circle cx="308" cy="106" r="27" fill="#14213D"/>
+
+  <!-- Towering Snow-Capped Echigo Mountains (Peak 1) -->
+  <polygon points="120,130 0,340 250,340" fill="url(#mtnGrad1)"/>
+  <!-- Mountain Shading & Ridges -->
+  <polygon points="120,130 140,240 180,340 120,340" fill="#1E293B" opacity="0.6"/>
+
+  <!-- Mountain Peak 2 (Right) -->
+  <polygon points="280,160 160,360 400,360" fill="url(#mtnGrad2)"/>
+  <polygon points="280,160 310,260 360,360 280,360" fill="#0F172A" opacity="0.7"/>
+
+  <!-- Snowy Mountain Range Baseline with Fog -->
+  <rect x="0" y="330" width="400" height="60" fill="#334155" opacity="0.5"/>
+
+  <!-- Snow Hills Forefront -->
+  <path d="M0 400 Q 140 370, 260 390 T 400 375 L 400 600 L 0 600 Z" fill="#0F172A"/>
+  <path d="M0 400 Q 140 370, 260 390 T 400 375 L 400 420 Q 260 405, 140 425 T 0 420 Z" fill="#E2E8F0" opacity="0.85"/>
+
+  <!-- Silhouetted Snow Pine Trees (Fir Trees) -->
+  <g fill="#020617">
+    <!-- Tree 1 -->
+    <polygon points="70,350 62,370 78,370"/>
+    <polygon points="70,365 58,390 82,390"/>
+    <polygon points="70,385 54,415 86,415"/>
+    <rect x="68" y="415" width="4" height="15" fill="#020617"/>
+    <!-- Tree 2 -->
+    <polygon points="340,360 333,380 347,380"/>
+    <polygon points="340,375 329,400 351,400"/>
+    <polygon points="340,395 325,425 355,425"/>
+    <rect x="338" y="425" width="4" height="15" fill="#020617"/>
+  </g>
+
+  <!-- Snow on branches -->
+  <ellipse cx="70" cy="370" rx="8" ry="2" fill="#FFF"/>
+  <ellipse cx="70" cy="390" rx="12" ry="2.5" fill="#FFF"/>
+  <ellipse cx="70" cy="415" rx="16" ry="3" fill="#FFF"/>
+
+  <!-- Traditional Snowflakes Flurry (Anime Blizzard) -->
+  <g fill="#FFFFFF">
+    <circle cx="50" cy="180" r="2.5" opacity="0.9"/>
+    <circle cx="85" cy="220" r="1.5" opacity="0.7"/>
+    <circle cx="160" cy="190" r="3" opacity="0.8"/>
+    <circle cx="210" cy="250" r="2" opacity="0.9"/>
+    <circle cx="280" cy="210" r="3.5" opacity="0.85"/>
+    <circle cx="340" cy="190" r="2" opacity="0.7"/>
+    <circle cx="370" cy="240" r="2.5" opacity="0.8"/>
+    <circle cx="120" cy="280" r="3" opacity="0.9"/>
+    <circle cx="240" cy="310" r="2.5" opacity="0.85"/>
+    <circle cx="180" cy="370" r="3" opacity="0.75"/>
+    <circle cx="310" cy="350" r="2" opacity="0.8"/>
+    <!-- Blurred Big Foreground Flakes -->
+    <circle cx="40" cy="320" r="6" opacity="0.4"/>
+    <circle cx="360" cy="280" r="8" opacity="0.3"/>
+  </g>
+
+  <!-- Publisher Frame & Border -->
+  <rect x="20" y="20" width="360" height="560" rx="4" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+  <rect x="24" y="24" width="352" height="552" rx="2" fill="none" stroke="url(#platinumFoil)" stroke-width="0.75" opacity="0.6"/>
+
+  <!-- Japanese Book Title: Vertical Calligraphy Strip -->
+  <g transform="translate(48, 55)">
+    <!-- Washi Paper Label -->
+    <rect x="0" y="0" width="56" height="150" rx="3" fill="#F8FAFC" opacity="0.96"/>
+    <rect x="3" y="3" width="50" height="144" rx="2" fill="none" stroke="#475569" stroke-width="0.8" opacity="0.5"/>
+    
+    <!-- Title: 雪国 -->
+    <text x="28" y="52" font-family="'Noto Serif JP', 'Shippori Mincho', serif" font-weight="900" font-size="36" fill="#0F172A" text-anchor="middle">雪</text>
+    <text x="28" y="105" font-family="'Noto Serif JP', 'Shippori Mincho', serif" font-weight="900" font-size="36" fill="#0F172A" text-anchor="middle">国</text>
+  </g>
+
+  <!-- Red Seal Stamp of Author (Kawabata) -->
+  <g transform="translate(60, 220)">
+    <rect x="0" y="0" width="28" height="28" rx="3" fill="#DC2626"/>
+    <text x="14" y="20" font-family="'Noto Serif JP', serif" font-size="13" font-weight="bold" fill="#FFF" text-anchor="middle">康成</text>
+  </g>
+
+  <!-- Author Name & English Subtitle -->
+  <text x="50" y="275" font-family="'Noto Sans JP', sans-serif" font-size="14" font-weight="700" fill="#E2E8F0" letter-spacing="3">川端康成</text>
+  <text x="50" y="295" font-family="'Outfit', sans-serif" font-size="11" font-weight="500" fill="#94A3B8" letter-spacing="1">SNOW COUNTRY</text>
+
+  <!-- Obi Band at Bottom (Authentic Literature Wrap) -->
+  <rect x="20" y="460" width="360" height="120" fill="#1E293B" opacity="0.95"/>
+  <rect x="20" y="460" width="360" height="2" fill="#38BDF8"/>
+
+  <text x="40" y="492" font-family="'Noto Sans JP', sans-serif" font-size="13" font-weight="800" fill="#E0F2FE" letter-spacing="2">ノーベル文学賞受賞作 • JLPT N2</text>
+  <text x="40" y="520" font-family="'Shippori Mincho', serif" font-size="13.5" font-weight="500" fill="#F8FAFC">「国境の長いトンネルを抜けると雪国であった」</text>
+  
+  <rect x="40" y="538" width="64" height="22" rx="4" fill="#38BDF8"/>
+  <text x="72" y="553" font-family="'Outfit', sans-serif" font-size="11" font-weight="800" fill="#0F172A" text-anchor="middle">JLPT N2</text>
+  <text x="115" y="553" font-family="'Outfit', sans-serif" font-size="11" font-weight="600" fill="#94A3B8">KOTOBA BUNKO</text>
+</svg>

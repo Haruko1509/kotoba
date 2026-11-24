@@ -124,3 +124,31 @@ public class Achievement
     public DateTime? UnlockedAt { get; set; }
     public int RewardXp { get; set; } = 100;
 }
+
+public class ChapterQuizAttempt
+{
+    public int Id { get; set; }
+    public int NovelId { get; set; }
+    public int ChapterNumber { get; set; }
+    public int TotalQuestions { get; set; }
+    public int CorrectAnswers { get; set; }
+    public int ScorePercentage { get; set; }
+    public bool Passed { get; set; }
+    public int XpAwarded { get; set; }
+    public int ReadingScorePercent { get; set; } = 100;
+    public int VocabScorePercent { get; set; } = 100;
+    public int GrammarScorePercent { get; set; } = 100;
+    public DateTime AttemptedAt { get; set; } = DateTime.UtcNow;
+}
+
+public class CharacterChatMessage
+{
+    public int Id { get; set; }
+    public string SessionId { get; set; } = string.Empty;
+    public string CharacterId { get; set; } = string.Empty;
+    public string Role { get; set; } = "user"; // "user" or "character"
+    public string ContentJapanese { get; set; } = string.Empty;
+    public string ContentVietnamese { get; set; } = string.Empty;
+    public string Expression { get; set; } = "neutral";
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+}

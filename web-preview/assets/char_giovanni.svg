@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 480" width="320" height="480">
+  <defs>
+    <linearGradient id="gioHair" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1E293B"/>
+      <stop offset="60%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+    <linearGradient id="gioSkin" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFF5EB"/>
+      <stop offset="100%" stop-color="#FED7AA"/>
+    </linearGradient>
+    <linearGradient id="gioCoat" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#334155"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+    <linearGradient id="gioScarf" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#B45309"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Aura Glow -->
+  <ellipse cx="160" cy="240" rx="140" ry="200" fill="#38BDF8" opacity="0.1" filter="blur(20px)"/>
+
+  <!-- Body / School Uniform Coat -->
+  <path d="M70 330 C 70 280, 110 270, 160 270 C 210 270, 250 280, 250 330 L 265 480 L 55 480 Z" fill="url(#gioCoat)"/>
+  
+  <!-- Collar & White Shirt -->
+  <polygon points="160,275 135,325 185,325" fill="#F8FAFC"/>
+  <polygon points="160,290 148,340 172,340" fill="#0284C7"/>
+
+  <!-- Warm Yellow/Amber Scarf -->
+  <path d="M115 260 C 130 285, 190 285, 205 260 C 215 285, 215 315, 195 330 C 175 315, 145 315, 125 330 C 105 315, 105 285, 115 260 Z" fill="url(#gioScarf)"/>
+  <!-- Scarf tail -->
+  <path d="M175 310 L 195 410 L 165 415 L 155 315 Z" fill="#D97706"/>
+
+  <!-- Neck -->
+  <rect x="142" y="225" width="36" height="45" fill="url(#gioSkin)"/>
+
+  <!-- Head Base / Chin -->
+  <path d="M105 160 C 105 230, 130 255, 160 255 C 190 255, 215 230, 215 160 C 215 105, 105 105, 105 160 Z" fill="url(#gioSkin)"/>
+
+  <!-- Ears -->
+  <ellipse cx="102" cy="175" rx="10" ry="16" fill="#FDBA74"/>
+  <ellipse cx="218" cy="175" rx="10" ry="16" fill="#FDBA74"/>
+
+  <!-- Eyes (Determined, Starlight Anime Eyes) -->
+  <!-- Left Eye -->
+  <ellipse cx="135" cy="175" rx="14" ry="18" fill="#FFF"/>
+  <ellipse cx="136" cy="175" rx="9" ry="14" fill="#0284C7"/>
+  <ellipse cx="137" cy="175" rx="5" ry="8" fill="#0C4A6E"/>
+  <circle cx="133" cy="170" r="4" fill="#FFF"/>
+  <circle cx="138" cy="180" r="2" fill="#BAE6FD"/>
+  <path d="M120 160 Q 135 152, 150 160" stroke="#0F172A" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+  <!-- Right Eye -->
+  <ellipse cx="185" cy="175" rx="14" ry="18" fill="#FFF"/>
+  <ellipse cx="184" cy="175" rx="9" ry="14" fill="#0284C7"/>
+  <ellipse cx="183" cy="175" rx="5" ry="8" fill="#0C4A6E"/>
+  <circle cx="181" cy="170" r="4" fill="#FFF"/>
+  <circle cx="186" cy="180" r="2" fill="#BAE6FD"/>
+  <path d="M170 160 Q 185 152, 200 160" stroke="#0F172A" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+  <!-- Eyebrows -->
+  <path d="M122 148 Q 136 142, 148 147" stroke="#1E293B" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M172 147 Q 184 142, 198 148" stroke="#1E293B" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+  <!-- Nose & Mouth (Kind Smile) -->
+  <path d="M160 188 L 157 196 L 163 196" stroke="#EA580C" stroke-width="1.5" fill="none"/>
+  <path d="M148 215 Q 160 224, 172 215" stroke="#9A3412" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- Blush -->
+  <ellipse cx="125" cy="195" rx="10" ry="5" fill="#F87171" opacity="0.4"/>
+  <ellipse cx="195" cy="195" rx="10" ry="5" fill="#F87171" opacity="0.4"/>
+
+  <!-- Anime Hair Bangs (Dark Charcoal / Midnight Blue) -->
+  <path d="M95 155 C 80 110, 115 65, 160 65 C 205 65, 240 110, 225 155 C 235 125, 225 90, 200 80 C 160 70, 120 85, 95 155 Z" fill="url(#gioHair)"/>
+  <!-- Bangs Forehead -->
+  <polygon points="120,85 130,140 145,95" fill="url(#gioHair)"/>
+  <polygon points="140,88 158,150 170,95" fill="url(#gioHair)"/>
+  <polygon points="165,90 182,142 195,95" fill="url(#gioHair)"/>
+  <polygon points="100,120 115,165 125,125" fill="url(#gioHair)"/>
+  <polygon points="220,120 205,165 195,125" fill="url(#gioHair)"/>
+
+  <!-- Cosmic Student Cap -->
+  <path d="M92 90 C 100 50, 220 50, 228 90 Z" fill="#1E293B"/>
+  <path d="M85 90 C 85 85, 235 85, 235 90 L 225 98 C 160 92, 160 92, 95 98 Z" fill="#334155"/>
+  <circle cx="160" cy="75" r="7" fill="#F59E0B"/>
+  <polygon points="160,68 162,73 167,75 162,77 160,82 158,77 153,75 158,73" fill="#FEF08A"/>
+</svg>

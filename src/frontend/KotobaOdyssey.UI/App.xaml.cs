@@ -122,9 +122,12 @@ public partial class App : Application
         services.AddScoped<INovelImportService, NovelImportService>();
         services.AddSingleton<IJapaneseDictionaryService, JapaneseDictionaryService>();
         services.AddScoped<IJapaneseTextAnalyzer, JapaneseTextAnalyzer>();
+        services.AddScoped<IAiTutorService, GeminiAiTutorService>();
         services.AddScoped<IVocabularyRepository, VocabularyRepository>();
         services.AddScoped<IUserProgressRepository, UserProgressRepository>();
         services.AddScoped<IDailyQuestRepository, DailyQuestRepository>();
+        services.AddScoped<IChapterPracticeService, ChapterPracticeService>();
+        services.AddScoped<ICharacterDialogueService, GeminiCharacterDialogueService>();
         services.AddScoped<IDatabaseInitializer, DatabaseInitializer>();
 
         // Navigation

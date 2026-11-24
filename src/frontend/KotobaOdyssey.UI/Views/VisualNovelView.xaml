@@ -3,20 +3,242 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" Background="Transparent">
-    <Grid Margin="32">
-        <Border Style="{StaticResource StyleCosmicCard}" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="40" MaxWidth="600">
-            <StackPanel HorizontalAlignment="Center">
-                <Border Width="64" Height="64" CornerRadius="32" Background="#1C2642" HorizontalAlignment="Center" Margin="0,0,0,16">
-                    <Path Data="{StaticResource GeomVisualNovel}" Fill="{StaticResource BrushCherryPink}" Width="32" Height="32" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" />
+             xmlns:vm="clr-namespace:KotobaOdyssey.UI.ViewModels"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance vm:VisualNovelViewModel}"
+             Background="#070A12">
+
+    <Grid>
+        <!-- Background Wallpaper / Atmospheric Scenery -->
+        <Image Source="{Binding ActiveBackgroundPath}" Stretch="UniformToFill" Opacity="0.35" />
+        
+        <!-- Cosmic Gradient Vignette Overlay -->
+        <Rectangle>
+            <Rectangle.Fill>
+                <RadialGradientBrush Center="0.5,0.4" GradientOrigin="0.5,0.4" RadiusX="0.8" RadiusY="0.8">
+                    <GradientStop Color="#00000000" Offset="0.2" />
+                    <GradientStop Color="#CC070A12" Offset="0.8" />
+                    <GradientStop Color="#FF070A12" Offset="1.0" />
+                </RadialGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+
+        <Grid Margin="24,16,24,20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- ================= TOP HUD: Navigation & Character Selector ================= -->
+            <Border Grid.Row="0" Background="#990E1322" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="12" Padding="14,10" Margin="0,0,0,12">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Back Button & Stage Title -->
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Content="← Tủ sách" 
+                                Style="{StaticResource StyleSecondaryButton}" 
+                                Padding="10,5" FontSize="11" 
+                                Command="{Binding BackToLibraryCommand}" 
+                                Margin="0,0,14,0" />
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="VISUAL NOVEL THEATRE &amp; AI CHAT" FontSize="11" FontWeight="Bold" Foreground="{StaticResource BrushStarlightCyan}" />
+                            <TextBlock Text="Không gian tương tác nhân vật văn học" FontSize="12" Foreground="{StaticResource BrushTextSecondary}" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Character Selector Pills -->
+                    <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Margin="20,0">
+                        <ItemsControl ItemsSource="{Binding Characters}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <RadioButton GroupName="CharSelect" 
+                                                 Content="{Binding JapaneseName}" 
+                                                 IsChecked="{Binding DataContext.SelectedCharacter, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EqualityToBool}, ConverterParameter={Binding}}"
+                                                 Command="{Binding DataContext.SelectCharacterCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                 CommandParameter="{Binding}"
+                                                 Margin="0,0,8,0" Padding="10,4" FontSize="11" FontWeight="SemiBold"
+                                                 Style="{StaticResource StyleNavButton}" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+
+                    <!-- Mode Switcher Pills -->
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Content="💬 Tự do" 
+                                Command="{Binding SetModeCommand}" CommandParameter="free"
+                                Style="{StaticResource StyleSecondaryButton}" Padding="8,4" FontSize="11" Margin="0,0,6,0" />
+                        <Button Content="🎓 Luyện tập" 
+                                Command="{Binding SetModeCommand}" CommandParameter="practice"
+                                Style="{StaticResource StyleSecondaryButton}" Padding="8,4" FontSize="11" Margin="0,0,6,0" />
+                        <Button Content="🎭 Tình huống" 
+                                Command="{Binding SetModeCommand}" CommandParameter="scenario"
+                                Style="{StaticResource StyleSecondaryButton}" Padding="8,4" FontSize="11" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- ================= STAGE AREA: Character Avatar & Ambience ================= -->
+            <Grid Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Border Width="160" Height="160" CornerRadius="80" 
+                        BorderBrush="{StaticResource BrushStarlightCyan}" BorderThickness="2"
+                        Background="#44131B30">
+                    <Grid>
+                        <!-- Glow effect -->
+                        <Ellipse Width="156" Height="156" Fill="#1038BDF8" />
+                        <Path Data="{StaticResource GeomVisualNovel}" Fill="{StaticResource BrushStarlightCyan}" Width="64" Height="64" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding SelectedCharacter.JapaneseName, FallbackValue='ジョバンニ'}" 
+                                   FontFamily="{StaticResource FontJapanese}" FontSize="18" FontWeight="Bold" 
+                                   Foreground="#FFFFFF" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,16" />
+                    </Grid>
                 </Border>
-                <TextBlock Text="ビジュアルノベル (Visual Novel Mode)" Style="{StaticResource TextHeaderLarge}" HorizontalAlignment="Center" />
-                <TextBlock Text="Trải nghiệm đọc tương tác phong cách Visual Novel với nhân vật, hội thoại, lựa chọn phân nhánh và kịch bản anime." 
-                           Style="{StaticResource TextSubheader}" TextAlignment="Center" TextWrapping="Wrap" Margin="0,8,0,20" />
-                <Border Background="#1C2138" CornerRadius="8" Padding="14,10" HorizontalAlignment="Center">
-                    <TextBlock Text="✦ Phase 4: Visual Novel Engine &amp; Gamification ✦" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource BrushCherryPink}" />
-                </Border>
-            </StackPanel>
-        </Border>
+            </Grid>
+
+            <!-- ================= DIALOGUE BOX (SHINKAI HUD STYLE) ================= -->
+            <Border Grid.Row="2" Background="#DD0E1424" BorderBrush="{StaticResource BrushBorderGlow}" BorderThickness="1" CornerRadius="16" Padding="20,16" MaxWidth="1050" HorizontalAlignment="Stretch">
+                <StackPanel>
+                    <!-- Speaker Meta Row -->
+                    <DockPanel Margin="0,0,0,10">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <!-- Speaker Name Tag -->
+                            <Border Background="#2B1D48" BorderBrush="{StaticResource BrushVioletLight}" BorderThickness="1" CornerRadius="6" Padding="10,4" Margin="0,0,10,0">
+                                <TextBlock Text="{Binding CurrentSpeakerName}" FontSize="13" FontWeight="Bold" Foreground="{StaticResource BrushLavender}" FontFamily="{StaticResource FontJapanese}" />
+                            </Border>
+                            <!-- Emotion Pill -->
+                            <Border Background="#1C2D42" CornerRadius="12" Padding="8,3">
+                                <TextBlock Text="{Binding CurrentExpression}" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource BrushStarlightCyan}" />
+                            </Border>
+                        </StackPanel>
+
+                        <!-- Persona speaking style caption -->
+                        <TextBlock Text="{Binding SelectedCharacter.SpeakingStyle}" 
+                                   Style="{StaticResource TextMuted}" FontSize="11" 
+                                   HorizontalAlignment="Right" VerticalAlignment="Center" />
+                    </DockPanel>
+
+                    <!-- Japanese Dialogue Speech -->
+                    <Border Background="#220B0F1A" CornerRadius="8" Padding="14,10" Margin="0,0,0,8">
+                        <TextBlock Text="{Binding CurrentSpeechJapanese}" 
+                                   FontFamily="{StaticResource FontJapanese}" 
+                                   FontSize="17" LineHeight="28" FontWeight="Medium"
+                                   Foreground="#F8FAFC" TextWrapping="Wrap" />
+                    </Border>
+
+                    <!-- Vietnamese Translation -->
+                    <TextBlock Text="{Binding CurrentSpeechVietnamese}" 
+                               Style="{StaticResource TextSubheader}" 
+                               FontSize="13" LineHeight="20" 
+                               Foreground="{StaticResource BrushTextSecondary}" 
+                               TextWrapping="Wrap" Margin="4,0,0,10" />
+
+                    <!-- Gentle Language Correction Box (Shown if learner made mistakes) -->
+                    <Border Background="#2232250F" BorderBrush="{StaticResource BrushStarGold}" BorderThickness="1" CornerRadius="8" Padding="12,8" Margin="0,0,0,10"
+                            Visibility="{Binding HasCorrection, Converter={StaticResource BoolToVis}}">
+                        <StackPanel>
+                            <TextBlock Text="💡 GỢI Ý DIỄN ĐẠT TỰ NHIÊN HƠN:" FontSize="11" FontWeight="Bold" Foreground="{StaticResource BrushStarGold}" Margin="0,0,0,2" />
+                            <TextBlock Text="{Binding CorrectedSentence, StringFormat='{}Gợi ý: {0}'}" FontSize="12" FontWeight="SemiBold" Foreground="#FFFFFF" />
+                            <TextBlock Text="{Binding CorrectionExplanation}" FontSize="11" Foreground="{StaticResource BrushTextSecondary}" Margin="0,2,0,0" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Pedagogical / Grammar Feedback -->
+                    <Border Background="#151E32" CornerRadius="8" Padding="10,6" Margin="0,0,0,10">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="✦ Nhận xét: " FontSize="11" FontWeight="Bold" Foreground="{StaticResource BrushEmerald}" />
+                            <TextBlock Text="{Binding GrammarFeedback}" FontSize="11" Foreground="{StaticResource BrushTextSecondary}" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Vocabulary Highlight Chips (Click to 1-Click Save to SRS) -->
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10" Visibility="{Binding CurrentKeyVocabulary.Count, Converter={StaticResource NullToVis}}">
+                        <TextBlock Text="📚 Từ vựng then chốt (Bấm để lưu SRS): " FontSize="11" FontWeight="Bold" Foreground="{StaticResource BrushStarlightCyan}" VerticalAlignment="Center" Margin="0,0,6,0" />
+                        <ItemsControl ItemsSource="{Binding CurrentKeyVocabulary}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Command="{Binding DataContext.SaveVocabToSrsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}"
+                                            Style="{StaticResource StyleSecondaryButton}"
+                                            Padding="8,3" FontSize="11" Margin="0,0,6,0"
+                                            ToolTip="Lưu từ này vào sổ tay Spaced Repetition">
+                                        <TextBlock>
+                                            <Run Text="＋ " Foreground="{StaticResource BrushEmerald}" FontWeight="Bold" />
+                                            <Run Text="{Binding Word}" FontWeight="Bold" />
+                                            <Run Text=" (" />
+                                            <Run Text="{Binding Reading}" />
+                                            <Run Text="): " />
+                                            <Run Text="{Binding Meaning}" Foreground="{StaticResource BrushTextSecondary}" />
+                                        </TextBlock>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+
+                    <!-- Quick Prompt Suggestions -->
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                        <TextBlock Text="✦ Gợi ý: " FontSize="11" FontWeight="Bold" Foreground="{StaticResource BrushVioletLight}" VerticalAlignment="Center" Margin="0,0,6,0" />
+                        <ItemsControl ItemsSource="{Binding SuggestedFollowups}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Content="{Binding}" 
+                                            Command="{Binding DataContext.SendMessageCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}"
+                                            Style="{StaticResource StyleSecondaryButton}"
+                                            Padding="8,3" FontSize="11" Margin="0,0,6,0" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+
+                    <!-- User Message Input Bar -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="10" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <Border Grid.Column="0" Background="#0C1220" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="10" Padding="12,8">
+                            <TextBox Text="{Binding UserMessageInput, UpdateSourceTrigger=PropertyChanged}" 
+                                     Background="Transparent" BorderThickness="0" 
+                                     Foreground="{StaticResource BrushTextPrimary}" 
+                                     FontSize="13" 
+                                     VerticalAlignment="Center">
+                                <TextBox.InputBindings>
+                                    <KeyBinding Key="Enter" Command="{Binding SendMessageCommand}" />
+                                </TextBox.InputBindings>
+                            </TextBox>
+                        </Border>
+
+                        <Button Grid.Column="2" 
+                                Content="Gửi tin nhắn ➔" 
+                                Command="{Binding SendMessageCommand}" 
+                                Style="{StaticResource StylePrimaryButton}" 
+                                Padding="16,8" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </Grid>
     </Grid>
 </UserControl>

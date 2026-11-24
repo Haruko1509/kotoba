@@ -13,6 +13,8 @@ public class KotobaDbContext : DbContext
     public DbSet<UserProgress> UserProgresses => Set<UserProgress>();
     public DbSet<DailyQuest> DailyQuests => Set<DailyQuest>();
     public DbSet<Achievement> Achievements => Set<Achievement>();
+    public DbSet<ChapterQuizAttempt> ChapterQuizAttempts => Set<ChapterQuizAttempt>();
+    public DbSet<CharacterChatMessage> CharacterChatMessages => Set<CharacterChatMessage>();
 
     public KotobaDbContext(DbContextOptions<KotobaDbContext> options) : base(options)
     {
@@ -35,6 +37,12 @@ public class KotobaDbContext : DbContext
                 .WithOne(c => c.Novel)
                 .HasForeignKey(c => c.NovelId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // Performance Indexes for fast filtering and ordering
+            entity.HasIndex(n => n.LastReadAt);
+            entity.HasIndex(n => n.JlptLevel);
+            entity.HasIndex(n => n.IsFavorite);
+            entity.HasIndex(n => n.Title);
         });
 
         // Chapter configuration
@@ -47,6 +55,8 @@ public class KotobaDbContext : DbContext
                 .WithOne(b => b.Chapter)
                 .HasForeignKey(b => b.ChapterId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(c => new { c.NovelId, c.ChapterNumber });
         });
 
         // VocabularyItem configuration
@@ -61,6 +71,12 @@ public class KotobaDbContext : DbContext
                 .WithOne(r => r.VocabularyItem)
                 .HasForeignKey(r => r.VocabularyItemId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // Performance Indexes for SRS SM-2 due calculation & lookups
+            entity.HasIndex(v => v.NextReviewDate);
+            entity.HasIndex(v => v.SourceChapterId);
+            entity.HasIndex(v => v.Word);
+            entity.HasIndex(v => v.JlptLevel);
         });
 
         // DailyQuest configuration

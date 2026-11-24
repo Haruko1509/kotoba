@@ -3,20 +3,192 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" Background="Transparent">
-    <Grid Margin="32">
-        <Border Style="{StaticResource StyleCosmicCard}" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="40" MaxWidth="600">
-            <StackPanel HorizontalAlignment="Center">
-                <Border Width="64" Height="64" CornerRadius="32" Background="#1C2642" HorizontalAlignment="Center" Margin="0,0,0,16">
-                    <Path Data="{StaticResource GeomSettings}" Fill="{StaticResource BrushLavender}" Width="32" Height="32" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                </Border>
-                <TextBlock Text="設定 (Settings)" Style="{StaticResource TextHeaderLarge}" HorizontalAlignment="Center" />
-                <TextBlock Text="Tùy chỉnh chủ đề Cosmic / Anime, cỡ chữ, phông chữ tiếng Nhật, thư mục lưu trữ SQLite và sao lưu dữ liệu." 
-                           Style="{StaticResource TextSubheader}" TextAlignment="Center" TextWrapping="Wrap" Margin="0,8,0,20" />
-                <Border Background="#1C2138" CornerRadius="8" Padding="14,10" HorizontalAlignment="Center">
-                    <TextBlock Text="✦ Phase 5: Customization &amp; Polish ✦" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource BrushLavender}" />
-                </Border>
-            </StackPanel>
-        </Border>
-    </Grid>
+             xmlns:vm="clr-namespace:KotobaOdyssey.UI.ViewModels"
+             mc:Ignorable="d" Background="Transparent"
+             d:DataContext="{d:DesignInstance vm:SettingsViewModel}">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <Grid Margin="32,24,32,48" MaxWidth="880">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <Grid Grid.Row="0" Margin="0,0,0,24">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Border Width="36" Height="36" CornerRadius="18" Background="#1C2642" Margin="0,0,12,0">
+                            <Path Data="{StaticResource GeomSettings}" Fill="{StaticResource BrushLavender}" Width="18" Height="18" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <TextBlock Text="設定 (Cài đặt &amp; Tùy biến)" Style="{StaticResource TextHeaderLarge}" VerticalAlignment="Center" />
+                    </StackPanel>
+                    <TextBlock Text="Cá nhân hóa giao diện Cosmic Anime, kiểu chữ Nhật, trợ giảng JLPT và dữ liệu lưu trữ SQLite." 
+                               Style="{StaticResource TextSubheader}" Margin="48,6,0,0" />
+                </StackPanel>
+
+                <Button Grid.Column="1" Content="Quay lại Tổng quan" Command="{Binding BackToDashboardCommand}"
+                        Style="{StaticResource StyleSecondaryButton}" VerticalAlignment="Center" />
+            </Grid>
+
+            <!-- Status Banner -->
+            <Border Grid.Row="1" Background="#1E2A4A" BorderBrush="{StaticResource BrushBorderGlow}" BorderThickness="1" 
+                    CornerRadius="8" Padding="14,10" Margin="0,0,0,20"
+                    Visibility="{Binding StatusText, Converter={StaticResource NullToVis}}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="✦ " Foreground="{StaticResource BrushLavender}" FontWeight="Bold" />
+                    <TextBlock Text="{Binding StatusText}" Foreground="{StaticResource BrushTextPrimary}" FontSize="13" />
+                </StackPanel>
+            </Border>
+
+            <!-- Group 1: Appearance & Typography -->
+            <Border Grid.Row="2" Style="{StaticResource StyleCosmicCard}" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="1. GIAO DIỆN &amp; PHÔNG CHỮ (Appearance)" FontSize="15" FontWeight="Bold" Foreground="{StaticResource BrushLavender}" Margin="0,0,0,16" />
+
+                    <!-- Theme Selection -->
+                    <TextBlock Text="Chủ đề hiển thị (Theme):" FontSize="13" Foreground="{StaticResource BrushTextSecondary}" Margin="0,0,0,8" />
+                    <WrapPanel Margin="0,0,0,16">
+                        <Button Content="🌌 Cosmic Obsidian" Command="{Binding SetThemeCommand}" CommandParameter="Cosmic Obsidian"
+                                Style="{StaticResource StyleSecondaryButton}" Margin="0,0,10,8" />
+                        <Button Content="📜 Satori Paper Warm" Command="{Binding SetThemeCommand}" CommandParameter="Paper Warm"
+                                Style="{StaticResource StyleSecondaryButton}" Margin="0,0,10,8" />
+                        <Button Content="🌌 Deep Midnight" Command="{Binding SetThemeCommand}" CommandParameter="Deep Midnight"
+                                Style="{StaticResource StyleSecondaryButton}" Margin="0,0,10,8" />
+                    </WrapPanel>
+
+                    <!-- Japanese Font -->
+                    <TextBlock Text="Phông chữ tiếng Nhật (Japanese Font Stack):" FontSize="13" Foreground="{StaticResource BrushTextSecondary}" Margin="0,0,0,8" />
+                    <WrapPanel Margin="0,0,0,16">
+                        <Button Content="Noto Sans JP" Command="{Binding SetJapaneseFontCommand}" CommandParameter="Noto Sans JP"
+                                Style="{StaticResource StyleSecondaryButton}" Margin="0,0,10,8" />
+                        <Button Content="Yu Gothic UI" Command="{Binding SetJapaneseFontCommand}" CommandParameter="Yu Gothic UI"
+                                Style="{StaticResource StyleSecondaryButton}" Margin="0,0,10,8" />
+                        <Button Content="Meiryo / MS Gothic" Command="{Binding SetJapaneseFontCommand}" CommandParameter="Meiryo"
+                                Style="{StaticResource StyleSecondaryButton}" Margin="0,0,10,8" />
+                    </WrapPanel>
+
+                    <!-- Reader Font Size -->
+                    <TextBlock Text="Cỡ chữ khi đọc truyện (Reader Font Size):" FontSize="13" Foreground="{StaticResource BrushTextSecondary}" Margin="0,0,0,8" />
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Content=" - " Command="{Binding DecreaseFontSizeCommand}" Style="{StaticResource StyleSecondaryButton}" Width="36" Height="36" Padding="0" />
+                        <Border Background="#1C2138" CornerRadius="6" Padding="16,6" Margin="8,0">
+                            <TextBlock Text="{Binding ReaderFontSize, StringFormat='{}{0} px'}" FontWeight="Bold" FontSize="14" Foreground="{StaticResource BrushLavender}" />
+                        </Border>
+                        <Button Content=" + " Command="{Binding IncreaseFontSizeCommand}" Style="{StaticResource StyleSecondaryButton}" Width="36" Height="36" Padding="0" />
+                        <TextBlock Text="Khuyên dùng: 18px - 22px cho Light Novel với furigana" 
+                                   Foreground="{StaticResource BrushTextMuted}" FontSize="12" Margin="14,0,0,0" VerticalAlignment="Center" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Group 2: Reading & Learning Experience -->
+            <Border Grid.Row="3" Style="{StaticResource StyleCosmicCard}" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="2. TRẢI NGHIỆM ĐỌC &amp; HỌC TẬP (Reading &amp; Learning)" FontSize="15" FontWeight="Bold" Foreground="{StaticResource BrushGoldPrimary}" Margin="0,0,0,16" />
+
+                    <!-- Toggles -->
+                    <Grid Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Furigana -->
+                        <Border Grid.Column="0" Background="#141B2D" CornerRadius="10" Padding="14" Margin="0,0,8,0">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Hiển thị Furigana (Hiragana trên Kanji)" FontWeight="SemiBold" Foreground="{StaticResource BrushTextPrimary}" />
+                                    <TextBlock Text="Tự động thêm phiên âm cho từ Kanji trong Light Novel" FontSize="11" Foreground="{StaticResource BrushTextMuted}" Margin="0,2,0,0" />
+                                </StackPanel>
+                                <Button Grid.Column="1" Content="{Binding FuriganaStatusLabel}" 
+                                        Command="{Binding ToggleFuriganaCommand}" Style="{StaticResource StylePrimaryButton}"
+                                        Padding="14,6" />
+                            </Grid>
+                        </Border>
+
+                        <!-- Audio SFX -->
+                        <Border Grid.Column="1" Background="#141B2D" CornerRadius="10" Padding="14" Margin="8,0,0,0">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Âm thanh hiệu ứng (VN Audio SFX)" FontWeight="SemiBold" Foreground="{StaticResource BrushTextPrimary}" />
+                                    <TextBlock Text="Tiếng lật sách, tiếng gõ phím nhân vật và chuông SRS" FontSize="11" Foreground="{StaticResource BrushTextMuted}" Margin="0,2,0,0" />
+                                </StackPanel>
+                                <Button Grid.Column="1" Content="{Binding AudioSfxStatusLabel}" 
+                                        Command="{Binding ToggleAudioSfxCommand}" 
+                                        Style="{StaticResource StyleSecondaryButton}" Padding="14,6" />
+                            </Grid>
+                        </Border>
+                    </Grid>
+
+                    <!-- Default JLPT Level -->
+                    <TextBlock Text="Cấp độ JLPT trọng tâm:" FontSize="13" Foreground="{StaticResource BrushTextSecondary}" Margin="0,0,0,8" />
+                    <WrapPanel>
+                        <Button Content="N5 (Nhập môn)" Command="{Binding SetJlptLevelCommand}" CommandParameter="N5" Style="{StaticResource StyleSecondaryButton}" Margin="0,0,8,6" />
+                        <Button Content="N4 (Sơ cấp)" Command="{Binding SetJlptLevelCommand}" CommandParameter="N4" Style="{StaticResource StyleSecondaryButton}" Margin="0,0,8,6" />
+                        <Button Content="N3 (Trung cấp)" Command="{Binding SetJlptLevelCommand}" CommandParameter="N3" Style="{StaticResource StyleSecondaryButton}" Margin="0,0,8,6" />
+                        <Button Content="N2 (Cao cấp)" Command="{Binding SetJlptLevelCommand}" CommandParameter="N2" Style="{StaticResource StyleSecondaryButton}" Margin="0,0,8,6" />
+                        <Button Content="N1 (Thành thạo)" Command="{Binding SetJlptLevelCommand}" CommandParameter="N1" Style="{StaticResource StyleSecondaryButton}" Margin="0,0,8,6" />
+                    </WrapPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Group 3: Data & Storage -->
+            <Border Grid.Row="4" Style="{StaticResource StyleCosmicCard}" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="3. DỮ LIỆU &amp; LƯU TRỮ (Data &amp; Persistence)" FontSize="15" FontWeight="Bold" Foreground="#38BDF8" Margin="0,0,0,16" />
+
+                    <TextBlock Text="Cơ sở dữ liệu SQLite cục bộ (Offline-first):" FontSize="13" Foreground="{StaticResource BrushTextSecondary}" Margin="0,0,0,6" />
+                    <Border Background="#0B0E14" CornerRadius="8" Padding="12,10" Margin="0,0,0,14">
+                        <TextBlock Text="{Binding DataStoragePath}" FontFamily="Consolas" FontSize="12" Foreground="{StaticResource BrushLavender}" />
+                    </Border>
+
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="Sao lưu cơ sở dữ liệu (Backup SQLite)" Command="{Binding BackupDatabaseCommand}"
+                                Style="{StaticResource StyleSecondaryButton}" Margin="0,0,12,0" />
+                        <TextBlock Text="Toàn bộ tiến độ đọc, thẻ từ vựng SRS, kết quả Quiz và lịch sử hội thoại được bảo toàn." 
+                                   FontSize="12" Foreground="{StaticResource BrushTextMuted}" VerticalAlignment="Center" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Group 4: About & Philosophy -->
+            <Border Grid.Row="5" Style="{StaticResource StyleSubCard}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Kotoba Odyssey (言葉の旅) • v6.0 Polish Edition" FontWeight="Bold" Foreground="{StaticResource BrushTextPrimary}" />
+                        <TextBlock Text="Học tiếng Nhật qua tiểu thuyết văn học kinh điển và Visual Novel tương tác AI." 
+                                   FontSize="12" Foreground="{StaticResource BrushTextMuted}" Margin="0,4,0,0" />
+                        <TextBlock Text="Kiến trúc: C# .NET 9 WPF Desktop • ASP.NET Core Web API • Entity Framework Core SQLite • Google Gemini 2.5 Flash." 
+                                   FontSize="11" Foreground="{StaticResource BrushTextMuted}" Margin="0,2,0,0" />
+                    </StackPanel>
+
+                    <Border Grid.Column="1" Background="#1C2138" CornerRadius="8" Padding="14,8" VerticalAlignment="Center">
+                        <TextBlock Text="Phase 6: Visual Identity" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource BrushLavender}" />
+                    </Border>
+                </Grid>
+            </Border>
+        </Grid>
+    </ScrollViewer>
 </UserControl>

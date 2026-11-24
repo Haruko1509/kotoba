@@ -48,9 +48,9 @@ public class JapaneseTextAnalyzer : IJapaneseTextAnalyzer
                 continue;
             }
 
-            // 2. Try Longest Prefix Match against Dictionary (from max len 8 down to 1)
+            // 2. Try Longest Prefix Match against Dictionary (from max len 12 down to 1)
             bool matched = false;
-            int maxSearchLen = Math.Min(8, len - i);
+            int maxSearchLen = Math.Min(12, len - i);
 
             for (int searchLen = maxSearchLen; searchLen >= 1; searchLen--)
             {
@@ -115,6 +115,55 @@ public class JapaneseTextAnalyzer : IJapaneseTextAnalyzer
                c == '、' || c == '。' || c == '「' || c == '」' ||
                c == '『' || c == '』' || c == '・' || c == '…' ||
                c == '！' || c == '？' || c == 'ー';
+    }
+
+    public string ExtractSentence(string text, string targetWord, int approximateIndex = -1)
+    {
+        if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(targetWord))
+        {
+            return string.Empty;
+        }
+
+        int wordIdx = -1;
+        if (approximateIndex >= 0 && approximateIndex < text.Length)
+        {
+            wordIdx = text.IndexOf(targetWord, approximateIndex, StringComparison.Ordinal);
+        }
+
+        if (wordIdx < 0)
+        {
+            wordIdx = text.IndexOf(targetWord, StringComparison.Ordinal);
+        }
+
+        if (wordIdx < 0)
+        {
+            return text.Trim();
+        }
+
+        char[] sentenceTerminators = new[] { '。', '！', '？', '!', '?', '\n', '\r' };
+
+        int start = 0;
+        for (int j = wordIdx - 1; j >= 0; j--)
+        {
+            if (sentenceTerminators.Contains(text[j]))
+            {
+                start = j + 1;
+                break;
+            }
+        }
+
+        int end = text.Length;
+        for (int j = wordIdx + targetWord.Length; j < text.Length; j++)
+        {
+            if (sentenceTerminators.Contains(text[j]))
+            {
+                end = j + 1;
+                break;
+            }
+        }
+
+        string sentence = text.Substring(start, end - start).Trim();
+        return sentence;
     }
 
     private static ScriptType GetCharScript(char c)

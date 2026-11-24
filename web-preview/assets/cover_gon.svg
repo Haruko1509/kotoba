@@ -1,0 +1,142 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" width="400" height="600">
+  <defs>
+    <!-- Background Gradient: Autumn Dusk -->
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1A1528"/>
+      <stop offset="40%" stop-color="#2D1B36"/>
+      <stop offset="70%" stop-color="#5A2E38"/>
+      <stop offset="100%" stop-color="#9E4D37"/>
+    </linearGradient>
+
+    <!-- Moon Glow -->
+    <radialGradient id="moonGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFF8E7" stop-opacity="1"/>
+      <stop offset="60%" stop-color="#FDE68A" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#F59E0B" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Golden Foil Gradient -->
+    <linearGradient id="goldFoil" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FDE68A"/>
+      <stop offset="50%" stop-color="#D97706"/>
+      <stop offset="100%" stop-color="#FBBF24"/>
+    </linearGradient>
+
+    <!-- Hill Gradient -->
+    <linearGradient id="hillGrad1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3B1828"/>
+      <stop offset="100%" stop-color="#180B14"/>
+    </linearGradient>
+    <linearGradient id="hillGrad2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1E0E18"/>
+      <stop offset="100%" stop-color="#0C050A"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Deep Autumn Background -->
+  <rect width="400" height="600" fill="url(#bgGrad)"/>
+
+  <!-- Celestial Stars -->
+  <circle cx="50" cy="60" r="1.5" fill="#FFF" opacity="0.6"/>
+  <circle cx="120" cy="40" r="1.2" fill="#FFF" opacity="0.8"/>
+  <circle cx="280" cy="70" r="1.5" fill="#FFF" opacity="0.7"/>
+  <circle cx="340" cy="50" r="1" fill="#FFF" opacity="0.5"/>
+  <circle cx="90" cy="110" r="1.8" fill="#FDE68A" opacity="0.9"/>
+  <circle cx="320" cy="120" r="1.2" fill="#FFF" opacity="0.6"/>
+
+  <!-- Harvest Full Moon -->
+  <circle cx="290" cy="150" r="75" fill="url(#moonGlow)"/>
+  <circle cx="290" cy="150" r="55" fill="#FFFDF5"/>
+
+  <!-- Distant Mountain Ridge -->
+  <path d="M0 320 Q 80 280, 180 310 T 360 270 L 400 290 L 400 600 L 0 600 Z" fill="url(#hillGrad1)" opacity="0.7"/>
+
+  <!-- Midground Rolling Hill with Autumn Trees -->
+  <path d="M0 390 Q 120 340, 240 370 T 400 350 L 400 600 L 0 600 Z" fill="url(#hillGrad2)"/>
+
+  <!-- Golden Autumn Foliage & Ginkgo Leaves -->
+  <g fill="#F59E0B" opacity="0.85">
+    <circle cx="80" cy="330" r="30"/>
+    <circle cx="105" cy="315" r="22"/>
+    <circle cx="65" cy="315" r="24"/>
+    <circle cx="50" cy="340" r="18"/>
+  </g>
+  <path d="M80 330 L 80 410" stroke="#2D1515" stroke-width="5" stroke-linecap="round"/>
+
+  <!-- Second Golden Tree -->
+  <g fill="#D97706" opacity="0.9">
+    <circle cx="340" cy="340" r="25"/>
+    <circle cx="360" cy="330" r="18"/>
+    <circle cx="325" cy="330" r="20"/>
+  </g>
+  <path d="M340 340 L 340 400" stroke="#2D1515" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- Silhouette of Little Fox (Gon) on the Ridge Looking at Moon -->
+  <g transform="translate(180, 310) scale(0.65)" fill="#F59E0B">
+    <!-- Fox Body -->
+    <ellipse cx="60" cy="50" rx="30" ry="18" fill="#F97316"/>
+    <!-- Fox Chest & Head -->
+    <circle cx="35" cy="38" r="14" fill="#F97316"/>
+    <polygon points="25,28 32,12 37,27" fill="#EA580C"/>
+    <polygon points="35,28 42,14 45,28" fill="#EA580C"/>
+    <!-- Snout -->
+    <polygon points="25,36 12,42 27,45" fill="#F97316"/>
+    <circle cx="12" cy="42" r="2" fill="#180B14"/>
+    <!-- Big Fluffy Fox Tail with White Tip -->
+    <path d="M85 52 C 115 50, 130 30, 125 15 C 115 10, 100 25, 85 45 Z" fill="#EA580C"/>
+    <path d="M125 15 C 120 12, 112 18, 115 25 C 120 22, 128 20, 125 15 Z" fill="#FFFDF5"/>
+    <!-- Legs -->
+    <rect x="36" y="52" width="6" height="22" rx="3" fill="#C2410C"/>
+    <rect x="48" y="52" width="6" height="20" rx="3" fill="#9A3412"/>
+    <rect x="70" y="52" width="7" height="22" rx="3" fill="#C2410C"/>
+    <rect x="80" y="50" width="7" height="22" rx="3" fill="#9A3412"/>
+  </g>
+
+  <!-- Swirling Golden Leaves Wind -->
+  <g fill="#FDE68A" opacity="0.8">
+    <ellipse cx="140" cy="220" rx="6" ry="3" transform="rotate(-25 140 220)"/>
+    <ellipse cx="170" cy="205" rx="5" ry="2.5" transform="rotate(35 170 205)"/>
+    <ellipse cx="220" cy="230" rx="7" ry="3.5" transform="rotate(-15 220 230)"/>
+    <ellipse cx="120" cy="260" rx="5" ry="2.5" transform="rotate(40 120 260)"/>
+    <ellipse cx="250" cy="270" rx="6" ry="3" transform="rotate(20 250 270)"/>
+  </g>
+
+  <!-- Publisher Frame & Header Banner -->
+  <rect x="20" y="20" width="360" height="560" rx="4" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+  <rect x="24" y="24" width="352" height="552" rx="2" fill="none" stroke="url(#goldFoil)" stroke-width="0.75" opacity="0.6"/>
+
+  <!-- Japanese Book Title: Vertical Calligraphy Styling -->
+  <g transform="translate(48, 55)">
+    <!-- White Paper Strip Label (Authentic Bunko Style) -->
+    <rect x="0" y="0" width="60" height="210" rx="3" fill="#FFFDF8" opacity="0.94"/>
+    <rect x="3" y="3" width="54" height="204" rx="2" fill="none" stroke="#B45309" stroke-width="1" opacity="0.5"/>
+    
+    <!-- Title: ごんぎつね -->
+    <text x="30" y="45" font-family="'Noto Serif JP', 'Shippori Mincho', serif" font-weight="900" font-size="28" fill="#1C1917" text-anchor="middle">ご</text>
+    <text x="30" y="82" font-family="'Noto Serif JP', 'Shippori Mincho', serif" font-weight="900" font-size="28" fill="#1C1917" text-anchor="middle">ん</text>
+    <text x="30" y="119" font-family="'Noto Serif JP', 'Shippori Mincho', serif" font-weight="900" font-size="28" fill="#1C1917" text-anchor="middle">ぎ</text>
+    <text x="30" y="156" font-family="'Noto Serif JP', 'Shippori Mincho', serif" font-weight="900" font-size="28" fill="#1C1917" text-anchor="middle">つ</text>
+    <text x="30" y="193" font-family="'Noto Serif JP', 'Shippori Mincho', serif" font-weight="900" font-size="28" fill="#1C1917" text-anchor="middle">ね</text>
+  </g>
+
+  <!-- Red Inkan / Artist Stamp -->
+  <g transform="translate(60, 275)">
+    <rect x="0" y="0" width="28" height="28" rx="3" fill="#DC2626"/>
+    <text x="14" y="20" font-family="'Noto Serif JP', serif" font-size="14" font-weight="bold" fill="#FFF" text-anchor="middle">南吉</text>
+  </g>
+
+  <!-- Author Name & Bunko Brand -->
+  <text x="50" y="330" font-family="'Noto Sans JP', sans-serif" font-size="14" font-weight="700" fill="#FDE68A" letter-spacing="3">新美南吉</text>
+  <text x="50" y="350" font-family="'Outfit', sans-serif" font-size="11" font-weight="500" fill="#E2E8F0" opacity="0.75" letter-spacing="1">NIIMI NANKICHI</text>
+
+  <!-- Obi Band at Bottom (Authentic Japanese Novel Belly-Band) -->
+  <rect x="20" y="460" width="360" height="120" fill="#7C2D12" opacity="0.95"/>
+  <rect x="20" y="460" width="360" height="2" fill="url(#goldFoil)"/>
+
+  <text x="40" y="492" font-family="'Noto Sans JP', sans-serif" font-size="13" font-weight="800" fill="#FEF3C7" letter-spacing="2">童話の名作 • JLPT N5 初級対応</text>
+  <text x="40" y="520" font-family="'Shippori Mincho', serif" font-size="14" font-weight="600" fill="#FFF">「ごん、お前だったのか。くりをくれたのは」</text>
+  
+  <rect x="40" y="538" width="64" height="22" rx="4" fill="#F59E0B"/>
+  <text x="72" y="553" font-family="'Outfit', sans-serif" font-size="11" font-weight="800" fill="#180B14" text-anchor="middle">JLPT N5</text>
+  <text x="115" y="553" font-family="'Outfit', sans-serif" font-size="11" font-weight="600" fill="#FED7AA">KOTOBA BUNKO</text>
+</svg>

@@ -10,16 +10,41 @@ using KotobaOdyssey.Core.Models;
 
 namespace KotobaOdyssey.UI.ViewModels;
 
+public class ParagraphModel
+{
+    public int ParagraphIndex { get; set; }
+    public string RawText { get; set; } = string.Empty;
+    public ObservableCollection<TokenItemViewModel> Tokens { get; set; } = new();
+}
+
+public class TokenItemViewModel
+{
+    public string Surface { get; set; } = string.Empty;
+    public string Reading { get; set; } = string.Empty;
+    public string BaseForm { get; set; } = string.Empty;
+    public string PartOfSpeech { get; set; } = string.Empty;
+    public JlptLevel JlptLevel { get; set; }
+    public bool HasDictionaryEntry { get; set; }
+    public bool IsPunctuation { get; set; }
+    public string ContextSentence { get; set; } = string.Empty;
+
+    public bool HasFurigana => !string.IsNullOrWhiteSpace(Reading) &&
+                               Reading != Surface &&
+                               Surface.Any(c => c >= '\u4e00' && c <= '\u9faf');
+}
+
 public partial class ReaderViewModel : ViewModelBase
 {
     private readonly INovelRepository _novelRepository;
     private readonly IBookmarkRepository _bookmarkRepository;
     private readonly IUserProgressRepository _userProgressRepository;
     private readonly IJapaneseDictionaryService _dictionaryService;
+    private readonly IJapaneseTextAnalyzer _textAnalyzer;
     private readonly IVocabularyRepository _vocabularyRepository;
     private readonly IDailyQuestRepository _dailyQuestRepository;
     private readonly INavigationService _navigationService;
     private readonly MainViewModel _mainViewModel;
+    private readonly IAiTutorService? _aiTutorService;
 
     private DispatcherTimer? _studyTimer;
     private int _elapsedSeconds;
@@ -61,6 +86,9 @@ public partial class ReaderViewModel : ViewModelBase
     [ObservableProperty]
     private Brush _readerForegroundBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E2E8F0"));
 
+    [ObservableProperty]
+    private bool _isFuriganaVisible = true;
+
     // Drawers / Panels
     [ObservableProperty]
     private bool _isSettingsOpen;
@@ -73,6 +101,37 @@ public partial class ReaderViewModel : ViewModelBase
 
     [ObservableProperty]
     private string _selectedSnippet = string.Empty;
+
+    // AI Tutor Drawer
+    [ObservableProperty]
+    private bool _isAiTutorOpen;
+
+    [ObservableProperty]
+    private bool _isAiTutorLoading;
+
+    [ObservableProperty]
+    private string _aiSentenceJp = string.Empty;
+
+    [ObservableProperty]
+    private string _aiTranslationVn = string.Empty;
+
+    [ObservableProperty]
+    private string _aiGrammarInsight = string.Empty;
+
+    [ObservableProperty]
+    private string _aiStructureInfo = string.Empty;
+
+    [ObservableProperty]
+    private string _aiProviderInfo = string.Empty;
+
+    [ObservableProperty]
+    private string _aiFollowUpQuestion = string.Empty;
+
+    [ObservableProperty]
+    private string _aiFollowUpAnswer = string.Empty;
+
+    [ObservableProperty]
+    private string? _aiErrorMessage;
 
     // Dictionary Quick Lookup Drawer
     [ObservableProperty]
@@ -93,6 +152,15 @@ public partial class ReaderViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isWordAlreadySaved;
 
+    [ObservableProperty]
+    private string _currentContextSentence = string.Empty;
+
+    [ObservableProperty]
+    private string _savedFeedbackMessage = string.Empty;
+
+    [ObservableProperty]
+    private string _savedWordExistingContext = string.Empty;
+
     // Progress and Session stats
     [ObservableProperty]
     private int _readingProgressPercent = 0;
@@ -100,27 +168,39 @@ public partial class ReaderViewModel : ViewModelBase
     [ObservableProperty]
     private string _sessionReadingTime = "00:00";
 
+    [ObservableProperty]
+    private bool _hasParagraphTokens;
+
     public ObservableCollection<Chapter> Chapters { get; } = new();
     public ObservableCollection<Bookmark> Bookmarks { get; } = new();
+    public ObservableCollection<ParagraphModel> Paragraphs { get; } = new();
+
+    public string SaveButtonText => IsWordAlreadySaved
+        ? "✓ Đã có trong sổ từ (Cập nhật ngữ cảnh)"
+        : "＋ Lưu vào sổ từ & Flashcard";
 
     public ReaderViewModel(
         INovelRepository novelRepository,
         IBookmarkRepository bookmarkRepository,
         IUserProgressRepository userProgressRepository,
         IJapaneseDictionaryService dictionaryService,
+        IJapaneseTextAnalyzer textAnalyzer,
         IVocabularyRepository vocabularyRepository,
         IDailyQuestRepository dailyQuestRepository,
         INavigationService navigationService,
-        MainViewModel mainViewModel)
+        MainViewModel mainViewModel,
+        IAiTutorService? aiTutorService = null)
     {
         _novelRepository = novelRepository;
         _bookmarkRepository = bookmarkRepository;
         _userProgressRepository = userProgressRepository;
         _dictionaryService = dictionaryService;
+        _textAnalyzer = textAnalyzer;
         _vocabularyRepository = vocabularyRepository;
         _dailyQuestRepository = dailyQuestRepository;
         _navigationService = navigationService;
         _mainViewModel = mainViewModel;
+        _aiTutorService = aiTutorService;
 
         SetupStudyTimer();
         ApplyTheme();
@@ -215,6 +295,49 @@ public partial class ReaderViewModel : ViewModelBase
             Bookmarks.Add(b);
         }
 
+        // Interactive Tokenized Paragraphs
+        Paragraphs.Clear();
+        if (!string.IsNullOrWhiteSpace(chapter.Content))
+        {
+            var rawParas = chapter.Content.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+            int pIdx = 0;
+            foreach (var para in rawParas)
+            {
+                if (string.IsNullOrWhiteSpace(para)) continue;
+
+                var pModel = new ParagraphModel
+                {
+                    ParagraphIndex = pIdx++,
+                    RawText = para.Trim()
+                };
+
+                var tokens = await _textAnalyzer.AnalyzeTextAsync(pModel.RawText);
+                foreach (var t in tokens)
+                {
+                    bool isPunc = char.IsPunctuation(t.Surface[0]) ||
+                                  t.Surface == "、" || t.Surface == "。" || t.Surface == "「" || t.Surface == "」" ||
+                                  t.Surface == "『" || t.Surface == "』" || t.Surface == "・" || t.Surface == "…";
+
+                    string sentence = _textAnalyzer.ExtractSentence(pModel.RawText, t.Surface, t.StartIndex);
+
+                    pModel.Tokens.Add(new TokenItemViewModel
+                    {
+                        Surface = t.Surface,
+                        Reading = t.Reading,
+                        BaseForm = t.BaseForm,
+                        PartOfSpeech = t.PartOfSpeech,
+                        JlptLevel = t.JlptLevel,
+                        HasDictionaryEntry = t.HasDictionaryEntry,
+                        IsPunctuation = isPunc,
+                        ContextSentence = sentence
+                    });
+                }
+
+                Paragraphs.Add(pModel);
+            }
+        }
+        HasParagraphTokens = Paragraphs.Count > 0;
+
         await _novelRepository.UpdateChapterProgressAsync(chapter.Id, chapter.LastReadPosition, chapter.IsCompleted);
     }
 
@@ -271,9 +394,29 @@ public partial class ReaderViewModel : ViewModelBase
         await _novelRepository.UpdateChapterProgressAsync(CurrentChapter.Id, pos, isCompleted);
     }
 
+    [RelayCommand]
+    public void ToggleFurigana()
+    {
+        IsFuriganaVisible = !IsFuriganaVisible;
+    }
+
     // Dictionary Lookup Actions
     [RelayCommand]
+    public async Task LookupToken(TokenItemViewModel? token)
+    {
+        if (token == null || string.IsNullOrWhiteSpace(token.Surface)) return;
+        if (token.IsPunctuation) return;
+
+        await LookupWordWithContext(token.Surface, token.ContextSentence);
+    }
+
+    [RelayCommand]
     public async Task LookupWord(string? term = null)
+    {
+        await LookupWordWithContext(term, null);
+    }
+
+    public async Task LookupWordWithContext(string? term, string? contextSentence)
     {
         string lookupText = term ?? LookupInputText;
         if (string.IsNullOrWhiteSpace(lookupText)) return;
@@ -282,8 +425,27 @@ public partial class ReaderViewModel : ViewModelBase
         LookupResult = await _dictionaryService.LookupAsync(LookupTerm);
 
         IsLookupNotFound = LookupResult == null;
-        IsWordAlreadySaved = await _vocabularyRepository.ExistsAsync(LookupTerm);
+        string wordToCheck = LookupResult?.Term ?? LookupTerm;
 
+        var existing = await _vocabularyRepository.GetByWordAsync(wordToCheck);
+        IsWordAlreadySaved = existing != null;
+        SavedWordExistingContext = existing?.ContextSentence ?? string.Empty;
+        SavedFeedbackMessage = existing != null ? "Từ này đã có trong sổ từ." : string.Empty;
+
+        if (!string.IsNullOrWhiteSpace(contextSentence))
+        {
+            CurrentContextSentence = contextSentence;
+        }
+        else if (CurrentChapter != null)
+        {
+            CurrentContextSentence = _textAnalyzer.ExtractSentence(CurrentChapter.Content, LookupTerm);
+        }
+        else
+        {
+            CurrentContextSentence = LookupResult?.ExampleSentence ?? string.Empty;
+        }
+
+        OnPropertyChanged(nameof(SaveButtonText));
         IsLookupOpen = true;
         IsSettingsOpen = false;
         IsBookmarkDrawerOpen = false;
@@ -298,23 +460,56 @@ public partial class ReaderViewModel : ViewModelBase
     [RelayCommand]
     public async Task SaveWordFromReader()
     {
-        if (LookupResult == null || IsWordAlreadySaved) return;
+        if (LookupResult == null && string.IsNullOrWhiteSpace(LookupTerm)) return;
 
-        string context = CurrentChapter != null
-            ? (CurrentChapter.Content.Length > 80 ? CurrentChapter.Content.Substring(0, 80) + "..." : CurrentChapter.Content)
-            : "";
+        string wordToSave = LookupResult?.Term ?? LookupTerm;
+        string readingToSave = LookupResult?.Reading ?? wordToSave;
+        string meaningToSave = LookupResult?.Meaning ?? "Từ vựng tiếng Nhật";
+        var jlptToSave = LookupResult?.JlptLevel ?? JlptLevel.N5;
+        string sentenceToSave = !string.IsNullOrWhiteSpace(CurrentContextSentence)
+            ? CurrentContextSentence
+            : (LookupResult?.ExampleSentence ?? "");
+
+        var existing = await _vocabularyRepository.GetByWordAsync(wordToSave);
+        if (existing != null)
+        {
+            // Enrich context if not already present
+            if (!string.IsNullOrWhiteSpace(sentenceToSave) &&
+                (string.IsNullOrWhiteSpace(existing.ContextSentence) || !existing.ContextSentence.Contains(sentenceToSave)))
+            {
+                existing.ContextSentence = string.IsNullOrWhiteSpace(existing.ContextSentence)
+                    ? sentenceToSave
+                    : $"{existing.ContextSentence} \n{sentenceToSave}";
+
+                if (CurrentChapter != null && !existing.SourceChapterId.HasValue)
+                {
+                    existing.SourceChapterId = CurrentChapter.Id;
+                }
+
+                await _vocabularyRepository.UpdateAsync(existing);
+                SavedFeedbackMessage = "Đã cập nhật thêm ngữ cảnh mới vào sổ từ vựng!";
+            }
+            else
+            {
+                SavedFeedbackMessage = "Từ này đã có sẵn trong sổ từ vựng.";
+            }
+
+            IsWordAlreadySaved = true;
+            OnPropertyChanged(nameof(SaveButtonText));
+            return;
+        }
 
         var item = new VocabularyItem
         {
-            Word = LookupResult.Term,
-            Reading = LookupResult.Reading,
-            Meaning = LookupResult.Meaning,
-            JlptLevel = LookupResult.JlptLevel,
-            ContextSentence = string.IsNullOrWhiteSpace(LookupResult.ExampleSentence) ? context : LookupResult.ExampleSentence,
-            SourceNovelTitle = Novel?.Title ?? "Reading Workspace",
+            Word = wordToSave,
+            Reading = readingToSave,
+            Meaning = meaningToSave,
+            JlptLevel = jlptToSave,
+            ContextSentence = sentenceToSave,
+            SourceNovelTitle = Novel?.Title ?? "Tác phẩm văn học",
             SourceChapterId = CurrentChapter?.Id,
             CreatedAt = DateTime.UtcNow,
-            NextReviewDate = DateTime.UtcNow.AddHours(4),
+            NextReviewDate = DateTime.UtcNow, // Due immediately for review
             IntervalDays = 0,
             EaseFactor = 2.5,
             Repetitions = 0
@@ -326,6 +521,8 @@ public partial class ReaderViewModel : ViewModelBase
         await _mainViewModel.LoadUserProgressAsync();
 
         IsWordAlreadySaved = true;
+        SavedFeedbackMessage = "Đã lưu vào sổ từ vựng & Flashcard!";
+        OnPropertyChanged(nameof(SaveButtonText));
     }
 
     [RelayCommand]
@@ -333,37 +530,44 @@ public partial class ReaderViewModel : ViewModelBase
     {
         if (CurrentChapter == null) return;
 
-        string note = string.IsNullOrWhiteSpace(NewBookmarkNote) ? "Đoạn văn quan trọng" : NewBookmarkNote.Trim();
-        string snippet = string.IsNullOrWhiteSpace(SelectedSnippet)
-            ? (CurrentChapter.Content.Length > 40 ? CurrentChapter.Content.Substring(0, 40) + "..." : CurrentChapter.Content)
-            : SelectedSnippet.Trim();
+        string snippet = !string.IsNullOrWhiteSpace(SelectedSnippet)
+            ? SelectedSnippet
+            : (CurrentChapter.Content.Length > 120 ? CurrentChapter.Content.Substring(0, 120) + "..." : CurrentChapter.Content);
 
         var bm = new Bookmark
         {
             ChapterId = CurrentChapter.Id,
             CharacterPosition = CurrentChapter.LastReadPosition,
             Snippet = snippet,
-            Note = note,
+            Note = string.IsNullOrWhiteSpace(NewBookmarkNote) ? $"Dấu trang tại {DateTime.Now:dd/MM/yyyy HH:mm}" : NewBookmarkNote.Trim(),
             CreatedAt = DateTime.UtcNow
         };
 
-        var saved = await _bookmarkRepository.AddAsync(bm);
-        Bookmarks.Add(saved);
-
+        await _bookmarkRepository.AddAsync(bm);
+        Bookmarks.Insert(0, bm);
         NewBookmarkNote = string.Empty;
-        SelectedSnippet = string.Empty;
+        IsBookmarkDrawerOpen = false;
     }
 
     [RelayCommand]
-    public async Task DeleteBookmark(Bookmark? bookmark)
+    public async Task DeleteBookmark(Bookmark? bm)
     {
-        if (bookmark == null) return;
-        await _bookmarkRepository.DeleteAsync(bookmark.Id);
-        Bookmarks.Remove(bookmark);
+        if (bm == null) return;
+        await _bookmarkRepository.DeleteAsync(bm.Id);
+        Bookmarks.Remove(bm);
     }
 
     [RelayCommand]
-    public void ToggleSettingsDrawer()
+    public void JumpToBookmark(Bookmark? bm)
+    {
+        if (bm == null) return;
+        _ = SaveCurrentProgressAsync(bm.CharacterPosition);
+        IsBookmarkDrawerOpen = false;
+    }
+
+    // Customization Drawers Toggle
+    [RelayCommand]
+    public void ToggleSettings()
     {
         IsSettingsOpen = !IsSettingsOpen;
         if (IsSettingsOpen)
@@ -374,7 +578,7 @@ public partial class ReaderViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    public void ToggleBookmarkDrawer()
+    public void ToggleBookmarks()
     {
         IsBookmarkDrawerOpen = !IsBookmarkDrawerOpen;
         if (IsBookmarkDrawerOpen)
@@ -385,9 +589,9 @@ public partial class ReaderViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    public void SetTheme(string themeKey)
+    public void SetTheme(string themeName)
     {
-        SelectedTheme = themeKey;
+        SelectedTheme = themeName;
         ApplyTheme();
     }
 
@@ -395,17 +599,13 @@ public partial class ReaderViewModel : ViewModelBase
     {
         switch (SelectedTheme)
         {
-            case "DeepNight":
-                ReaderBackgroundBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#060911"));
-                ReaderForegroundBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#CBD5E1"));
+            case "Slate":
+                ReaderBackgroundBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E293B"));
+                ReaderForegroundBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F8FAFC"));
                 break;
-            case "WarmSepia":
-                ReaderBackgroundBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1C1917"));
-                ReaderForegroundBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FDE68A"));
-                break;
-            case "Amethyst":
-                ReaderBackgroundBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#150F28"));
-                ReaderForegroundBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E9D5FF"));
+            case "Paper":
+                ReaderBackgroundBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F5F2EB"));
+                ReaderForegroundBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#292524"));
                 break;
             case "Cosmic":
             default:
@@ -416,10 +616,129 @@ public partial class ReaderViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    public async Task BackToLibrary()
+    public void IncreaseFontSize()
     {
-        await SaveCurrentProgressAsync();
-        _studyTimer?.Stop();
+        FontSize = Math.Min(FontSize + 2, 36);
+        LineSpacing = FontSize * 1.6;
+    }
+
+    [RelayCommand]
+    public void DecreaseFontSize()
+    {
+        FontSize = Math.Max(FontSize - 2, 12);
+        LineSpacing = FontSize * 1.6;
+    }
+
+    [RelayCommand]
+    public async Task AnalyzeSentenceWithAi(string? customSentence = null)
+    {
+        string target = !string.IsNullOrWhiteSpace(customSentence)
+            ? customSentence
+            : (!string.IsNullOrWhiteSpace(CurrentContextSentence) ? CurrentContextSentence : CurrentChapter?.Title ?? "");
+
+        if (string.IsNullOrWhiteSpace(target)) return;
+
+        IsAiTutorOpen = true;
+        IsAiTutorLoading = true;
+        AiErrorMessage = null;
+        AiSentenceJp = target;
+        AiTranslationVn = "Đang phân tích cấu trúc cú pháp...";
+        AiGrammarInsight = "Đang kết nối AI Tutor Engine...";
+        AiStructureInfo = string.Empty;
+        AiFollowUpAnswer = string.Empty;
+
+        if (_aiTutorService == null)
+        {
+            AiTranslationVn = "Dịch vụ AI Tutor chưa được kích hoạt trong phiên bản này.";
+            AiGrammarInsight = "Vui lòng kiểm tra cấu hình kết nối AI.";
+            IsAiTutorLoading = false;
+            return;
+        }
+
+        try
+        {
+            var req = new AiSentenceExplanationRequest
+            {
+                Sentence = target,
+                NovelTitle = Novel?.Title ?? "Tiểu thuyết",
+                ChapterTitle = CurrentChapter?.Title ?? "Chương hiện tại",
+                ChapterNumber = CurrentChapterNumber,
+                JlptLevel = Novel != null ? Novel.JlptLevel.ToString() : "N3",
+                RequestType = "explain"
+            };
+
+            var res = await _aiTutorService.ExplainSentenceAsync(req);
+            if (res != null && res.Success)
+            {
+                AiTranslationVn = res.TranslationVn;
+                AiGrammarInsight = res.GrammarInsight;
+                AiProviderInfo = res.Provider;
+
+                if (res.SentenceStructure != null)
+                {
+                    AiStructureInfo = $"Chủ ngữ: {res.SentenceStructure.Subject} | Vị ngữ: {res.SentenceStructure.Predicate}";
+                }
+            }
+            else
+            {
+                AiErrorMessage = res?.ErrorMessage ?? "Không thể phân tích câu.";
+            }
+        }
+        catch (Exception ex)
+        {
+            AiErrorMessage = ex.Message;
+        }
+        finally
+        {
+            IsAiTutorLoading = false;
+        }
+    }
+
+    [RelayCommand]
+    public async Task SendAiFollowUp()
+    {
+        if (string.IsNullOrWhiteSpace(AiFollowUpQuestion) || string.IsNullOrWhiteSpace(AiSentenceJp) || _aiTutorService == null)
+            return;
+
+        IsAiTutorLoading = true;
+        try
+        {
+            var req = new AiSentenceExplanationRequest
+            {
+                Sentence = AiSentenceJp,
+                NovelTitle = Novel?.Title ?? "",
+                ChapterTitle = CurrentChapter?.Title ?? "",
+                ChapterNumber = CurrentChapterNumber,
+                RequestType = "follow_up",
+                FollowUpQuestion = AiFollowUpQuestion,
+                PreviousExplanation = AiGrammarInsight
+            };
+
+            var res = await _aiTutorService.ExplainSentenceAsync(req);
+            if (res != null && res.Success)
+            {
+                AiFollowUpAnswer = res.GrammarInsight ?? res.TranslationVn;
+            }
+        }
+        catch (Exception ex)
+        {
+            AiErrorMessage = ex.Message;
+        }
+        finally
+        {
+            IsAiTutorLoading = false;
+        }
+    }
+
+    [RelayCommand]
+    public void CloseAiTutor()
+    {
+        IsAiTutorOpen = false;
+    }
+
+    [RelayCommand]
+    public void BackToLibrary()
+    {
         _navigationService.NavigateTo("Library");
     }
 }

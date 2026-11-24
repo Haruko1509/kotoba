@@ -91,6 +91,9 @@ public partial class VocabularyViewModel : ViewModelBase
     [ObservableProperty]
     private int _sessionReviewedCount;
 
+    [ObservableProperty]
+    private bool _isRatingProcessing;
+
     public VocabularyViewModel(
         IVocabularyRepository vocabularyRepository,
         IUserProgressRepository userProgressRepository,
@@ -242,8 +245,22 @@ public partial class VocabularyViewModel : ViewModelBase
             return;
         }
 
-        if (await _vocabularyRepository.ExistsAsync(NewWord.Trim()))
+        var existing = await _vocabularyRepository.GetByWordAsync(NewWord.Trim());
+        if (existing != null)
         {
+            if (!string.IsNullOrWhiteSpace(NewContextSentence) &&
+                (string.IsNullOrWhiteSpace(existing.ContextSentence) || !existing.ContextSentence.Contains(NewContextSentence.Trim())))
+            {
+                existing.ContextSentence = string.IsNullOrWhiteSpace(existing.ContextSentence)
+                    ? NewContextSentence.Trim()
+                    : $"{existing.ContextSentence} \n{NewContextSentence.Trim()}";
+
+                await _vocabularyRepository.UpdateAsync(existing);
+                CloseAddModal();
+                await LoadVocabularyAsync();
+                return;
+            }
+
             AddWordErrorMessage = $"Từ '{NewWord.Trim()}' đã có trong sổ tay của bạn.";
             return;
         }
@@ -258,7 +275,7 @@ public partial class VocabularyViewModel : ViewModelBase
             SourceNovelTitle = "Thêm thủ công",
             Notes = NewNotes.Trim(),
             CreatedAt = DateTime.UtcNow,
-            NextReviewDate = DateTime.UtcNow.AddHours(4),
+            NextReviewDate = DateTime.UtcNow, // Due immediately for Flashcard review
             IntervalDays = 0,
             EaseFactor = 2.5,
             Repetitions = 0
@@ -321,41 +338,49 @@ public partial class VocabularyViewModel : ViewModelBase
     [RelayCommand]
     public async Task SubmitRating(string ratingStr)
     {
-        if (CurrentCard == null) return;
+        if (CurrentCard == null || IsRatingProcessing) return;
 
-        if (!Enum.TryParse<ReviewRating>(ratingStr, true, out var rating))
+        IsRatingProcessing = true;
+        try
         {
-            rating = ReviewRating.Good;
+            if (!Enum.TryParse<ReviewRating>(ratingStr, true, out var rating))
+            {
+                rating = ReviewRating.Good;
+            }
+
+            // Calculate SM-2 interval and ease factor
+            var srsResult = SpacedRepetitionCalculator.CalculateNextReview(
+                currentIntervalDays: CurrentCard.IntervalDays,
+                currentEaseFactor: CurrentCard.EaseFactor,
+                currentRepetitions: CurrentCard.Repetitions,
+                rating: rating,
+                reviewDateUtc: DateTime.UtcNow);
+
+            // Record to DB
+            await _vocabularyRepository.RecordReviewAsync(CurrentCard.Id, rating, srsResult);
+
+            // Reward XP based on rating
+            int earnedXp = rating switch
+            {
+                ReviewRating.Easy => 15,
+                ReviewRating.Good => 12,
+                ReviewRating.Hard => 8,
+                _ => 4
+            };
+
+            SessionXpEarned += earnedXp;
+            SessionReviewedCount++;
+
+            await _userProgressRepository.AddXpAsync(earnedXp);
+            await _dailyQuestRepository.IncrementQuestProgressAsync(QuestType.ReviewCards, 1);
+            await _mainViewModel.LoadUserProgressAsync();
+
+            CurrentCardIndex++;
+            AdvanceToNextCard();
         }
-
-        // Calculate SM-2 interval and ease factor
-        var srsResult = SpacedRepetitionCalculator.CalculateNextReview(
-            currentIntervalDays: CurrentCard.IntervalDays,
-            currentEaseFactor: CurrentCard.EaseFactor,
-            currentRepetitions: CurrentCard.Repetitions,
-            rating: rating,
-            reviewDateUtc: DateTime.UtcNow);
-
-        // Record to DB
-        await _vocabularyRepository.RecordReviewAsync(CurrentCard.Id, rating, srsResult);
-
-        // Reward XP based on rating
-        int earnedXp = rating switch
+        finally
         {
-            ReviewRating.Easy => 15,
-            ReviewRating.Good => 12,
-            ReviewRating.Hard => 8,
-            _ => 4
-        };
-
-        SessionXpEarned += earnedXp;
-        SessionReviewedCount++;
-
-        await _userProgressRepository.AddXpAsync(earnedXp);
-        await _dailyQuestRepository.IncrementQuestProgressAsync(QuestType.ReviewCards, 1);
-        await _mainViewModel.LoadUserProgressAsync();
-
-        CurrentCardIndex++;
-        AdvanceToNextCard();
+            IsRatingProcessing = false;
+        }
     }
 }

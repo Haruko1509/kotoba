@@ -1,749 +1,1620 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" class="notranslate" translate="no">
 <head>
   <meta charset="UTF-8">
+  <meta name="google" content="notranslate">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kotoba Odyssey: Astral Journey — 言葉のオデッセイ</title>
+  <title>Kotoba Odyssey (言葉の旅) — Japanese Light Novel Reading & Learning Platform</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700;900&family=Shippori+Mincho:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@500;700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Shippori+Mincho:wght@500;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=6.1">
 </head>
-<body class="theme-night">
-  <div class="app-layout">
-    <!-- SIDEBAR -->
-    <aside class="astral-sidebar">
-      <div class="sidebar-brand">
-        <div class="astral-emblem">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="url(#brandGrad)" />
-            <defs>
-              <linearGradient id="brandGrad" x1="2" y1="2" x2="22" y2="22">
-                <stop offset="0%" stop-color="#818CF8" />
-                <stop offset="100%" stop-color="#06B6D4" />
-              </linearGradient>
-            </defs>
-          </svg>
+<body class="theme-obsidian">
+
+  <!-- ================= 1. GLOBAL LIGHT NOVEL STICKY NAVBAR ================= -->
+  <header class="global-ln-header">
+    <div class="header-inner">
+      <!-- Brand Logo -->
+      <a class="brand-group" onclick="switchPane('home')">
+        <div class="brand-gem">言</div>
+        <div class="brand-text">
+          <div class="brand-title">KOTOBA ODYSSEY</div>
+          <div class="brand-subtitle">言葉の旅 • LIGHT NOVEL &amp; JAPANESE</div>
         </div>
-        <div class="brand-info">
-          <span class="brand-name">KOTOBA ODYSSEY</span>
-          <span class="brand-jp">言葉のオデッセイ • Astral Journey</span>
-        </div>
-      </div>
+      </a>
 
-      <!-- Navigation -->
-      <nav class="astral-nav">
-        <div class="nav-group-label">HÀNH TRÌNH KHÁM PHÁ</div>
-        <button class="nav-link active" data-tab="dashboard">
-          <span class="nav-link-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
-          </span>
-          <div class="nav-link-text">
-            <span class="title">Trang chủ (Home)</span>
-            <span class="sub">ホーム • Khởi hành</span>
-          </div>
+      <!-- Primary Navigation Links -->
+      <nav class="ln-nav-links" id="primaryNavLinks">
+        <button class="ln-nav-link active" data-pane="home" onclick="switchPane('home')">
+          <span class="icon">🏠</span> <span class="nav-label">Trang chủ</span>
         </button>
-
-        <button class="nav-link" data-tab="library">
-          <span class="nav-link-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-          </span>
-          <div class="nav-link-text">
-            <span class="title">Thư viện tác phẩm</span>
-            <span class="sub">文学ライブラリ • Light Novel</span>
-          </div>
+        <button class="ln-nav-link" data-pane="explore" onclick="switchPane('explore')">
+          <span class="icon">🧭</span> <span class="nav-label">Khám phá truyện</span>
         </button>
-
-        <button class="nav-link" data-tab="reader">
-          <span class="nav-link-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-          </span>
-          <div class="nav-link-text">
-            <span class="title">Không gian đọc</span>
-            <span class="sub">読書空間 • Interactive Reader</span>
-          </div>
+        <button class="ln-nav-link" data-pane="rankings" onclick="scrollToRankings()">
+          <span class="icon">🏆</span> <span class="nav-label">Xếp hạng</span>
         </button>
-
-        <button class="nav-link" data-tab="vocabulary">
-          <span class="nav-link-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          </span>
-          <div class="nav-link-text">
-            <span class="title">Sổ từ vựng & SRS</span>
-            <span class="sub">語彙と復習 • Spaced Repetition</span>
-          </div>
+        <button class="ln-nav-link" data-pane="learning" onclick="switchPane('learning')">
+          <span class="icon">🧠</span> <span class="nav-label">Học tập &amp; SRS</span>
+          <span class="nav-count-badge srs" id="navSrsCount">8</span>
         </button>
-
-        <button class="nav-link" data-tab="visualnovel">
-          <span class="nav-link-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-          </span>
-          <div class="nav-link-text">
-            <span class="title">Visual Novel Mode</span>
-            <span class="sub">ビジュアルノベル • Cinematic</span>
-          </div>
+        <button class="ln-nav-link" data-pane="vn" onclick="openVN(currentInspectedId || currentVnBookKey || 'ginga')">
+          <span class="icon">🎭</span> <span class="nav-label">Visual Novel AI</span>
         </button>
       </nav>
 
-      <!-- Sidebar Bottom Profile Mini Card -->
-      <div class="sidebar-user-card">
-        <div class="user-avatar-hex">
-          <span>旅</span>
+      <!-- Global Search & Controls -->
+      <div class="header-right-group">
+        <!-- Quick Global Search Input -->
+        <div class="global-search-bar">
+          <span class="search-lens">🔍</span>
+          <input type="text" id="globalSearchInput" placeholder="Tìm truyện, Romaji, tác giả..." oninput="handleGlobalSearch(this.value)">
+          <span class="search-kbd-hint">ESC</span>
         </div>
-        <div class="user-details">
-          <div class="user-name">旅人 (Traveler)</div>
-          <div class="user-status-pill">Starlight Scholar</div>
+
+        <!-- Global Theme Switcher (Paper Warm / Sepia / Obsidian) -->
+        <button class="ln-action-btn" id="btnGlobalTheme" onclick="toggleGlobalTheme()" title="Đổi màu nền (Giấy ngà / Sepia / Đêm)">
+          <span id="themeBtnIcon">🌓</span>
+        </button>
+
+        <!-- Audio Sound Effects Toggle -->
+        <button class="ln-action-btn" id="btnAudioToggle" onclick="toggleAudioFx()" title="Bật/Tắt hiệu ứng âm thanh">
+          <span>🔊</span>
+        </button>
+
+        <!-- Import Novel TXT/JSON -->
+        <button class="ln-action-btn" onclick="triggerImportPrompt()" title="Nhập truyện tiếng Nhật (TXT / JSON)">
+          <span>📥</span>
+        </button>
+
+        <!-- User Profile Pill -->
+        <div class="user-chip" onclick="switchPane('profile')" title="Xem Tủ sách cá nhân &amp; Cài đặt">
+          <div class="user-avatar-circle">旅</div>
+          <div class="user-chip-meta">
+            <span class="user-chip-name">Nhà thám hiểm</span>
+            <span class="user-chip-streak">🔥 7 ngày • Lv.3</span>
+          </div>
+        </div>
+
+        <!-- Mobile Navigation Menu Toggle -->
+        <button class="mobile-menu-burger" onclick="toggleMobileNav()" aria-label="Menu di động">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Collapsible Navigation Drawer -->
+  <div class="mobile-nav-drawer" id="mobileNavDrawer">
+    <div class="mobile-nav-inner">
+      <div class="mobile-nav-item active" data-pane="home" onclick="switchPane('home'); closeMobileNav();">🏠 Trang chủ</div>
+      <div class="mobile-nav-item" data-pane="explore" onclick="switchPane('explore'); closeMobileNav();">🧭 Khám phá thư viện Light Novel</div>
+      <div class="mobile-nav-item" data-pane="learning" onclick="switchPane('learning'); closeMobileNav();">🧠 Sổ từ vựng &amp; Flashcards SRS</div>
+      <div class="mobile-nav-item" data-pane="vn" onclick="openVN(currentInspectedId || currentVnBookKey || 'ginga'); closeMobileNav();">🎭 Visual Novel Theatre &amp; AI Chat</div>
+      <div class="mobile-nav-item" data-pane="profile" onclick="switchPane('profile'); closeMobileNav();">👤 Hồ sơ &amp; Tủ sách cá nhân</div>
+    </div>
+  </div>
+
+  <!-- Breadcrumb Sub-bar -->
+  <div class="global-sub-bar" id="globalSubBar">
+    <div class="sub-bar-inner">
+      <div class="breadcrumbs" id="topBreadcrumb">
+        <span class="crumb root" onclick="switchPane('home')">Kotoba Odyssey</span>
+        <span class="separator">/</span>
+        <span class="crumb current" id="crumbCurrent">Trang chủ</span>
+      </div>
+      <div class="sub-bar-stats" id="subBarStats">
+        <span class="stat-pill">📖 Đang đọc: <strong id="subBarCurrentBook">銀河鉄道の夜</strong></span>
+        <span class="stat-pill">🧠 Cần ôn tập: <strong id="subBarDueCount">8 từ</strong></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 2. MAIN APPLICATION WORKSPACE ================= -->
+  <main class="main-viewport">
+
+    <!-- ===================================================================
+         PANE 1: HOME — LIGHT NOVEL WEB PORTAL (WATTPAD × BOOKWALKER STYLE)
+         =================================================================== -->
+    <section id="pane-home" class="pane active">
+      <div class="ln-home-container">
+
+        <!-- A. FEATURED NOVEL HERO SHOWCASE (Wattpad / Royal Road Style) -->
+        <div class="featured-hero-card" id="homeHeroCard">
+          <div class="hero-backdrop" id="heroBackdrop"></div>
+          <div class="hero-overlay-scrim"></div>
+          <div class="hero-content-wrap">
+            <div class="hero-cover-frame">
+              <img src="assets/cover_ginga.jpg" alt="Night on the Galactic Railroad" class="hero-book-cover" id="heroCoverImg">
+              <span class="hero-badge-tag">🌟 TÁC PHẨM ĐỀ CỬ</span>
+            </div>
+            <div class="hero-info-column">
+              <div class="hero-meta-badges">
+                <span class="chip n3" id="heroJlptBadge">JLPT N3</span>
+                <span class="chip genre" id="heroGenreBadge">Cosmic Fantasy</span>
+                <span class="chip status" id="heroStatusBadge">Hoàn thành</span>
+              </div>
+              <h1 class="hero-novel-title" id="heroTitle">銀河鉄道の夜</h1>
+              <div class="hero-novel-romaji" id="heroRomaji">Night on the Galactic Railroad • 宮沢賢治 (Miyazawa Kenji)</div>
+              <p class="hero-novel-synopsis" id="heroSynopsis">
+                Kiệt tác kỳ ảo kinh điển bất hủ của văn học Nhật Bản. Cùng cậu bé Giovanni bước lên chuyến tàu đêm lấp lánh xuyên qua dòng sông sao Ngân Hà, gặp gỡ những linh hồn du hành và tìm kiếm câu trả lời cho niềm hạnh phúc đích thực.
+              </p>
+              <div class="hero-novel-stats" id="heroStatsRow">
+                <span>📚 2 Chương truyện</span>
+                <span>•</span>
+                <span>✍️ 770 Chữ Hán JLPT</span>
+                <span>•</span>
+                <span>🏷️ Văn học &amp; Kỳ ảo</span>
+              </div>
+              <div class="hero-actions-row">
+                <button class="btn btn-primary" id="btnHeroRead" onclick="openBook('ginga', 1)">
+                  <span>📖 Đọc ngay Chương 1 ➔</span>
+                </button>
+                <button class="btn btn-secondary" id="btnHeroDetail" onclick="openBookDetail('ginga')">
+                  <span>ℹ️ Chi tiết tác phẩm</span>
+                </button>
+                <button class="btn btn-accent" id="btnHeroVN" onclick="openVN(typeof currentFeaturedHeroKey !== 'undefined' ? currentFeaturedHeroKey : 'ginga')">
+                  <span>🎭 Visual Novel AI</span>
+                </button>
+              </div>
+
+              <!-- Multi-Novel Featured Switcher -->
+              <div class="hero-switcher-strip">
+                <span class="switcher-label">✨ Tuyển tập nổi bật:</span>
+                <button class="hero-switch-btn active" onclick="setFeaturedHero('ginga', this)">銀河鉄道の夜 (N3)</button>
+                <button class="hero-switch-btn" onclick="setFeaturedHero('botchan', this)">坊っちゃん (N4)</button>
+                <button class="hero-switch-btn" onclick="setFeaturedHero('kokoro', this)">こころ (N2)</button>
+                <button class="hero-switch-btn" onclick="setFeaturedHero('merosu', this)">走れメロス (N3)</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- B. CONTINUE READING SHELF (Tiếp tục đọc dở dang) -->
+        <div class="home-section-wrap" id="sectionContinueReading">
+          <div class="section-title-strip">
+            <div class="title-with-icon">
+              <span class="sec-emoji">📖</span>
+              <h2 class="sec-heading">Tiếp tục đọc</h2>
+              <span class="sec-tag">Đang đọc dở</span>
+            </div>
+            <a class="sec-action-link" onclick="switchPane('explore')">Xem toàn bộ thư viện ➔</a>
+          </div>
+          <div class="continue-reading-shelf" id="continueReadingShelf">
+            <!-- Card 1: Ginga Active Reading -->
+            <div class="continue-card" onclick="openBook('ginga', 1)">
+              <div class="cont-cover-wrap">
+                <img src="assets/cover_ginga.jpg" alt="Cover" class="cont-cover-img">
+              </div>
+              <div class="cont-meta">
+                <div class="cont-title">銀河鉄道の夜</div>
+                <div class="cont-chapter">Chương 1: 午後の授業 (Tiết học buổi chiều)</div>
+                <div class="cont-progress-bar-wrap">
+                  <div class="cont-progress-fill" style="width: 35%;"></div>
+                </div>
+                <div class="cont-progress-info">
+                  <span>Tiến độ 35%</span>
+                  <span class="resume-text">Đọc tiếp ➔</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 2: Melos Preview -->
+            <div class="continue-card" onclick="openBook('merosu', 1)">
+              <div class="cont-cover-wrap">
+                <img src="assets/covers/cover_anime_adventurer.jpg" alt="Cover" class="cont-cover-img">
+              </div>
+              <div class="cont-meta">
+                <div class="cont-title">走れメロス</div>
+                <div class="cont-chapter">Chương 1: メロスは激怒した (Melos nổi giận)</div>
+                <div class="cont-progress-bar-wrap">
+                  <div class="cont-progress-fill" style="width: 10%;"></div>
+                </div>
+                <div class="cont-progress-info">
+                  <span>Tiến độ 10%</span>
+                  <span class="resume-text">Đọc tiếp ➔</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- C. RECENTLY UPDATED (Truyện mới cập nhật) -->
+        <div class="home-section-wrap" id="sectionRecentlyUpdated">
+          <div class="section-title-strip">
+            <div class="title-with-icon">
+              <span class="sec-emoji">⚡</span>
+              <h2 class="sec-heading">Mới cập nhật</h2>
+              <span class="sec-tag">Chương mới phát hành</span>
+            </div>
+            <a class="sec-action-link" onclick="switchPane('explore')">Xem lịch cập nhật ➔</a>
+          </div>
+          <div class="recent-updates-grid" id="recentUpdatesGrid">
+            <!-- Update Item 1 -->
+            <div class="recent-update-card" onclick="openBook('ginga', 2)">
+              <div class="ruc-cover-wrap">
+                <img src="assets/cover_ginga.jpg" alt="Cover" class="ruc-cover-img">
+              </div>
+              <div class="ruc-meta">
+                <div class="ruc-header-line">
+                  <span class="ruc-title">銀河鉄道の夜</span>
+                  <span class="ruc-chapter-badge">Chương 2 (Mới)</span>
+                </div>
+                <div class="ruc-time-line">
+                  <span>Miyazawa Kenji</span> • <span>Hôm nay</span>
+                </div>
+                <div class="ruc-tags-line">
+                  <span class="chip n3">JLPT N3</span>
+                  <span class="chip genre">Cosmic Fantasy</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Update Item 2 -->
+            <div class="recent-update-card" onclick="openBook('botchan', 1)">
+              <div class="ruc-cover-wrap">
+                <img src="assets/cover_botchan.jpg" alt="Cover" class="ruc-cover-img">
+              </div>
+              <div class="ruc-meta">
+                <div class="ruc-header-line">
+                  <span class="ruc-title">坊っちゃん</span>
+                  <span class="ruc-chapter-badge">Chương 1</span>
+                </div>
+                <div class="ruc-time-line">
+                  <span>Natsume Soseki</span> • <span>Hôm qua</span>
+                </div>
+                <div class="ruc-tags-line">
+                  <span class="chip n4">JLPT N4</span>
+                  <span class="chip genre">Slice of Life</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Update Item 3 -->
+            <div class="recent-update-card" onclick="openBook('kokoro', 1)">
+              <div class="ruc-cover-wrap">
+                <img src="assets/cover_kokoro.jpg" alt="Cover" class="ruc-cover-img">
+              </div>
+              <div class="ruc-meta">
+                <div class="ruc-header-line">
+                  <span class="ruc-title">こころ</span>
+                  <span class="ruc-chapter-badge">Chương 1</span>
+                </div>
+                <div class="ruc-time-line">
+                  <span>Natsume Soseki</span> • <span>2 ngày trước</span>
+                </div>
+                <div class="ruc-tags-line">
+                  <span class="chip n2">JLPT N2</span>
+                  <span class="chip genre">Psychological</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Update Item 4 -->
+            <div class="recent-update-card" onclick="openBook('merosu', 1)">
+              <div class="ruc-cover-wrap">
+                <img src="assets/covers/cover_anime_adventurer.jpg" alt="Cover" class="ruc-cover-img">
+              </div>
+              <div class="ruc-meta">
+                <div class="ruc-header-line">
+                  <span class="ruc-title">走れメロス</span>
+                  <span class="ruc-chapter-badge">Chương 1</span>
+                </div>
+                <div class="ruc-time-line">
+                  <span>Dazai Osamu</span> • <span>3 ngày trước</span>
+                </div>
+                <div class="ruc-tags-line">
+                  <span class="chip n3">JLPT N3</span>
+                  <span class="chip genre">Action / Adventure</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- D. RECOMMENDED NOVELS (Gợi ý truyện theo JLPT & Thể loại) -->
+        <div class="home-section-wrap" id="sectionRecommended">
+          <div class="section-title-strip">
+            <div class="title-with-icon">
+              <span class="sec-emoji">🌸</span>
+              <h2 class="sec-heading">Khám phá theo trình độ JLPT</h2>
+              <span class="sec-tag" id="jlptTabSubtitle">105 Tác phẩm từ N5 đến N1</span>
+            </div>
+            <a class="sec-action-link" onclick="switchPane('explore')">Khám phá tất cả ➔</a>
+          </div>
+
+          <!-- JLPT Filter Pills -->
+          <div class="jlpt-filter-tabs">
+            <button class="jlpt-tab-pill active" onclick="filterHomeByJlpt('all', this)">Tất cả (105)</button>
+            <button class="jlpt-tab-pill" onclick="filterHomeByJlpt('N5', this)">JLPT N5 (45 bộ)</button>
+            <button class="jlpt-tab-pill" onclick="filterHomeByJlpt('N4', this)">JLPT N4 (32 bộ)</button>
+            <button class="jlpt-tab-pill" onclick="filterHomeByJlpt('N3', this)">JLPT N3 (18 bộ)</button>
+            <button class="jlpt-tab-pill" onclick="filterHomeByJlpt('N2', this)">JLPT N2 (7 bộ)</button>
+            <button class="jlpt-tab-pill" onclick="filterHomeByJlpt('N1', this)">JLPT N1 (3 bộ)</button>
+          </div>
+
+          <!-- Bookshelf Grid: Real Book Cover Gallery -->
+          <div class="bookshelf-grid" id="homeBookshelfGrid">
+            <!-- Dynamic via api.js / data.js -->
+          </div>
+        </div>
+
+        <!-- E. LEARNING THROUGH READING (Đồng hành học tập cùng từng trang truyện) -->
+        <div class="home-section-wrap" id="sectionLearningCompanion">
+          <div class="section-title-strip">
+            <div class="title-with-icon">
+              <span class="sec-emoji">🌱</span>
+              <h2 class="sec-heading">Đồng hành học tập cùng từng trang truyện</h2>
+              <span class="sec-tag">Học tự nhiên qua ngữ cảnh</span>
+            </div>
+            <a class="sec-action-link" onclick="switchPane('learning')">Vào Sổ từ vựng &amp; SRS ➔</a>
+          </div>
+
+          <div class="learning-companion-card">
+            <div class="lc-stats-row">
+              <div class="lc-stat-box">
+                <div class="lc-stat-num" id="homeSavedVocabCount">32</div>
+                <div class="lc-stat-desc">Từ vựng đã lưu trong sổ</div>
+              </div>
+              <div class="lc-stat-divider"></div>
+              <div class="lc-stat-box highlight">
+                <div class="lc-stat-num" id="homeDueSrsCount">8</div>
+                <div class="lc-stat-desc">Thẻ cần ôn tập hôm nay (SRS)</div>
+              </div>
+              <div class="lc-stat-divider"></div>
+              <div class="lc-stat-box">
+                <div class="lc-stat-num">7 ngày</div>
+                <div class="lc-stat-desc">Chuỗi đọc liên tục</div>
+              </div>
+              <div class="lc-actions-cell">
+                <button class="btn btn-primary btn-sm" onclick="startSrsReviewModal()">
+                  🧠 Ôn tập Flashcards (8 thẻ) ➔
+                </button>
+                <button class="btn btn-secondary btn-sm" onclick="switchPane('learning')">
+                  📔 Sổ từ vựng cá nhân
+                </button>
+              </div>
+            </div>
+
+            <div class="lc-recent-words-header">
+              <span>📖 Từ vựng bạn vừa gặp trong các chương truyện:</span>
+            </div>
+
+            <div class="recent-vocab-list grid-layout" id="homeRecentVocabList">
+              <div class="recent-vocab-item">
+                <div class="rv-left">
+                  <div class="rv-kanji">銀河 <span class="rv-hiragana">ぎんが</span></div>
+                  <div class="rv-meaning">Dải Ngân Hà, dòng sông sao trên bầu trời đêm</div>
+                  <div class="rv-source">📖 Từ: 銀河鉄道の夜 • Chương 1</div>
+                </div>
+                <div class="rv-actions">
+                  <span class="chip n2">N2</span>
+                  <button class="rv-audio-btn" onclick="speakWordText('銀河', 'ぎんが')" title="Nghe phát âm chuẩn giọng Nhật">🔊</button>
+                </div>
+              </div>
+
+              <div class="recent-vocab-item">
+                <div class="rv-left">
+                  <div class="rv-kanji">切符 <span class="rv-hiragana">きっぷ</span></div>
+                  <div class="rv-meaning">Tấm vé (vé tàu, vé xe, vé hành trình)</div>
+                  <div class="rv-source">📖 Từ: 銀河鉄道の夜 • Chương 1</div>
+                </div>
+                <div class="rv-actions">
+                  <span class="chip n5">N5</span>
+                  <button class="rv-audio-btn" onclick="speakWordText('切符', 'きっぷ')" title="Nghe phát âm chuẩn giọng Nhật">🔊</button>
+                </div>
+              </div>
+
+              <div class="recent-vocab-item">
+                <div class="rv-left">
+                  <div class="rv-kanji">無鉄砲 <span class="rv-hiragana">むてっぽう</span></div>
+                  <div class="rv-meaning">Liều lĩnh, bồng bột, không suy tính trước sau</div>
+                  <div class="rv-source">📖 Từ: 坊っちゃん • Chương 1</div>
+                </div>
+                <div class="rv-actions">
+                  <span class="chip n1">N1</span>
+                  <button class="rv-audio-btn" onclick="speakWordText('無鉄砲', 'むてっぽう')" title="Nghe phát âm chuẩn giọng Nhật">🔊</button>
+                </div>
+              </div>
+
+              <div class="recent-vocab-item">
+                <div class="rv-left">
+                  <div class="rv-kanji">栗 <span class="rv-hiragana">くり</span></div>
+                  <div class="rv-meaning">Hạt dẻ, trái dẻ rừng mùa thu chín vàng</div>
+                  <div class="rv-source">📖 Từ: ごんぎつね • Chương 1</div>
+                </div>
+                <div class="rv-actions">
+                  <span class="chip n3">N3</span>
+                  <button class="rv-audio-btn" onclick="speakWordText('栗', 'くり')" title="Nghe phát âm chuẩn giọng Nhật">🔊</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- F. POPULAR NOVELS (Bảng xếp hạng / Top Trending - Chân thực từ DB) -->
+        <div class="home-section-wrap" id="rankings">
+          <div class="section-title-strip">
+            <div class="title-with-icon">
+              <span class="sec-emoji">🏆</span>
+              <h2 class="sec-heading">Bảng xếp hạng tác phẩm</h2>
+              <span class="sec-tag">Top thịnh hành</span>
+            </div>
+            <a class="sec-action-link" onclick="switchPane('explore')">Toàn bộ tác phẩm ➔</a>
+          </div>
+
+          <div class="rankings-list" id="rankingsList">
+            <div class="rank-item" onclick="openBookDetail('ginga')">
+              <div class="rank-num rank-1">1</div>
+              <img src="assets/cover_ginga.jpg" alt="Cover" class="rank-thumb">
+              <div class="rank-meta">
+                <div class="rank-title">銀河鉄道の夜 (Night on the Galactic Railroad)</div>
+                <div class="rank-author">Miyazawa Kenji • 2 Chương truyện</div>
+                <div class="rank-stats">JLPT N3 • Thể loại: Cosmic Fantasy</div>
+              </div>
+              <button class="rank-read-btn">Đọc ➔</button>
+            </div>
+
+            <div class="rank-item" onclick="openBookDetail('merosu')">
+              <div class="rank-num rank-2">2</div>
+              <img src="assets/covers/cover_anime_adventurer.jpg" alt="Cover" class="rank-thumb">
+              <div class="rank-meta">
+                <div class="rank-title">走れメロス (Run, Melos!)</div>
+                <div class="rank-author">Dazai Osamu • 1 Chương truyện</div>
+                <div class="rank-stats">JLPT N3 • Thể loại: Classical Adventure</div>
+              </div>
+              <button class="rank-read-btn">Đọc ➔</button>
+            </div>
+
+            <div class="rank-item" onclick="openBookDetail('botchan')">
+              <div class="rank-num rank-3">3</div>
+              <img src="assets/cover_botchan.jpg" alt="Cover" class="rank-thumb">
+              <div class="rank-meta">
+                <div class="rank-title">坊っちゃん (Botchan)</div>
+                <div class="rank-author">Natsume Soseki • 1 Chương truyện</div>
+                <div class="rank-stats">JLPT N4 • Thể loại: Slice of Life / School</div>
+              </div>
+              <button class="rank-read-btn">Đọc ➔</button>
+            </div>
+
+            <div class="rank-item" onclick="openBookDetail('kokoro')">
+              <div class="rank-num">4</div>
+              <img src="assets/cover_kokoro.jpg" alt="Cover" class="rank-thumb">
+              <div class="rank-meta">
+                <div class="rank-title">こころ (Kokoro)</div>
+                <div class="rank-author">Natsume Soseki • 1 Chương truyện</div>
+                <div class="rank-stats">JLPT N2 • Thể loại: Psychological Romance</div>
+              </div>
+              <button class="rank-read-btn">Đọc ➔</button>
+            </div>
+
+            <div class="rank-item" onclick="openBookDetail('rashomon')">
+              <div class="rank-num">5</div>
+              <img src="assets/covers/cover_anime_castle.jpg" alt="Cover" class="rank-thumb">
+              <div class="rank-meta">
+                <div class="rank-title">羅生門 (Rashomon)</div>
+                <div class="rank-author">Akutagawa Ryunosuke • 1 Chương truyện</div>
+                <div class="rank-stats">JLPT N2 • Thể loại: Dark Fantasy / Mystery</div>
+              </div>
+              <button class="rank-read-btn">Đọc ➔</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         PANE 2: EXPLORE — FULL LIGHT NOVEL CATALOG (BOOKWALKER × ROYAL ROAD)
+         =================================================================== -->
+    <section id="pane-explore" class="pane">
+      <div class="explore-container">
+        <!-- Explore Header Strip -->
+        <div class="explore-header-row">
+          <div>
+            <h1 class="explore-main-title">Khám phá thư viện Light Novel</h1>
+            <p class="explore-main-sub">Tuyển tập các tác phẩm kinh điển và hiện đại, chú thích Furigana và phân tích hình thái học tiếng Nhật.</p>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="triggerImportPrompt()">
+            📥 Thêm tác phẩm mới (TXT / JSON)
+          </button>
+        </div>
+
+        <!-- Explore Filter & Search Toolbar -->
+        <div class="explore-filter-card">
+          <div class="filter-top-row">
+            <!-- Search Box -->
+            <div class="explore-search-box">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="exploreSearchInput" placeholder="Tìm theo tên Kanji, Romaji, tác giả..." oninput="filterExploreCatalog()">
+            </div>
+
+            <!-- View Mode Switcher (Grid vs List) -->
+            <div class="view-mode-toggle">
+              <button class="view-btn active" id="btnViewGrid" onclick="setExploreViewMode('grid')" title="Dạng lưới ảnh bìa">⊞</button>
+              <button class="view-btn" id="btnViewList" onclick="setExploreViewMode('list')" title="Dạng danh sách chi tiết">☰</button>
+            </div>
+          </div>
+
+          <!-- Secondary Filters Row -->
+          <div class="filter-bottom-row">
+            <!-- JLPT Filter Pills -->
+            <div class="filter-group">
+              <span class="filter-label">Trình độ JLPT:</span>
+              <div class="filter-pills" id="exploreJlptPills">
+                <button class="filter-pill active" onclick="setExploreJlpt('all', this)">Tất cả (105)</button>
+                <button class="filter-pill" onclick="setExploreJlpt('N5', this)">N5 (45)</button>
+                <button class="filter-pill" onclick="setExploreJlpt('N4', this)">N4 (32)</button>
+                <button class="filter-pill" onclick="setExploreJlpt('N3', this)">N3 (18)</button>
+                <button class="filter-pill" onclick="setExploreJlpt('N2', this)">N2 (7)</button>
+                <button class="filter-pill" onclick="setExploreJlpt('N1', this)">N1 (3)</button>
+              </div>
+            </div>
+
+            <!-- Genre Dropdown -->
+            <div class="filter-group">
+              <span class="filter-label">Thể loại:</span>
+              <select id="exploreGenreSelect" onchange="filterExploreCatalog()" class="explore-select">
+                <option value="all">Tất cả thể loại</option>
+                <option value="Isekai">🌀 Isekai &amp; Dị giới (異世界・転生)</option>
+                <option value="Romcom">💘 RomCom &amp; Học đường (学園・ラブコメ)</option>
+                <option value="Akuyaku">👑 Nữ phản diện &amp; Quý tộc (悪役令嬢)</option>
+                <option value="Action">⚔️ Action &amp; Hầm ngục (ダンジョン・バトル)</option>
+                <option value="Fantasy">✨ Fantasy &amp; Ma thuật (ファンタジー)</option>
+                <option value="Sci-Fi">🚀 Sci-Fi &amp; Viễn tưởng (SF・近未来)</option>
+                <option value="Slice of Life">☕ Đời thường &amp; Chữa lành (日常・癒やし)</option>
+                <option value="Classic">📜 Văn học kinh điển (名作古典)</option>
+              </select>
+            </div>
+
+            <!-- Sort By -->
+            <div class="filter-group">
+              <span class="filter-label">Sắp xếp:</span>
+              <select id="exploreSortSelect" onchange="filterExploreCatalog()" class="explore-select">
+                <option value="popular">Phổ biến nhất</option>
+                <option value="latest">Mới cập nhật</option>
+                <option value="jlptAsc">Độ khó JLPT tăng dần</option>
+                <option value="titleAsc">Tên truyện A - Z</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Catalog Results Grid / List -->
+        <div class="explore-catalog-grid" id="exploreGrid">
+          <!-- Populated dynamically via renderExploreCatalog() -->
+        </div>
+
+        <!-- Empty State (When no book matches filters) -->
+        <div class="empty-state-card" id="exploreEmptyState" style="display: none;">
+          <div class="empty-state-icon">📖</div>
+          <div class="empty-state-title">Không tìm thấy tác phẩm phù hợp</div>
+          <div class="empty-state-desc">Không có cuốn tiểu thuyết nào khớp với bộ lọc hoặc từ khóa bạn vừa nhập. Thử chọn lại cấp độ hoặc tìm kiếm khác nhé!</div>
+          <button class="empty-state-btn" onclick="resetExploreFilters()">Xem tất cả truyện</button>
         </div>
       </div>
-    </aside>
+    </section>
 
-    <!-- MAIN BODY -->
-    <main class="astral-main">
-      <!-- TOP NAVIGATION BAR -->
-      <header class="astral-header">
-        <div class="header-left">
-          <div class="breadcrumbs">
-            <span class="crumb-root">Kotoba Odyssey</span>
-            <span class="crumb-separator">/</span>
-            <span class="crumb-active" id="crumbCurrent">Trang chủ</span>
+    <!-- ===================================================================
+         PANE 3: BOOK DETAIL — DEDICATED LIGHT NOVEL PROFILE (BRAND NEW)
+         =================================================================== -->
+    <section id="pane-detail" class="pane">
+      <div class="book-detail-wrapper">
+        <!-- Blurred Cover Backdrop Header -->
+        <div class="detail-hero-backdrop" id="detailBackdrop"></div>
+        <div class="detail-backdrop-scrim"></div>
+
+        <div class="detail-main-card">
+          <!-- Back button -->
+          <button class="detail-back-nav" onclick="switchPane('explore')">
+            ← Quay lại Khám phá truyện
+          </button>
+
+          <!-- Book Header Row -->
+          <div class="detail-header-flex">
+            <!-- Cover Frame -->
+            <div class="detail-cover-box">
+              <img src="assets/cover_ginga.jpg" id="detailCoverImg" alt="Novel Cover" class="detail-cover-artwork">
+              <span class="detail-status-pill" id="detailStatus">Đang phát hành</span>
+            </div>
+
+            <!-- Metadata & Intro -->
+            <div class="detail-meta-column">
+              <div class="detail-tags-strip">
+                <span class="chip n3" id="detailJlpt">JLPT N3</span>
+                <span class="chip genre" id="detailGenre">Cosmic Fantasy</span>
+                <span class="chip" style="background: rgba(255,255,255,0.08); color: var(--text-secondary);" id="detailChaptersCount">2 Chương</span>
+              </div>
+
+              <h1 class="detail-jp-title" id="detailJpTitle">銀河鉄道の夜</h1>
+              <div class="detail-romaji-title" id="detailRomajiTitle">Night on the Galactic Railroad</div>
+              <div class="detail-author-text" id="detailAuthor">Tác giả: 宮沢賢治 (Miyazawa Kenji)</div>
+
+              <!-- Metrics Row -->
+              <div class="detail-metrics-row">
+                <div class="metric-item">
+                  <span class="m-val" id="detailWordCount">770</span>
+                  <span class="m-label">Chữ Hán</span>
+                </div>
+                <div class="metric-item">
+                  <span class="m-val" id="detailTotalChapters">2</span>
+                  <span class="m-label">Chương truyện</span>
+                </div>
+                <div class="metric-item">
+                  <span class="m-val" style="color: #F59E0B;">⭐ 4.9</span>
+                  <span class="m-label">Đánh giá</span>
+                </div>
+                <div class="metric-item">
+                  <span class="m-val" style="color: var(--accent-cyan);" id="detailProgress">35%</span>
+                  <span class="m-label">Tiến độ đọc</span>
+                </div>
+              </div>
+
+              <!-- Synopsis -->
+              <div class="detail-synopsis-box">
+                <h3 class="synopsis-heading">Giới thiệu tác phẩm</h3>
+                <p class="synopsis-body" id="detailSynopsis">
+                  Tác phẩm văn học kỳ ảo kinh điển Nhật Bản theo chân cậu bé Giovanni trong chuyến tàu ngân hà bí ẩn cùng bạn thân Campanella, vượt qua các chòm sao Thiên Nga, Nam Thập Tự...
+                </p>
+              </div>
+
+              <!-- Action Row -->
+              <div class="detail-action-buttons">
+                <button class="btn btn-primary" id="btnDetailRead" onclick="openCurrentInspectedBook()">
+                  <span>📖 Bắt đầu đọc (Chương 1) ➔</span>
+                </button>
+                <button class="btn btn-secondary" id="btnDetailBookmark" onclick="toggleBookmarkCurrentBook()">
+                  <span>🔖 Thêm vào Tủ sách</span>
+                </button>
+                <button class="btn btn-accent" id="btnDetailVn" onclick="openVNFromCurrentBook()">
+                  <span>🎭 Trò chuyện nhân vật (AI)</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chapter List Section -->
+          <div class="detail-chapters-section">
+            <div class="section-title-strip" style="margin-bottom: 16px;">
+              <div class="title-with-icon">
+                <span class="sec-emoji">📑</span>
+                <h3 class="sec-heading">Danh sách chương sách</h3>
+                <span class="sec-tag">Đầy đủ Furigana &amp; Cú pháp</span>
+              </div>
+            </div>
+
+            <div class="detail-chapter-table" id="detailChapterList">
+              <!-- Dynamically populated via renderDetailChapterList() -->
+            </div>
+          </div>
+
+          <!-- Vocabulary Highlight Preview in this novel -->
+          <div class="detail-vocab-preview-section">
+            <div class="section-title-strip" style="margin-bottom: 14px;">
+              <div class="title-with-icon">
+                <span class="sec-emoji">💎</span>
+                <h3 class="sec-heading">Từ vựng tiêu biểu trong tác phẩm này</h3>
+                <span class="sec-tag">Hỗ trợ tra 1 chạm</span>
+              </div>
+            </div>
+            <div class="vocab-preview-pills" id="detailVocabPreview">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         PANE 4: READER — THE CROWN JEWEL (SATORI READER × PURE NOVEL FLOW)
+         =================================================================== -->
+    <section id="pane-reader" class="pane">
+      <div class="reader-container" id="readerShell">
+        <!-- Reader Sticky Header Toolbar -->
+        <div class="reader-toolbar">
+          <div class="reader-book-meta">
+            <button class="reader-back-btn" onclick="openBookDetail(currentInspectedId)" title="Quay lại Chi tiết tác phẩm">
+              ← <span class="back-text">Chi tiết truyện</span>
+            </button>
+            <div class="reader-title-group">
+              <span class="reader-book-title" id="readerBookTitle">銀河鉄道の夜</span>
+              <span class="reader-divider">•</span>
+              <select id="readerChapterSelect" onchange="changeReaderChapter(this.value)" class="reader-chapter-dropdown" title="Chọn chương đọc">
+                <option value="1">Chương 1: 午後の授業</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Japanese Typography & Learning Controls -->
+          <div class="reader-controls-row">
+            <!-- Font Style Switcher: Mincho (Serif) vs Gothic (Sans) -->
+            <button class="tool-pill-btn" id="btnReaderFont" onclick="toggleReaderFont()" title="Đổi kiểu chữ (Mincho / Gothic)">
+              Aa <span id="readerFontLabel">Mincho</span>
+            </button>
+
+            <!-- Font Size Adjuster (- / +) -->
+            <div class="reader-fontsize-group" title="Chỉnh cỡ chữ đọc">
+              <button class="font-size-step-btn" onclick="adjustReaderFontSize(-2)">−</button>
+              <span class="font-size-val" id="readerFontSizeDisplay">19px</span>
+              <button class="font-size-step-btn" onclick="adjustReaderFontSize(2)">+</button>
+            </div>
+
+            <!-- Background Theme Switcher -->
+            <button class="tool-pill-btn" onclick="toggleReaderTheme()" title="Đổi màu nền đọc sách (Giấy ngà / Sepia / Đêm)">
+              🌓 Nền: <span id="readerThemeLabel">Giấy ngà</span>
+            </button>
+
+            <!-- Furigana Switcher -->
+            <button class="tool-pill-btn" onclick="toggleFurigana()" title="Bật/Tắt phiên âm Furigana trên chữ Hán">
+              Furigana: <span id="furiStatus">Hiện</span>
+            </button>
+
+            <!-- Zen Focus Mode -->
+            <button class="tool-pill-btn" id="btnReaderFocus" onclick="toggleReaderFocusMode()" title="Chế độ tập trung (Phím F)">
+              ⛶ Tập trung
+            </button>
+
+            <!-- Chapter Quiz Trigger -->
+            <button class="tool-pill-btn quiz-accent-btn" id="btnReaderQuiz" onclick="openChapterQuiz()" title="Làm bài kiểm tra đọc hiểu chương">
+              📝 Kiểm tra đọc hiểu (+25 XP)
+            </button>
+
+            <!-- Visual Novel Mode Hop -->
+            <button class="tool-pill-btn" onclick="openVN(currentInspectedId || 'ginga')" title="Chuyển sang Visual Novel AI của tác phẩm này">
+              🎭 Visual Novel AI
+            </button>
           </div>
         </div>
 
-        <div class="header-right">
-          <!-- Study Streak -->
-          <div class="header-stat streak-chip" title="Chuỗi học tập liên tục">
-            <span class="streak-flame">🔥</span>
-            <span class="streak-text"><strong>5 ngày</strong> chuỗi học</span>
+        <!-- Reading Canvas: Centered Pure Paper Sheet (Satori Reader Standard 720px) -->
+        <div class="reader-canvas-scroll">
+          <article class="reader-book-sheet" id="readerBookSheet">
+            <header class="reading-chapter-header">
+              <h1 class="reading-h1" id="proseHeading">第一章　午後の授業</h1>
+              <div class="reading-sub" id="readingSub">
+                Miyazawa Kenji • Cấp độ N3 • Chạm vào từng từ để tra cứu hoặc bấm nút bên phải để phân tích cú pháp AI
+              </div>
+            </header>
+
+            <!-- Japanese Reading Prose Content -->
+            <div class="reading-prose font-mincho" id="readingProse">
+              <!-- Rendered dynamically from SQLite backend or fallback -->
+            </div>
+
+            <!-- Chapter End Comprehension Callout Card -->
+            <div class="chapter-end-card">
+              <div class="end-card-text">
+                <h4 class="end-card-title">🎉 Bạn vừa hoàn thành chương này!</h4>
+                <p class="end-card-sub">Hãy củng cố khả năng đọc hiểu ngữ cảnh và từ vựng của chương qua bài trắc nghiệm nhanh.</p>
+              </div>
+              <button class="btn btn-primary" onclick="openChapterQuiz()">
+                📝 Làm bài kiểm tra đọc hiểu (+25 XP)
+              </button>
+            </div>
+
+            <!-- Chapter Bottom Navigation & Pagination -->
+            <div class="chapter-nav-bottom-strip">
+              <button class="btn btn-secondary btn-sm" id="btnPrevChapterBottom" onclick="goToPrevChapter()">
+                ◄ Chương trước
+              </button>
+              <span id="chapterProgressBottom" class="chapter-nav-progress">
+                Chương 1 / 2
+              </span>
+              <button class="btn btn-primary btn-sm" id="btnNextChapterBottom" onclick="goToNextChapter()">
+                Chương tiếp theo ►
+              </button>
+            </div>
+          </article>
+        </div>
+
+        <!-- Floating Satori Reader Word Dictionary Dock (Popover) -->
+        <div class="satori-dict-dock" id="dictDock" style="display: none;">
+          <div class="dict-left">
+            <div class="dict-head-row">
+              <span class="dict-word" id="dictWord">銀河</span>
+              <span class="dict-reading" id="dictReading">ぎんが (Ginga)</span>
+              <button class="dict-audio-btn" onclick="speakCurrentWord()" title="Nghe phát âm">🔊</button>
+              <span class="chip n2" id="dictLevel">JLPT N2</span>
+            </div>
+            <div class="dict-meaning" id="dictMeaning">Dải Ngân Hà, dòng sông sao trên bầu trời đêm.</div>
+            <div class="dict-sentence" id="dictSentence">"白くけむった銀河の帯のようなところ"</div>
           </div>
 
-          <!-- XP Level Progress -->
-          <div class="header-xp-badge">
-            <div class="level-indicator">LV.3</div>
-            <div class="xp-slider-wrap">
-              <div class="xp-label-row">
-                <span class="xp-title">Kinh nghiệm lữ khách</span>
-                <span class="xp-numbers" id="headerXpText">210 / 390 XP</span>
-              </div>
-              <div class="xp-track">
-                <div class="xp-fill" id="headerXpFill" style="width: 54%;"></div>
-              </div>
-            </div>
+          <div class="dict-right">
+            <button class="btn btn-primary btn-sm" id="btnSaveSrs" onclick="saveWordToSRS()">
+              + Lưu vào SRS
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="closeDictDock()">
+              ✕
+            </button>
           </div>
         </div>
-      </header>
+      </div>
+    </section>
 
-      <!-- SCROLLABLE CONTENT VIEWPORT -->
-      <div class="astral-viewport">
-
-        <!-- ================= A. DASHBOARD / HOME ================= -->
-        <section id="pane-dashboard" class="content-pane active">
-          <!-- CINEMATIC HERO SECTION -->
-          <div class="cinematic-hero">
-            <div class="hero-bg-container">
-              <img src="assets/hero_astral.jpg" alt="Astral Express Station" class="hero-bg-img">
-              <div class="hero-vignette-overlay"></div>
-              <div class="hero-gradient-overlay"></div>
-            </div>
-
-            <div class="hero-content">
-              <div class="hero-tagline">
-                <span class="celestial-badge">CHUYẾN TÀU NGÂN HÀ • GA SỐ 4</span>
-                <span class="hero-date">10/2026 • Buổi tối sương mù</span>
-              </div>
-
-              <h1 class="hero-greeting">おかえりなさい、旅人。<br><span class="hero-greeting-sub">Hành trình ngôn ngữ qua từng trang truyện Nhật Bản.</span></h1>
-
-              <!-- Quick Continue Card (Embedded inside Hero with glass depth) -->
-              <div class="hero-novel-spotlight">
-                <div class="spotlight-cover-frame">
-                  <img src="assets/cover_ginga.jpg" alt="Night on the Galactic Railroad" class="spotlight-cover-img">
-                </div>
-                <div class="spotlight-details">
-                  <div class="spotlight-badges">
-                    <span class="tag-jlpt n3">JLPT N3</span>
-                    <span class="tag-meta">Chương 1: 一、午後の授業</span>
-                    <span class="tag-progress">35% hoàn thành</span>
-                  </div>
-                  <h3 class="spotlight-title">銀河鉄道の夜</h3>
-                  <div class="spotlight-author">Miyazawa Kenji (宮沢賢治) • 1896–1933</div>
-                  <p class="spotlight-excerpt">
-                    "先生は、黒板に吊した大きな黒い星座の図の、上から下へ白くけむった銀河の帯のようなところを指しながら..."
-                  </p>
-                  <div class="spotlight-action-row">
-                    <button class="btn btn-astral-primary" onclick="openReader('ginga')">
-                      <span>▶ Tiếp tục đọc ngay</span>
-                    </button>
-                    <button class="btn btn-astral-glass" onclick="switchTab('library')">
-                      <span>Mở toàn bộ danh mục</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+    <!-- ===================================================================
+         PANE 5: LEARNING HUB — SỔ TỪ VỰNG, FLASHCARDS SRS & THỐNG KÊ
+         =================================================================== -->
+    <section id="pane-learning" class="pane">
+      <div class="learning-hub-container">
+        <!-- Learning Hub Header -->
+        <div class="learning-header-row">
+          <div>
+            <h1 class="learning-main-title">Khu vực học tập &amp; Ôn tập kiến thức</h1>
+            <p class="learning-main-sub">Tổng hợp toàn bộ từ vựng, ngữ pháp đã tích lũy từ quá trình đọc Light Novel và hệ thống lặp lại ngắt quãng SM-2.</p>
           </div>
+        </div>
 
-          <!-- COMPACT METRICS & QUESTS SECTION -->
-          <div class="home-bottom-grid">
-            <!-- Left: Daily Quests -->
-            <div class="astral-panel">
-              <div class="panel-headline">
-                <div class="headline-left">
-                  <span class="headline-icon">⚔️</span>
-                  <div>
-                    <h2 class="panel-title">Nhiệm vụ hàng ngày</h2>
-                    <p class="panel-subtitle">Tích lũy kinh nghiệm và duy trì chuỗi học tập</p>
-                  </div>
-                </div>
-                <span class="badge-subtle">Làm mới lúc 00:00</span>
-              </div>
+        <!-- Learning Sub-Tabs -->
+        <div class="learning-tabs-nav">
+          <button class="learning-tab-btn active" id="tabBtnSrs" onclick="switchLearningTab('srs')">
+            <span>🧠 Ôn tập Flashcards (SRS SM-2)</span>
+          </button>
+          <button class="learning-tab-btn" id="tabBtnVocab" onclick="switchLearningTab('vocab')">
+            <span>📚 Sổ từ vựng đã lưu</span>
+          </button>
+          <button class="learning-tab-btn" id="tabBtnQuiz" onclick="switchLearningTab('quiz')">
+            <span>📝 Bài kiểm tra đọc hiểu</span>
+          </button>
+          <button class="learning-tab-btn" id="tabBtnProgress" onclick="switchLearningTab('progress')">
+            <span>📊 Tiến độ &amp; Năng lực JLPT</span>
+          </button>
+        </div>
 
-              <div class="quest-stack">
-                <div class="quest-card completed">
-                  <div class="quest-indicator-done">✓</div>
-                  <div class="quest-info">
-                    <div class="quest-title-row">
-                      <span class="quest-name">Starlight Reading</span>
-                      <span class="quest-reward">+50 XP</span>
-                    </div>
-                    <p class="quest-desc">Đọc truyện tiếng Nhật ít nhất 15 phút hôm nay.</p>
-                    <div class="quest-track"><div class="quest-bar" style="width: 100%;"></div></div>
-                  </div>
-                  <button class="btn btn-sm btn-claim" id="btnClaimQuest1" onclick="claimQuest(1, 50)">Nhận thưởng</button>
-                </div>
-
-                <div class="quest-card">
-                  <div class="quest-indicator-pending">8/10</div>
-                  <div class="quest-info">
-                    <div class="quest-title-row">
-                      <span class="quest-name">Memory Echoes</span>
-                      <span class="quest-reward">+60 XP</span>
-                    </div>
-                    <p class="quest-desc">Ôn tập 10 thẻ từ vựng đến hạn bằng thuật toán SM-2.</p>
-                    <div class="quest-track"><div class="quest-bar" style="width: 80%;"></div></div>
-                  </div>
-                  <button class="btn btn-sm btn-astral-outline" onclick="switchTab('vocabulary')">Ôn tập ngay</button>
-                </div>
-
-                <div class="quest-card claimed">
-                  <div class="quest-indicator-done">★</div>
-                  <div class="quest-info">
-                    <div class="quest-title-row">
-                      <span class="quest-name">Lexicon Explorer</span>
-                      <span class="quest-reward">+40 XP</span>
-                    </div>
-                    <p class="quest-desc">Lưu 3 từ vựng mới vào kho từ cá nhân khi đọc truyện.</p>
-                    <div class="quest-track"><div class="quest-bar" style="width: 100%;"></div></div>
-                  </div>
-                  <span class="badge-claimed">Đã hoàn thành</span>
+        <!-- TAB 1: SRS FLASHCARD ARENA (SM-2) -->
+        <div class="learning-tab-content active" id="tabContentSrs">
+          <div class="srs-deck-container">
+            <div class="srs-top-header">
+              <div>
+                <h2 class="srs-headline">Ôn tập thẻ ghi nhớ (Thuật toán SM-2)</h2>
+                <div style="font-size: 13px; color: var(--text-dim); margin-top: 2px;">
+                  Nhấp vào thẻ hoặc bấm phím Space để lật mở nghĩa và ngữ cảnh
                 </div>
               </div>
+              <div class="srs-counter" id="srsCounter">Thẻ 1 / 4 đến hạn</div>
             </div>
 
-            <!-- Right: Recommended Light Novels (Vertical Covers) -->
-            <div class="astral-panel">
-              <div class="panel-headline">
-                <div class="headline-left">
-                  <span class="headline-icon">📚</span>
-                  <div>
-                    <h2 class="panel-title">Tủ sách gợi ý</h2>
-                    <p class="panel-subtitle">Tác phẩm phù hợp với lộ trình học của bạn</p>
-                  </div>
-                </div>
-                <button class="text-link" onclick="switchTab('library')">Xem tất cả ➔</button>
-              </div>
-
-              <div class="recommended-books-row">
-                <div class="rec-book-card" onclick="openReader('botchan')">
-                  <div class="rec-cover-wrap">
-                    <img src="assets/cover_botchan.jpg" alt="Botchan" class="rec-cover-img">
-                    <span class="rec-jlpt-tag n4">N4</span>
-                  </div>
-                  <div class="rec-book-meta">
-                    <div class="rec-title">坊っちゃん (Botchan)</div>
-                    <div class="rec-author">Natsume Soseki</div>
-                  </div>
-                </div>
-
-                <div class="rec-book-card" onclick="openReader('gon')">
-                  <div class="rec-cover-wrap cover-gon-stylized">
-                    <div class="artistic-cover gon-art">
-                      <span class="art-kanji">ごん</span>
-                      <span class="art-sub">狐物語</span>
-                    </div>
-                    <span class="rec-jlpt-tag n5">N5</span>
-                  </div>
-                  <div class="rec-book-meta">
-                    <div class="rec-title">ごんぎつね (Gongitsune)</div>
-                    <div class="rec-author">Niimi Nankichi</div>
-                  </div>
-                </div>
-
-                <div class="rec-book-card" onclick="openReader('yukiguni')">
-                  <div class="rec-cover-wrap cover-yukiguni-stylized">
-                    <div class="artistic-cover yuki-art">
-                      <span class="art-kanji">雪国</span>
-                      <span class="art-sub">川端文学</span>
-                    </div>
-                    <span class="rec-jlpt-tag n2">N2</span>
-                  </div>
-                  <div class="rec-book-meta">
-                    <div class="rec-title">雪国 (Yukiguni)</div>
-                    <div class="rec-author">Kawabata Yasunari</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- ================= B. NOVEL LIBRARY ================= -->
-        <section id="pane-library" class="content-pane">
-          <div class="section-top-bar">
-            <div>
-              <h1 class="section-title">Thư viện tác phẩm Nhật Bản</h1>
-              <p class="section-subtitle">Kho tàng văn học kinh điển được phân loại theo cấp độ JLPT với đầy đủ bản văn tương tác.</p>
-            </div>
-            <div class="top-bar-tools">
-              <button class="btn btn-astral-outline" onclick="triggerImport()">📥 Import JSON / TXT</button>
-            </div>
-          </div>
-
-          <!-- Filter Toolbar -->
-          <div class="library-filter-strip">
-            <div class="filter-tab-pills">
-              <button class="pill-btn active" onclick="filterLibrary('all', this)">Tất cả (4)</button>
-              <button class="pill-btn" onclick="filterLibrary('N5', this)">JLPT N5 (1)</button>
-              <button class="pill-btn" onclick="filterLibrary('N4', this)">JLPT N4 (1)</button>
-              <button class="pill-btn" onclick="filterLibrary('N3', this)">JLPT N3 (1)</button>
-              <button class="pill-btn" onclick="filterLibrary('N2', this)">JLPT N2 (1)</button>
-            </div>
-            <div class="library-search-field">
-              <input type="text" id="libSearchInput" placeholder="Tìm theo tên tác phẩm, tác giả..." oninput="searchLibrary(this.value)">
-            </div>
-          </div>
-
-          <!-- Light Novel Vertical Grid -->
-          <div class="novel-library-grid" id="novelLibraryGrid">
-            <!-- Book 1: Ginga Tetsudou no Yoru -->
-            <article class="ln-card" data-level="N3" data-title="ginga">
-              <div class="ln-cover-box">
-                <img src="assets/cover_ginga.jpg" alt="Night on the Galactic Railroad" class="ln-cover-img">
-                <div class="ln-cover-overlay">
-                  <button class="btn btn-sm btn-astral-primary" onclick="openReader('ginga')">Đọc tác phẩm</button>
-                </div>
-                <span class="tag-jlpt n3">N3</span>
-              </div>
-              <div class="ln-card-body">
-                <div class="ln-genre">Cosmic Fantasy • Kỳ ảo</div>
-                <h3 class="ln-title">銀河鉄道の夜</h3>
-                <div class="ln-romaji">Night on the Galactic Railroad</div>
-                <div class="ln-author">Miyazawa Kenji (宮沢賢治)</div>
-                <p class="ln-desc">Cậu bé Giovanni bước lên chuyến tàu lửa ngân hà chạy xuyên qua các chòm sao kỳ vĩ cùng người bạn Campanella.</p>
-                <div class="ln-meta-footer">
-                  <span class="meta-item">2 Chương</span>
-                  <span class="meta-bullet">•</span>
-                  <span class="meta-item">770 chữ</span>
-                  <span class="meta-bullet">•</span>
-                  <span class="meta-item">Tiến độ 35%</span>
-                </div>
-              </div>
-            </article>
-
-            <!-- Book 2: Botchan -->
-            <article class="ln-card" data-level="N4" data-title="botchan">
-              <div class="ln-cover-box">
-                <img src="assets/cover_botchan.jpg" alt="Botchan" class="ln-cover-img">
-                <div class="ln-cover-overlay">
-                  <button class="btn btn-sm btn-astral-primary" onclick="openReader('botchan')">Đọc tác phẩm</button>
-                </div>
-                <span class="tag-jlpt n4">N4</span>
-              </div>
-              <div class="ln-card-body">
-                <div class="ln-genre">Classic School Drama • Hài hước</div>
-                <h3 class="ln-title">坊っちゃん</h3>
-                <div class="ln-romaji">Master Darling</div>
-                <div class="ln-author">Natsume Soseki (夏目漱石)</div>
-                <p class="ln-desc">Một thầy giáo trẻ bộc trực, nóng nảy nhưng đầy khí chất chính nghĩa từ Tokyo đến dạy học tại trường trung học ở Shikoku.</p>
-                <div class="ln-meta-footer">
-                  <span class="meta-item">1 Chương</span>
-                  <span class="meta-bullet">•</span>
-                  <span class="meta-item">510 chữ</span>
-                  <span class="meta-bullet">•</span>
-                  <span class="meta-item">Chưa đọc</span>
-                </div>
-              </div>
-            </article>
-
-            <!-- Book 3: Gongitsune -->
-            <article class="ln-card" data-level="N5" data-title="gon">
-              <div class="ln-cover-box artistic-cover-box gon-bg">
-                <div class="artistic-cover-pattern">
-                  <div class="art-kanji-big">ごんぎつね</div>
-                  <div class="art-subtext">新美南吉 • 童話</div>
-                </div>
-                <div class="ln-cover-overlay">
-                  <button class="btn btn-sm btn-astral-primary" onclick="openReader('gon')">Đọc tác phẩm</button>
-                </div>
-                <span class="tag-jlpt n5">N5</span>
-              </div>
-              <div class="ln-card-body">
-                <div class="ln-genre">Folktale • Cảm động</div>
-                <h3 class="ln-title">ごんぎつね</h3>
-                <div class="ln-romaji">Gon, the Little Fox</div>
-                <div class="ln-author">Niimi Nankichi (新美南吉)</div>
-                <p class="ln-desc">Câu chuyện cảm động sâu sắc về chú cáo nhỏ tinh nghịch Gon tìm cách chuộc lỗi với anh nông dân Hyoju bằng những món quà vô danh.</p>
-                <div class="ln-meta-footer">
-                  <span class="meta-item">1 Chương</span>
-                  <span class="meta-bullet">•</span>
-                  <span class="meta-item">380 chữ</span>
-                  <span class="meta-bullet">•</span>
-                  <span class="meta-item">Dành cho N5</span>
-                </div>
-              </div>
-            </article>
-
-            <!-- Book 4: Yukiguni -->
-            <article class="ln-card" data-level="N2" data-title="yukiguni">
-              <div class="ln-cover-box artistic-cover-box yuki-bg">
-                <div class="artistic-cover-pattern">
-                  <div class="art-kanji-big">雪国</div>
-                  <div class="art-subtext">川端康成 • ノーベル文学賞</div>
-                </div>
-                <div class="ln-cover-overlay">
-                  <button class="btn btn-sm btn-astral-primary" onclick="openReader('yukiguni')">Đọc tác phẩm</button>
-                </div>
-                <span class="tag-jlpt n2">N2</span>
-              </div>
-              <div class="ln-card-body">
-                <div class="ln-genre">Nobel Literature • Trữ tình</div>
-                <h3 class="ln-title">雪国</h3>
-                <div class="ln-romaji">Snow Country</div>
-                <div class="ln-author">Kawabata Yasunari (川端康成)</div>
-                <p class="ln-desc">Kiệt tác đoạt giải Nobel văn học khắc họa mối tình buồn giữa chàng Shimamura và nàng geisha Komako tại vùng suối nước nóng phủ tuyết.</p>
-                <div class="ln-meta-footer">
-                  <span class="meta-item">1 Chương</span>
-                  <span class="meta-bullet">•</span>
-                  <span class="meta-item">490 chữ</span>
-                  <span class="meta-bullet">•</span>
-                  <span class="meta-item">Văn phong cao cấp</span>
-                </div>
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <!-- ================= C. READER WORKSPACE ================= -->
-        <section id="pane-reader" class="content-pane">
-          <!-- Reader Utility Bar -->
-          <div class="reader-header-bar">
-            <div class="reader-headline">
-              <span class="reader-novel-title" id="rNovelTitle">銀河鉄道の夜</span>
-              <span class="reader-chapter-title" id="rChapterTitle">Chương 1: 一、午後の授業 (Giờ học buổi chiều)</span>
-            </div>
-
-            <div class="reader-actions">
-              <!-- Reading Theme Toggle: Night / Warm Ivory Paper -->
-              <div class="theme-switcher-pill">
-                <button class="theme-btn active" id="btnThemeDark" onclick="setReaderTheme('night')" title="Giao diện Ban đêm">🌙 Đêm</button>
-                <button class="theme-btn" id="btnThemeWarm" onclick="setReaderTheme('warm')" title="Giấy ngà bảo vệ mắt">📜 Giấy ngà</button>
-              </div>
-
-              <!-- Font Size Adjustment -->
-              <div class="font-stepper">
-                <button class="step-btn" onclick="changeFontSize(-2)">A-</button>
-                <span class="step-label" id="fontLabel">19px</span>
-                <button class="step-btn" onclick="changeFontSize(2)">A+</button>
-              </div>
-
-              <!-- Bookmark Button -->
-              <button class="btn btn-sm btn-astral-outline bookmark-btn" id="rBookmarkBtn" onclick="toggleReaderBookmark()">
-                <span id="rStarIcon">⭐</span> <span id="rBookmarkText">Đánh dấu trang</span>
-              </button>
-
-              <button class="btn btn-sm btn-astral-primary" onclick="switchTab('visualnovel')">
-                🌸 Xem dạng Visual Novel
-              </button>
-            </div>
-          </div>
-
-          <!-- Reader Centered Layout -->
-          <div class="reader-split-view">
-            <!-- Center Optimized Reading Column -->
-            <div class="reader-paper-column" id="readerPaper">
-              <div class="reader-guide-tip">
-                💡 <em>Nhấp chuột vào bất kỳ từ vựng Kanji / Hiragana nào để tra cứu cách đọc Furigana và nghĩa tiếng Việt tức thời.</em>
-              </div>
-
-              <article class="reading-typography" id="readingArticle">
-                <p>
-                  「ではみなさんは、そういうふうに<span class="token" onclick="inspectWord('川')">川</span>だと<span class="token" onclick="inspectWord('云われたり')">云われたり</span>、<span class="token" onclick="inspectWord('乳')">乳</span>の<span class="token" onclick="inspectWord('流れた')">流れた</span>あとだと云われていたこのぼんやりと<span class="token" onclick="inspectWord('白い')">白い</span>ものがほんとうは<span class="token" onclick="inspectWord('何か')">何か</span>ご<span class="token" onclick="inspectWord('承知')">承知</span>ですか」
-                </p>
-                <p>
-                  <span class="token" onclick="inspectWord('先生')">先生</span>は、<span class="token" onclick="inspectWord('黒板')">黒板</span>に<span class="token" onclick="inspectWord('吊した')">吊した</span><span class="token" onclick="inspectWord('大きな')">大きな</span><span class="token" onclick="inspectWord('黒い')">黒い</span><span class="token starred" onclick="inspectWord('星座')">星座</span>の<span class="token" onclick="inspectWord('図')">図</span>の、<span class="token" onclick="inspectWord('上')">上</span>から<span class="token" onclick="inspectWord('下')">下</span>へ白くけむった<span class="token starred" onclick="inspectWord('銀河')">銀河</span>の<span class="token" onclick="inspectWord('帯')">帯</span>のようなところを<span class="token" onclick="inspectWord('指しながら')">指しながら</span>、みんなに<span class="token" onclick="inspectWord('問い')">問い</span>をかけました。
-                </p>
-                <p>
-                  カムパネルラが<span class="token" onclick="inspectWord('手')">手</span>をあげました。それから四五人手をあげました。ジョバンニも手をあげようとして、<span class="token" onclick="inspectWord('急いで')">急いで</span>そのままやめました。たしかにあれがみんな<span class="token" onclick="inspectWord('星')">星</span>だと、いつか<span class="token" onclick="inspectWord('雑誌')">雑誌</span>で読んだのでしたが、このごろはジョバンニはまるで<span class="token" onclick="inspectWord('毎日')">毎日</span><span class="token" onclick="inspectWord('教室')">教室</span>でもねむく、<span class="token" onclick="inspectWord('本')">本</span>を<span class="token" onclick="inspectWord('読む')">読む</span>ひまも読む本もないので、なんだかそんなことはみんなうすれてしまったように思われたのでした。
-                </p>
-                <p>
-                  ところが先生は早くもそれを見附けたのでした。
-                  「ジョバンニさん。<span class="token" onclick="inspectWord('あなた')">あなた</span>はわかっているのでしょう」
-                  ジョバンニは<span class="token" onclick="inspectWord('勢いよく')">勢いよく</span>立ちあがりましたが、立って見るともうはっきりとそれを<span class="token" onclick="inspectWord('答える')">答える</span>ことができませんでした。
-                </p>
-              </article>
-            </div>
-
-            <!-- Sleek Side Dictionary Inspector -->
-            <aside class="reader-side-inspector">
-              <div class="astral-panel inspector-panel">
-                <div class="inspector-top-row">
-                  <span class="inspector-badge">TỪ ĐIỂN NHẬT - VIỆT</span>
-                  <span class="inspector-live-dot">● Engine Ready</span>
-                </div>
-
-                <!-- Empty State -->
-                <div class="inspector-empty" id="inspectEmpty">
-                  <div class="empty-compass">🧭</div>
-                  <p>Chọn một từ vựng tiếng Nhật trong bài đọc để xem phân tích ngữ pháp, cấp độ JLPT và lưu vào SRS.</p>
-                </div>
-
-                <!-- Result Card -->
-                <div class="inspector-content" id="inspectContent" style="display: none;">
-                  <div class="word-lead-group">
-                    <h2 class="ins-word" id="insWord">銀河</h2>
-                    <span class="ins-reading" id="insReading">ぎんが (Ginga)</span>
-                  </div>
-
-                  <div class="ins-tags-row">
-                    <span class="tag-jlpt n3" id="insJlpt">JLPT N3</span>
-                    <span class="tag-meta" id="insPos">Danh từ (Noun)</span>
-                  </div>
-
-                  <div class="ins-block">
-                    <div class="ins-label">ĐỊNH NGHĨA TIẾNG VIỆT</div>
-                    <div class="ins-meaning" id="insMeaning">Ngân hà, dải thiên hà (Milky Way)</div>
-                  </div>
-
-                  <div class="ins-block">
-                    <div class="ins-label">NGỮ CẢNH TRONG TRUYỆN</div>
-                    <div class="ins-example" id="insExample">上から下へ白くけむった銀河の帯のようなところを指しながら。</div>
-                  </div>
-
-                  <button class="btn btn-astral-primary btn-block" onclick="saveInsWord()">
-                    <span>⭐ Lưu vào Sổ từ vựng (+SRS)</span>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Chapter Selector -->
-              <div class="astral-panel chapter-tree-panel">
-                <h4 class="chapter-tree-title">DANH SÁCH CHƯƠNG</h4>
-                <div class="chapter-node active" onclick="selectChapter(1)">Chương 1: 一、午後の授業</div>
-                <div class="chapter-node" onclick="selectChapter(2)">Chương 2: 二、活版所 (Xưởng in)</div>
-              </div>
-            </aside>
-          </div>
-        </section>
-
-        <!-- ================= D. VOCABULARY & SRS ================= -->
-        <section id="pane-vocabulary" class="content-pane">
-          <div class="section-top-bar">
-            <div>
-              <h1 class="section-title">Hành trình Ôn tập Từ vựng (SM-2 SRS)</h1>
-              <p class="section-subtitle">Phương pháp lặp lại ngắt quãng khoa học giúp lưu giữ từ vựng văn học Nhật Bản vào trí nhớ dài hạn.</p>
-            </div>
-            <div class="srs-due-indicator">
-              <span class="flame-pulse">🔥</span>
-              <span id="vocabDueBadge">3 thẻ từ vựng cần ôn tập</span>
-            </div>
-          </div>
-
-          <!-- FLASHCARD ARENA -->
-          <div class="flashcard-workspace">
-            <div class="astral-card-scene" onclick="flipCard()">
-              <div class="astral-card-mesh" id="cardMesh">
+            <!-- 3D Flashcard Arena -->
+            <div class="flashcard-arena" onclick="flipCurrentCard()">
+              <div class="flashcard-inner" id="flashcardInner">
                 <!-- Front Side -->
-                <div class="card-side card-front">
-                  <div class="card-hint-top">Chạm hoặc nhấp chuột để lật mở phiên âm</div>
-                  <div class="card-kanji-display" id="fcKanji">銀河</div>
-                  <div class="card-context-sentence" id="fcSentence">
-                    「上から下へ白くけむった<span class="term-hl">銀河</span>の帯のようなところを指しながら」
-                  </div>
-                  <div class="card-source-tag">Nguồn: 銀河鉄道の夜 • JLPT N3</div>
+                <div class="card-face front">
+                  <span class="chip n2" id="cardJlptFront">JLPT N2</span>
+                  <div class="card-kanji-huge" id="cardKanji">銀河</div>
+                  <div style="font-size: 15px; color: var(--text-secondary);" id="cardRomaji">ginga</div>
+                  <div class="card-flip-prompt">👆 Nhấn để lật thẻ xem cách đọc &amp; nghĩa</div>
                 </div>
 
                 <!-- Back Side -->
-                <div class="card-side card-back">
-                  <div class="back-furigana" id="fcReading">ぎんが (Ginga)</div>
-                  <div class="back-meaning-text" id="fcMeaning">Ngân hà, dải thiên hà (Milky Way)</div>
-                  <div class="back-meta-pills">
-                    <span class="tag-jlpt n3">JLPT N3</span>
-                    <span class="tag-meta">Chu kỳ: 1 ngày</span>
-                    <span class="tag-meta">Hệ số SM-2: 2.50</span>
+                <div class="card-face back">
+                  <span class="chip n2" id="cardJlptBack">JLPT N2</span>
+                  <div class="back-reading" id="cardReading">ぎんが</div>
+                  <div class="back-meaning" id="cardMeaning">Dải Ngân Hà (Milky Way Galaxy)</div>
+                  
+                  <div class="back-sentence-box">
+                    <div class="sentence-jp" id="cardSentence">白くけむった銀河の帯のようなところを指しながら...</div>
+                    <div class="sentence-vn" id="cardSentenceVn">Vừa chỉ vào dải mờ trắng như dải Ngân Hà...</div>
                   </div>
-                  <div class="back-footer-prompt">Đánh giá mức độ ghi nhớ của bạn:</div>
+
+                  <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); speakCurrentCard();">
+                    🔊 Nghe phát âm
+                  </button>
                 </div>
               </div>
             </div>
 
-            <!-- SM-2 Rating Controls -->
-            <div class="srs-grading-bar">
-              <button class="grade-btn again" onclick="submitGrade(1)">
-                <span class="grade-title">Again (Quên)</span>
-                <span class="grade-interval">&lt; 10 phút</span>
+            <!-- 4 SM-2 Grading Buttons -->
+            <div class="srs-buttons-row">
+              <button class="srs-btn again" onclick="gradeCard(1)">
+                <span>Again (Quên)</span>
+                <span class="time-hint">&lt;10 phút</span>
               </button>
-              <button class="grade-btn hard" onclick="submitGrade(3)">
-                <span class="grade-title">Hard (Khó)</span>
-                <span class="grade-interval">1 ngày</span>
+              <button class="srs-btn hard" onclick="gradeCard(2)">
+                <span>Hard (Khó)</span>
+                <span class="time-hint">1 ngày</span>
               </button>
-              <button class="grade-btn good" onclick="submitGrade(4)">
-                <span class="grade-title">Good (Nhớ)</span>
-                <span class="grade-interval">3 ngày</span>
+              <button class="srs-btn good" onclick="gradeCard(3)">
+                <span>Good (Thuộc)</span>
+                <span class="time-hint">3 ngày</span>
               </button>
-              <button class="grade-btn easy" onclick="submitGrade(5)">
-                <span class="grade-title">Easy (Rất dễ)</span>
-                <span class="grade-interval">5 ngày</span>
+              <button class="srs-btn easy" onclick="gradeCard(4)">
+                <span>Easy (Rất dễ)</span>
+                <span class="time-hint">5 ngày</span>
               </button>
             </div>
           </div>
+        </div>
 
-          <!-- VOCABULARY NOTEBOOK TABLE -->
-          <div class="astral-panel mt-36">
-            <div class="panel-headline">
-              <div class="headline-left">
-                <span class="headline-icon">📖</span>
-                <div>
-                  <h2 class="panel-title">Sổ tay từ vựng đã lưu trong tác phẩm</h2>
-                  <p class="panel-subtitle">Tổng hợp từ vựng được trích xuất từ các tiểu thuyết đã đọc</p>
+        <!-- TAB 2: VOCABULARY NOTEBOOK (SỔ TỪ VỰNG ĐÃ LƯU) -->
+        <div class="learning-tab-content" id="tabContentVocab">
+          <div class="vocab-bank-wrap">
+            <div class="vocab-toolbar-row">
+              <div class="vocab-search-wrap">
+                <input type="text" placeholder="Tìm trong sổ từ vựng..." oninput="handleVocabSearch(this.value)">
+              </div>
+              <div class="vocab-filter-wrap">
+                <select id="vocabNovelFilter" onchange="filterVocabByNovel(this.value)" class="explore-select">
+                  <option value="all">Tất cả nguồn truyện</option>
+                  <option value="銀河鉄道の夜">銀河鉄道の夜</option>
+                  <option value="坊っちゃん">坊っちゃん</option>
+                  <option value="ごんぎつね">ごんぎつね</option>
+                  <option value="雪国">雪国</option>
+                  <option value="走れメロス">走れメロス</option>
+                </select>
+              </div>
+              <span class="vocab-count-indicator" id="vocabBankCount">Đang tải...</span>
+            </div>
+
+            <div class="vocab-row head">
+              <span>TỪ VỰNG</span>
+              <span>CÁCH ĐỌC</span>
+              <span>Ý NGHĨA</span>
+              <span>CẤP ĐỘ</span>
+              <span>NGUỒN TRUYỆN</span>
+              <span>LỊCH ÔN TẬP</span>
+            </div>
+
+            <div id="vocabBankRows">
+              <!-- Populated dynamically via api.js -->
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: CHAPTER QUIZ STARTERS -->
+        <div class="learning-tab-content" id="tabContentQuiz">
+          <div class="quiz-starters-container">
+            <div class="quiz-starter-header">
+              <h3>Kiểm tra đọc hiểu &amp; Ngữ pháp theo chương</h3>
+              <p>Mỗi bài gồm 3–5 câu hỏi trắc nghiệm kiểm tra khả năng tiếp thu ngữ cảnh, từ vựng và ngữ pháp của chương sách.</p>
+            </div>
+            <div class="quiz-cards-grid">
+              <div class="quiz-starter-card" onclick="openChapterQuiz(1, 1)">
+                <div class="qsc-top">
+                  <span class="chip n3">JLPT N3</span>
+                  <span class="qsc-xp">+25 XP</span>
                 </div>
+                <h4 class="qsc-title">銀河鉄道の夜 • Chương 1</h4>
+                <p class="qsc-desc">Kiểm tra nghĩa của từ "黒板", "星座" và cấu trúc nối tiếp 〜ながら trong câu.</p>
+                <button class="btn btn-primary btn-sm">Bắt đầu làm bài ➔</button>
               </div>
-              <input type="text" class="table-search" placeholder="Lọc từ vựng..." oninput="filterNotebook(this.value)">
-            </div>
 
-            <div class="table-scroll">
-              <table class="astral-table">
-                <thead>
-                  <tr>
-                    <th>Từ vựng (Kanji)</th>
-                    <th>Cách đọc (Furigana)</th>
-                    <th>Ý nghĩa tiếng Việt</th>
-                    <th>Cấp độ</th>
-                    <th>Tiểu thuyết nguồn</th>
-                    <th>Lần lặp</th>
-                    <th>Trạng thái SRS</th>
-                  </tr>
-                </thead>
-                <tbody id="notebookBody">
-                  <tr>
-                    <td><strong class="kanji-main">銀河</strong></td>
-                    <td class="furi-sub">ぎんが</td>
-                    <td>Ngân hà, dải thiên hà</td>
-                    <td><span class="tag-jlpt n3">N3</span></td>
-                    <td>銀河鉄道の夜</td>
-                    <td>1 lần</td>
-                    <td><span class="status-pill due">Cần ôn tập</span></td>
-                  </tr>
-                  <tr>
-                    <td><strong class="kanji-main">星座</strong></td>
-                    <td class="furi-sub">せいざ</td>
-                    <td>Chòm sao, tinh tú</td>
-                    <td><span class="tag-jlpt n3">N3</span></td>
-                    <td>銀河鉄道の夜</td>
-                    <td>1 lần</td>
-                    <td><span class="status-pill due">Cần ôn tập</span></td>
-                  </tr>
-                  <tr>
-                    <td><strong class="kanji-main">無鉄砲</strong></td>
-                    <td class="furi-sub">むてっぽう</td>
-                    <td>Hấp tấp, liều lĩnh, không suy nghĩ</td>
-                    <td><span class="tag-jlpt n1">N1</span></td>
-                    <td>坊っちゃん</td>
-                    <td>2 lần</td>
-                    <td><span class="status-pill due">Cần ôn tập</span></td>
-                  </tr>
-                  <tr>
-                    <td><strong class="kanji-main">国境</strong></td>
-                    <td class="furi-sub">こっきょう</td>
-                    <td>Biên giới quốc gia, ranh giới tỉnh</td>
-                    <td><span class="tag-jlpt n3">N3</span></td>
-                    <td>雪国</td>
-                    <td>2 lần</td>
-                    <td><span class="status-pill ok">Còn 2 ngày</span></td>
-                  </tr>
-                  <tr>
-                    <td><strong class="kanji-main">いたずら</strong></td>
-                    <td class="furi-sub">いたずら</td>
-                    <td>Nghịch ngợm, trò đùa tai quái</td>
-                    <td><span class="tag-jlpt n4">N4</span></td>
-                    <td>ごんぎつね</td>
-                    <td>2 lần</td>
-                    <td><span class="status-pill ok">Còn 1 ngày</span></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-
-        <!-- ================= E. VISUAL NOVEL MODE ================= -->
-        <section id="pane-visualnovel" class="content-pane">
-          <div class="vn-cinema-theatre">
-            <!-- Background Image Artwork with Depth -->
-            <div class="vn-cinematic-backdrop">
-              <img src="assets/hero_astral.jpg" alt="Cosmic Stage" class="vn-backdrop-img">
-              <div class="vn-atmosphere-gradient"></div>
-            </div>
-
-            <!-- Foreground Character Silhouette / Art -->
-            <div class="vn-stage-actor">
-              <div class="actor-card-glow">
-                <div class="actor-inner-silhouette">
-                  <div class="actor-character-avatar">
-                    <span class="actor-kanji">カンパ</span>
-                  </div>
-                  <div class="actor-name-banner">Campanella (カムパネルラ)</div>
+              <div class="quiz-starter-card" onclick="openChapterQuiz(5, 1)">
+                <div class="qsc-top">
+                  <span class="chip n3">JLPT N3</span>
+                  <span class="qsc-xp">+25 XP</span>
                 </div>
-              </div>
-            </div>
-
-            <!-- Cinematic Bottom Dialogue Box -->
-            <div class="vn-dialogue-console">
-              <div class="vn-speaker-bar">
-                <span class="vn-speaker-name">カムパネルラ</span>
-                <span class="vn-speaker-title">• Người bạn trên chuyến tàu ngân hà</span>
+                <h4 class="qsc-title">走れメロス • Chương 1</h4>
+                <p class="qsc-desc">Kiểm tra câu văn mở đầu kinh điển "メロスは激怒した" và từ vựng "邪智暴虐".</p>
+                <button class="btn btn-primary btn-sm">Bắt đầu làm bài ➔</button>
               </div>
 
-              <div class="vn-sentence-jp" id="vnSentenceJp">
-                「ジョバンニ、僕たちどこまでもどこまでも、この銀河鉄道に乗って一緒に行こうね」
-              </div>
-
-              <div class="vn-sentence-vi" id="vnSentenceVi">
-                "Giovanni à, hai chúng ta hãy cứ cùng nhau ngồi trên chuyến tàu hỏa ngân hà này, đi đến mãi tận cùng nhé..."
-              </div>
-
-              <div class="vn-control-dock">
-                <button class="vn-btn" onclick="playVoice()">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
-                  <span>Phát âm (Speech)</span>
-                </button>
-                <button class="vn-btn" onclick="inspectWord('銀河鉄道')">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                  <span>Ngữ pháp từ vựng</span>
-                </button>
-                <button class="vn-btn primary" onclick="advanceVnStory()">
-                  <span>Tiếp tục thoại ➔</span>
-                </button>
+              <div class="quiz-starter-card" onclick="openChapterQuiz(2, 1)">
+                <div class="qsc-top">
+                  <span class="chip n4">JLPT N4</span>
+                  <span class="qsc-xp">+25 XP</span>
+                </div>
+                <h4 class="qsc-title">坊っちゃん • Chương 1</h4>
+                <p class="qsc-desc">Kiểm tra từ vựng "無鉄砲", "親譲り" và ngữ pháp thể điều kiện quá khứ.</p>
+                <button class="btn btn-primary btn-sm">Bắt đầu làm bài ➔</button>
               </div>
             </div>
           </div>
-        </section>
+        </div>
+
+        <!-- TAB 4: PROGRESS ANALYTICS -->
+        <div class="learning-tab-content" id="tabContentProgress">
+          <div class="progress-analytics-grid">
+            <div class="progress-stat-card">
+              <div class="psc-icon">📖</div>
+              <div class="psc-val" id="statChaptersRead">6 Chương</div>
+              <div class="psc-label">Tổng số chương truyện đã đọc</div>
+            </div>
+            <div class="progress-stat-card">
+              <div class="psc-icon">💎</div>
+              <div class="psc-val" id="statWordsSaved">48 Từ</div>
+              <div class="psc-label">Từ vựng đã lưu vào sổ</div>
+            </div>
+            <div class="progress-stat-card">
+              <div class="psc-icon">🎯</div>
+              <div class="psc-val" id="statRetentionRate">92%</div>
+              <div class="psc-label">Tỷ lệ ghi nhớ SRS (SM-2)</div>
+            </div>
+            <div class="progress-stat-card">
+              <div class="psc-icon">🔥</div>
+              <div class="psc-val" id="statStreakDays">7 Ngày</div>
+              <div class="psc-label">Chuỗi ngày đọc liên tục</div>
+            </div>
+          </div>
+        </div>
 
       </div>
-    </main>
+    </section>
+
+    <!-- ===================================================================
+         PANE 6: VISUAL NOVEL THEATRE 2.0 & AI CHARACTER CONVERSATION
+         =================================================================== -->
+    <section id="pane-vn" class="pane">
+      <div class="vn-theatre-wrap shinkai-theatre">
+        <!-- Dual Layer Background for Smooth Crossfade Transitions -->
+        <img src="assets/bg_shinkai_ginga.jpg" alt="Galaxy Scene" class="vn-bg-art current" id="vnBgArt">
+        <img src="" alt="Next Scene" class="vn-bg-art next" id="vnBgArtNext" style="opacity: 0;">
+        <div class="vn-gradient-shade shinkai-twilight-gradient"></div>
+        <div class="vn-stage-vignette"></div>
+
+        <!-- Ambient Shinkai Particles (Sakura petals & Twilight Motes) -->
+        <div class="shinkai-particles-container" aria-hidden="true">
+          <span class="shinkai-petal p1"></span>
+          <span class="shinkai-petal p2"></span>
+          <span class="shinkai-petal p3"></span>
+          <span class="shinkai-petal p4"></span>
+          <span class="shinkai-mote m1"></span>
+          <span class="shinkai-mote m2"></span>
+          <span class="shinkai-mote m3"></span>
+          <span class="shinkai-mote m4"></span>
+        </div>
+
+        <!-- Top Header in Stage (Cinematic HUD Bar) -->
+        <div class="vn-top-bar shinkai-top-bar">
+          <div class="vn-story-dropdown-wrap">
+            <button class="vn-story-nav-btn" id="btnStoryNav" onclick="toggleVnStoryMenu(event)" title="Đổi tác phẩm &amp; chọn phân cảnh Visual Novel">
+              📚 <span id="currentStoryNavTitle">Chuyến tàu Ngân Hà</span> • <span id="currentSceneTag" class="vn-scene-badge">Cảnh 1: Bờ cát sông sao</span> ▾
+            </button>
+            <div class="vn-story-menu-dropdown" id="vnStoryDropdown">
+              <div class="vn-story-group-header">✦ Chọn Tác Phẩm &amp; Phân Cảnh Bối Cảnh</div>
+              <!-- Dynamically populated via renderVnStoryMenu() -->
+            </div>
+          </div>
+
+          <div class="vn-location-tag shinkai-location-pill" id="vnLocationTag">
+            🌸 CHUYẾN TÀU NGÂN HÀ • GA SỐ 4: THIÊN NGA VÀ BỜ BÃI TRẮNG
+          </div>
+
+          <div class="vn-mode-switch shinkai-mode-pill">
+            <button class="vn-mode-btn active" id="btnModeVnStory" onclick="switchVnMode('story')">
+              📖 Kịch bản chương
+            </button>
+            <button class="vn-mode-btn" id="btnModeVnChat" onclick="switchVnMode('chat')">
+              💬 Trò chuyện AI nhân vật
+            </button>
+          </div>
+
+          <div class="shinkai-quick-hud">
+            <button class="shinkai-hud-btn" id="btnToggleSub" onclick="toggleVnTransVisibility()" title="Ẩn/Hiện dịch nghĩa tiếng Việt (Phím T)">
+              👁️ <span id="labelToggleSub">Dịch: Bật</span>
+            </button>
+            <button class="shinkai-hud-btn" id="btnVnAuto" onclick="toggleVnAuto()" title="Tự động chuyển câu thoại (Phím A)">
+              ▶ Tự động
+            </button>
+            <button class="shinkai-hud-btn" id="btnVnAudio" onclick="toggleVnAudio()" title="Bật/Tắt âm thanh hiệu ứng">
+              🔊 Âm thanh
+            </button>
+            <button class="shinkai-hud-btn" id="btnOpenVnAiSensei" onclick="toggleVnAiSensei()" title="Mở AI Sensei phân tích ngữ cảnh &amp; ngữ pháp">
+              🧠 AI Sensei
+            </button>
+            <button class="shinkai-hud-btn" onclick="toggleVnLog()" title="Xem lại lịch sử các câu thoại (Phím L)">
+              📜 Lịch sử
+            </button>
+            <button class="shinkai-hud-btn" id="btnVnFullscreen" onclick="toggleVnFocusMode()" title="Toàn màn hình rạp chiếu (Phím F)">
+              ⛶ Toàn màn hình
+            </button>
+            <button class="shinkai-hud-btn" onclick="switchPane('explore')" title="Quay lại danh sách truyện">
+              ✕ Đóng
+            </button>
+          </div>
+        </div>
+
+        <!-- Character Selector Strip (Visible in Chat Mode) -->
+        <div class="vn-character-selector-strip" id="vnCharSelectorStrip" style="display: none;">
+          <span class="vn-char-selector-label">Chọn nhân vật văn học:</span>
+          <div class="vn-char-pills-list" id="vnCharPillsList">
+            <!-- Dynamically populated from /api/characters -->
+          </div>
+        </div>
+
+        <!-- Characters Stage (Dynamic 3-Slot Standees with natural grounding) -->
+        <div class="vn-stage-container" id="vnStageCharacters">
+          <div class="vn-standee-slot slot-left" id="slotLeft" style="display: none;">
+            <img src="" id="charLeft" alt="Left Character" class="vn-char-sprite active-speaker">
+            <div class="standee-ground-shadow"></div>
+          </div>
+          <div class="vn-standee-slot slot-center" id="slotCenter" style="display: none;">
+            <img src="" id="charCenter" alt="Center Character" class="vn-char-sprite center-standee">
+            <div class="standee-ground-shadow"></div>
+          </div>
+          <div class="vn-standee-slot slot-right" id="slotRight" style="display: none;">
+            <img src="" id="charRight" alt="Right Character" class="vn-char-sprite dimmed-listener">
+            <div class="standee-ground-shadow"></div>
+          </div>
+        </div>
+
+        <!-- Choice Selection Overlay (Branching VN Story System) -->
+        <div class="vn-choice-overlay" id="vnChoiceOverlay" style="display: none;">
+          <div class="vn-choice-dialogue-prompt">✦ Hãy lựa chọn hướng đi cho câu chuyện:</div>
+          <div class="vn-choice-container" id="vnChoiceContainer"></div>
+        </div>
+
+        <!-- Bottom Dialogue Dock -->
+        <div class="vn-dialogue-dock shinkai-dialogue-dock">
+          <!-- MODE 1: MODERN VISUAL NOVEL DIALOGUE BOX -->
+          <div class="vn-dialogue-box shinkai-dialogue-card" id="vnStoryBox" onclick="handleVnDialogueBoxClick(event)">
+            <!-- Floating Nameplate with Avatar Badge -->
+            <div class="vn-nameplate" id="vnNameplate">
+              <div class="vn-nameplate-avatar-ring">
+                <img src="assets/char_giovanni.png" id="vnSpeakerAvatar" alt="Speaker">
+              </div>
+              <div class="vn-nameplate-info">
+                <span class="vn-nameplate-name" id="vnSpeaker">ジョバンニ (Giovanni)</span>
+                <span class="vn-nameplate-tag" id="vnSpeakerRole">✦ 星めぐりの旅人 • Hành khách chuyến tàu Ngân Hà</span>
+              </div>
+            </div>
+
+            <div class="vn-dialogue-body">
+              <div class="vn-text-japanese shinkai-text-jp" id="vnJp">
+                「カムパネルラ、見てごらん！ あの川の向こうの光、白くけむった銀河の帯だよ」
+              </div>
+
+              <div class="vn-text-vietnamese shinkai-text-vn" id="vnVn">
+                "Campanella, cậu nhìn kìa! Vệt sáng bên kia dòng sông kìa, chính là dải Ngân Hà mờ trắng đấy."
+              </div>
+            </div>
+
+            <div class="shinkai-dialogue-footer">
+              <div class="shinkai-hint-leaf">
+                <span class="shinkai-sparkle-dot">🌸</span> Chạm vào từng từ vựng tiếng Nhật để tra Furigana &amp; lưu vào Flashcard
+              </div>
+              <div class="shinkai-advance-trigger" id="vnAdvancePrompt" onclick="event.stopPropagation(); advanceVnDialogue();" title="Bấm hoặc nhấn Space để tiếp tục">
+                <span class="shinkai-advance-text">Tiếp tục [Space]</span>
+                <span class="shinkai-advance-diamond">✦</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- MODE 2: INTERACTIVE AI CHARACTER CONVERSATION VIEW -->
+          <div class="vn-dialogue-box vn-ai-chat-box" id="vnAiChatBox" style="display: none;">
+            <div class="vn-speaker-meta-row" style="justify-content: space-between;">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <div class="vn-speaker-avatar-circle">
+                  <img src="assets/char_giovanni.png" id="vnChatAvatar" alt="Speaker">
+                </div>
+                <div>
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="vn-speaker-tag" id="vnChatSpeakerName">ジョバンニ (Giovanni)</span>
+                    <span class="vn-emotion-pill" id="vnChatEmotionPill">✨ Tươi cười</span>
+                  </div>
+                  <div class="vn-character-subdesc" id="vnChatSpeakerBio">Cậu bé giàu cảm xúc, trân trọng tình bạn và chuyến tàu Ngân Hà</div>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <button class="btn btn-secondary btn-sm" onclick="speakCurrentChatReply()" title="Nghe nhân vật phát âm tiếng Nhật">
+                  🔊 Phát âm
+                </button>
+              </div>
+            </div>
+
+            <div class="vn-chat-mode-strip" style="display: flex; gap: 8px; margin: 8px 0 12px 0;">
+              <button class="vn-chat-mode-chip active" id="btnChatModeFree" onclick="setVnChatMode('free')">
+                💬 Hội thoại tự do
+              </button>
+              <button class="vn-chat-mode-chip" id="btnChatModePractice" onclick="setVnChatMode('practice')">
+                🎓 Luyện tập tiếng Nhật
+              </button>
+              <button class="vn-chat-mode-chip" id="btnChatModeScenario" onclick="setVnChatMode('scenario')">
+                🎭 Nhập vai tình huống
+              </button>
+            </div>
+
+            <div class="vn-text-japanese" id="vnChatJpText">
+              「君もこの銀河鉄道に乗ってきたんだね！ カムパネルラと一緒に、夜空の旅をしているところだよ。何でも話してね。」
+            </div>
+            <div class="vn-text-vietnamese" id="vnChatVnText">
+              "Cậu cũng bước lên chuyến tàu Ngân Hà này sao! Mình đang cùng Campanella du hành giữa bầu trời đêm đấy. Cứ thoải mái trò chuyện với mình nhé."
+            </div>
+
+            <!-- Gentle Language Correction Box -->
+            <div class="vn-ai-feedback-box" id="vnChatCorrectionBox" style="display: none; background: rgba(245, 158, 11, 0.12); border-left: 3px solid #F59E0B; margin-bottom: 8px;">
+              <div class="feedback-badge" style="color: #F59E0B;">💡 Gợi ý diễn đạt tự nhiên hơn</div>
+              <div class="feedback-content" id="vnChatCorrectionContent"></div>
+            </div>
+
+            <!-- AI Sensei Feedback -->
+            <div class="vn-ai-feedback-box" id="vnChatFeedbackBox">
+              <div class="feedback-badge">💡 Nhận xét ngữ pháp tiếng Nhật</div>
+              <div class="feedback-content" id="vnChatFeedbackContent">
+                Bạn mở đầu cuộc trò chuyện rất thân thiện! Hãy tiếp tục đặt câu hỏi bằng tiếng Nhật để nhân vật trả lời nhé.
+              </div>
+            </div>
+
+            <!-- Vocabulary in line -->
+            <div class="vn-chat-vocab-row" id="vnChatVocabRow">
+              <div class="vocab-row-label">📚 Từ vựng trong câu (Bấm để thêm vào Flashcard):</div>
+              <div class="vocab-chips-list" id="vnChatVocabChips"></div>
+            </div>
+
+            <!-- Input Bar -->
+            <div class="vn-chat-input-bar">
+              <input type="text" id="vnChatTextInput" class="vn-chat-text-input" 
+                     placeholder="Nhập câu tiếng Nhật nói chuyện với nhân vật (vd: どこまで行くの？)..." 
+                     onkeydown="handleVnChatInputKey(event)">
+              <button class="btn btn-primary" id="btnSendVnChat" onclick="sendVnChatMessage()">
+                <span>Gửi ➔</span>
+                <span class="xp-mini-badge">+5 XP</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dialogue Backlog Modal -->
+        <div class="vn-log-modal" id="vnLogModal">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
+            <h3 style="font-size: 16px; font-weight: 700; color: #FFF;">📜 Lịch sử đối thoại (Dialogue Backlog)</h3>
+            <button class="btn btn-secondary btn-sm" onclick="toggleVnLog()">Đóng (✕)</button>
+          </div>
+          <div class="vn-log-scroll" id="vnLogList"></div>
+        </div>
+
+        <!-- AI SENSEI SIDE DRAWER (Linguistic Breakdown & Context Grammar) -->
+        <aside class="vn-ai-sensei-drawer" id="vnAiSenseiDrawer">
+          <div class="sensei-drawer-head">
+            <div class="sensei-drawer-title">
+              <span class="sensei-icon">🧠</span>
+              <span>AI Sensei • Phân tích ngữ cảnh &amp; Ngữ pháp</span>
+            </div>
+            <button class="sensei-close-btn" onclick="closeVnAiSensei()" title="Đóng bảng AI Sensei">&times;</button>
+          </div>
+
+          <div class="sensei-drawer-body">
+            <!-- Active Dialogue Card -->
+            <div class="sensei-sentence-card">
+              <div class="sensei-card-label">Câu thoại đang phát:</div>
+              <div class="sensei-jp" id="aiSenseiSentenceJp">「カムパネルラ、見てごらん！ あの川の向こうの光、白くけむった銀河の帯だよ」</div>
+              <div class="sensei-vn" id="aiSenseiSentenceVn">"Campanella, cậu nhìn kìa! Vệt sáng bên kia dòng sông kìa, chính là dải Ngân Hà mờ trắng đấy."</div>
+            </div>
+
+            <!-- Grammar Insight -->
+            <div class="sensei-analysis-block">
+              <div class="sensei-block-title">💡 Điểm ngữ pháp trọng tâm:</div>
+              <div class="sensei-block-text" id="aiSenseiGrammarContent">
+                Cấu trúc [Động từ thể て + ごらん]: Lời rủ rê, khuyên nhủ ân cần trìu mến giữa bạn bè thân thiết.
+              </div>
+            </div>
+
+            <!-- Nuance & Culture -->
+            <div class="sensei-analysis-block">
+              <div class="sensei-block-title">🎭 Sắc thái văn học &amp; Cảm xúc:</div>
+              <div class="sensei-block-text" id="aiSenseiNuanceContent">
+                Khắc họa sự ngỡ ngàng tột bậc xen lẫn niềm vui thuần khiết của cậu bé Giovanni khi lần đầu chạm mắt vào dòng sông sao vũ trụ.
+              </div>
+            </div>
+
+            <!-- Vocabulary Chips -->
+            <div class="sensei-analysis-block">
+              <div class="sensei-block-title">📚 Từ vựng then chốt trong câu:</div>
+              <div class="sensei-vocab-grid" id="aiSenseiVocabList">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         PANE 7: PROFILE & PERSONAL BOOKSHELF (TỦ SÁCH CÁ NHÂN & CÀI ĐẶT)
+         =================================================================== -->
+    <section id="pane-profile" class="pane">
+      <div class="profile-container">
+        <!-- User Profile Hero Card -->
+        <div class="profile-hero-card">
+          <div class="user-big-avatar">旅</div>
+          <div class="profile-hero-info">
+            <h2 class="profile-user-name">Nhà thám hiểm Kotoba (言葉の旅人)</h2>
+            <div class="profile-badges-row">
+              <span class="chip n3">Mục tiêu: JLPT N3</span>
+              <span class="chip" style="background: rgba(245,158,11,0.2); color: #F59E0B;">🔥 Chuỗi 7 ngày</span>
+              <span class="chip" style="background: rgba(56,189,248,0.2); color: #38BDF8;">Cấp 3 • 160 XP</span>
+            </div>
+            <p class="profile-quote">"Mỗi cuốn sách là một chuyến du hành, mỗi câu văn tiếng Nhật là một cánh cửa mở ra thế giới."</p>
+          </div>
+        </div>
+
+        <!-- Preferences & Data Management -->
+        <div class="profile-settings-grid">
+          <div class="profile-setting-card">
+            <h3>🎨 Tùy biến hiển thị đọc sách</h3>
+            <div class="setting-item">
+              <span>Màu nền mặc định:</span>
+              <div class="setting-controls">
+                <button class="btn btn-secondary btn-sm" onclick="setGlobalTheme('paper')">Giấy ngà</button>
+                <button class="btn btn-secondary btn-sm" onclick="setGlobalTheme('sepia')">Trầm Sepia</button>
+                <button class="btn btn-secondary btn-sm" onclick="setGlobalTheme('obsidian')">Đêm Obsidian</button>
+              </div>
+            </div>
+            <div class="setting-item">
+              <span>Kiểu phông tiếng Nhật mặc định:</span>
+              <div class="setting-controls">
+                <button class="btn btn-secondary btn-sm" onclick="setGlobalFont('mincho')">Shippori Mincho (Serif)</button>
+                <button class="btn btn-secondary btn-sm" onclick="setGlobalFont('gothic')">Noto Sans JP (Gothic)</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="profile-setting-card">
+            <h3>💾 Cơ sở dữ liệu SQLite &amp; Ngoại tuyến</h3>
+            <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 14px;">
+              Toàn bộ tiến độ đọc, từ vựng SRS và lịch sử trò chuyện được lưu trữ cục bộ, đảm bảo quyền riêng tư và khả năng truy cập ngoại tuyến 100%.
+            </p>
+            <div style="display: flex; gap: 10px;">
+              <button class="btn btn-secondary btn-sm" onclick="triggerImportPrompt()">📥 Nhập truyện mới</button>
+              <button class="btn btn-secondary btn-sm" onclick="alert('Cơ sở dữ liệu SQLite: %LOCALAPPDATA%\\KotobaOdyssey\\kotoba.db')">📂 Đường dẫn SQLite</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= 3. MODALS & SLIDING DRAWERS ================= -->
+
+  <!-- Satori Reader Sentence Syntax & AI Tutor Sliding Drawer -->
+  <div class="sentence-modal-overlay" id="sentenceAnalysisModal" onclick="closeSentenceAnalysis(event)">
+    <div class="sentence-modal-card" onclick="event.stopPropagation()">
+      <div class="sentence-modal-header">
+        <div class="header-left">
+          <span class="modal-badge-chip">✦ SATORI SYNTAX BREAKDOWN</span>
+          <span class="modal-badge-chip" id="sentModalProviderBadge" style="background: rgba(99, 102, 241, 0.2); color: #818CF8; border-color: rgba(99, 102, 241, 0.4); margin-left: 6px;">⚡ Local Engine</span>
+          <h3 class="modal-title">Phân tích cú pháp &amp; Cấu trúc câu</h3>
+        </div>
+        <button class="modal-close-btn" onclick="closeSentenceAnalysis()">✕</button>
+      </div>
+
+      <div class="sentence-modal-body">
+        <!-- Full Sentence Display Box -->
+        <div class="sentence-hero-box">
+          <div class="sentence-hero-jp" id="sentModalJp">先生は、黒板に吊した大きな黒い星座の図を指しました。</div>
+          <div class="sentence-hero-vn" id="sentModalVn">Thầy giáo vừa chỉ tay vào bản đồ các chòm sao màu đen treo trên bảng...</div>
+          <div class="sentence-hero-actions">
+            <button class="btn btn-secondary btn-sm" onclick="speakCurrentSentence()">
+              🔊 Phát âm toàn câu
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="explainCustomParagraph(currentSentenceAnalysis?.jp || '', 'grammar')">
+              🔍 Ngữ pháp
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="explainCustomParagraph(currentSentenceAnalysis?.jp || '', 'translate')">
+              🌐 Dịch nghĩa
+            </button>
+            <button class="btn btn-primary btn-sm" id="btnAskAiTutor" onclick="explainCustomParagraph(currentSentenceAnalysis?.jp || '', 'explain')">
+              🤖 Phân tích AI sâu
+            </button>
+            <span class="chip n3" id="sentModalLevel">JLPT N3</span>
+          </div>
+        </div>
+
+        <!-- Syntactic Tokens Breakdown List -->
+        <div class="tokens-section-title">Cấu trúc thành phần &amp; Từ loại (Part-of-Speech Breakdown)</div>
+        <div class="tokens-breakdown-list" id="sentTokensList"></div>
+
+        <!-- Grammar Insights Note Box -->
+        <div class="grammar-insight-box" id="sentGrammarNote"></div>
+
+        <!-- AI Follow-up Interactive Section -->
+        <div class="ai-followup-box" style="margin-top: 16px; border-top: 1px solid var(--border-medium); padding-top: 14px;">
+          <div style="font-size: 13px; font-weight: 700; color: #F59E0B; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+            <span>💬</span> <span>Hỏi tiếp AI Tutor về câu này:</span>
+          </div>
+          <div id="aiFollowUpHistory" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; max-height: 180px; overflow-y: auto;"></div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px;">
+            <button class="btn btn-secondary btn-sm" style="font-size: 11px; padding: 4px 8px;" onclick="sendAiFollowUpQuestion('simpler')">💡 Đơn giản hơn</button>
+            <button class="btn btn-secondary btn-sm" style="font-size: 11px; padding: 4px 8px;" onclick="sendAiFollowUpQuestion('more_examples')">📚 Thêm ví dụ</button>
+            <button class="btn btn-secondary btn-sm" style="font-size: 11px; padding: 4px 8px;" onclick="sendAiFollowUpQuestion('why_translated_this_way')">❓ Tại sao dịch vậy?</button>
+            <button class="btn btn-secondary btn-sm" style="font-size: 11px; padding: 4px 8px;" onclick="sendAiFollowUpQuestion('easy_japanese')">🇯🇵 やさしい日本語</button>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="aiFollowUpInput" placeholder="Hỏi thêm về ngữ pháp, tại sao dùng trợ từ này, cách dùng khác..." 
+                   onkeydown="if(event.key==='Enter') sendAiFollowUpQuestion()"
+                   style="flex: 1; background: var(--bg-surface); border: 1px solid var(--border-medium); border-radius: 6px; padding: 8px 12px; color: #FFF; font-size: 13px;">
+            <button class="btn btn-primary btn-sm" id="btnSendAiFollowUp" onclick="sendAiFollowUpQuestion()">
+              Gửi câu hỏi
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- Interactive Toast Notification -->
-  <div id="astralToast" class="astral-toast"></div>
+  <!-- CHAPTER COMPREHENSION QUIZ MODAL -->
+  <div class="sentence-modal-overlay" id="chapterQuizModal" onclick="closeChapterQuiz(event)">
+    <div class="sentence-modal-card quiz-card-custom" onclick="event.stopPropagation()">
+      <div class="sentence-modal-header">
+        <div class="header-left">
+          <span class="modal-badge-chip">✦ KIỂM TRA ĐỌC HIỂU &amp; NGỮ PHÁP</span>
+          <h3 class="modal-title" id="quizModalTitle">銀河鉄道の夜 • Chương 1</h3>
+          <span class="quiz-badge-progress" id="quizProgressBadge">Câu 1 / 3</span>
+        </div>
+        <button class="modal-close-btn" onclick="closeChapterQuiz()">✕</button>
+      </div>
 
-  <script src="app.js"></script>
+      <!-- Active Question Body -->
+      <div class="sentence-modal-body" id="quizQuestionBody">
+        <div class="quiz-context-quote" id="quizContextQuote">
+          "上から下へ白くけむった銀河の帯のようなところを指しながら。"
+        </div>
+
+        <div class="quiz-question-box">
+          <div class="quiz-q-jp" id="quizQuestionJp">先生が黒板の図で指した、白くけむったものは何ですか？</div>
+          <div class="quiz-q-vn" id="quizQuestionVn">Vệt mờ trắng mà thầy giáo chỉ tay vào trên bản đồ bảng đen là gì?</div>
+        </div>
+
+        <div class="quiz-options-grid" id="quizOptionsGrid"></div>
+
+        <div class="quiz-explanation-box" id="quizExplanationBox" style="display: none;">
+          <div class="exp-badge" id="quizExpBadge">💡 GIẢI THÍCH CHI TIẾT &amp; DẪN CHỨNG NGỮ CẢNH</div>
+          <div class="exp-content" id="quizExpContent">...</div>
+        </div>
+      </div>
+
+      <!-- Quiz Results View -->
+      <div class="sentence-modal-body" id="quizResultsBody" style="display: none;">
+        <div class="quiz-results-banner">
+          <div class="quiz-score-badge" id="quizScoreBadge">100%</div>
+          <h3 class="quiz-result-heading" id="quizResultHeading">Xuất sắc! Hoàn thành bài trắc nghiệm</h3>
+          <p class="quiz-result-desc" id="quizResultDesc">Bạn đã nắm rất vững nội dung và cấu trúc câu của chương.</p>
+          <div class="quiz-xp-badge" id="quizXpBadge">+35 XP Đã nhận!</div>
+        </div>
+
+        <div class="quiz-review-section">
+          <div class="review-title">📚 Điểm kiến thức &amp; Từ vựng cần ghi nhớ:</div>
+          <div class="quiz-review-list" id="quizReviewList"></div>
+        </div>
+      </div>
+
+      <div class="quiz-modal-footer">
+        <button class="btn btn-secondary btn-sm" onclick="closeChapterQuiz()">Đóng</button>
+        <button class="btn btn-primary btn-sm" id="btnNextQuizQuestion" onclick="advanceQuizQuestion()" style="display: none;">
+          Câu tiếp theo ➔
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Novel Import Modal -->
+  <div class="sentence-modal-overlay" id="importModal" onclick="closeImportModal(event)">
+    <div class="sentence-modal-card" style="max-width: 680px;" onclick="event.stopPropagation()">
+      <div class="sentence-modal-header">
+        <div class="header-left">
+          <span class="modal-badge-chip">✦ WEB NOVEL IMPORT ENGINE</span>
+          <h3 class="modal-title">Thêm tác phẩm vào Thư viện</h3>
+        </div>
+        <button class="modal-close-btn" onclick="closeImportModal()">✕</button>
+      </div>
+
+      <div class="sentence-modal-body">
+        <!-- Import Method Switcher Tabs -->
+        <div style="display: flex; gap: 8px; margin-bottom: 14px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 10px;">
+          <button class="filter-pill active" id="tabImportUrlBtn" onclick="switchImportModalTab('url')">
+            🔗 Cào từ Link (Syosetu / Kakuyomu)
+          </button>
+          <button class="filter-pill" id="tabImportManualBtn" onclick="switchImportModalTab('manual')">
+            📝 Nhập thủ công (TXT / JSON)
+          </button>
+        </div>
+
+        <!-- 1. TAB URL IMPORT -->
+        <div id="importTabUrl">
+          <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 12px;">
+            Hỗ trợ cào trực tiếp từ <strong>Shousetsuka ni Narou (ncode.syosetu.com)</strong>, <strong>Kakuyomu (kakuyomu.jp)</strong> hoặc bất kỳ trang web tiểu thuyết tiếng Nhật nào. Hệ thống tự động bóc tách tiêu đề, tác giả, và chương truyện.
+          </div>
+
+          <div style="margin-bottom: 12px;">
+            <label style="font-size: 12px; font-weight: 600; color: var(--text-dim); display: block; margin-bottom: 6px;">Đường dẫn tác phẩm (URL)</label>
+            <input type="url" id="importUrlInput" placeholder="Ví dụ: https://ncode.syosetu.com/n9669bk/1/" style="width: 100%; background: var(--bg-surface); border: 1px solid var(--border-medium); border-radius: 6px; padding: 10px 12px; color: #FFF; font-size: 13px;">
+          </div>
+
+          <!-- Quick Sample Chips -->
+          <div style="margin-bottom: 14px;">
+            <span style="font-size: 11.5px; color: var(--text-dim); display: block; margin-bottom: 6px;">💡 Hoặc thử link truyện mẫu có sẵn:</span>
+            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+              <button class="filter-pill" style="font-size: 11.5px; padding: 4px 10px;" onclick="fillSampleUrl('https://ncode.syosetu.com/n9669bk/1/', 'Isekai &amp; Fantasy', 'N3')">
+                🌀 Vô chức chuyển sinh (Syosetu)
+              </button>
+              <button class="filter-pill" style="font-size: 11.5px; padding: 4px 10px;" onclick="fillSampleUrl('https://ncode.syosetu.com/n6316bn/1/', 'Isekai &amp; Fantasy', 'N3')">
+                ⚔️ Tensei Slime (Syosetu)
+              </button>
+              <button class="filter-pill" style="font-size: 11.5px; padding: 4px 10px;" onclick="fillSampleUrl('https://ncode.syosetu.com/n2267be/1/', 'RomCom &amp; Học đường', 'N2')">
+                💘 Re:Zero (Syosetu)
+              </button>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 12px; margin-bottom: 14px;">
+            <div style="flex: 2;">
+              <label style="font-size: 12px; font-weight: 600; color: var(--text-dim); display: block; margin-bottom: 6px;">Thể loại truyện</label>
+              <select id="importUrlGenre" style="width: 100%; background: var(--bg-surface); border: 1px solid var(--border-medium); border-radius: 6px; padding: 8px 12px; color: #FFF; font-size: 13px;">
+                <option value="Isekai &amp; Fantasy">🌀 Isekai &amp; Dị giới (異世界・転生)</option>
+                <option value="RomCom &amp; Học đường">💘 RomCom &amp; Học đường (学園・ラブコメ)</option>
+                <option value="Akuyaku Reijou">👑 Nữ phản diện &amp; Quý tộc (悪役令嬢)</option>
+                <option value="Action &amp; Dungeon">⚔️ Action &amp; Hầm ngục (ダンジョン・バトル)</option>
+                <option value="Sci-Fi &amp; Cyberpunk">🚀 Sci-Fi &amp; Viễn tưởng (SF・近未来)</option>
+                <option value="Slice of Life">☕ Đời thường &amp; Chữa lành (日常・癒やし)</option>
+                <option value="Mystery &amp; Suspense">🔍 Trinh thám &amp; Ly kỳ (推理・ミステリー)</option>
+              </select>
+            </div>
+            <div style="flex: 1;">
+              <label style="font-size: 12px; font-weight: 600; color: var(--text-dim); display: block; margin-bottom: 6px;">Độ khó JLPT</label>
+              <select id="importUrlLevel" style="width: 100%; background: var(--bg-surface); border: 1px solid var(--border-medium); border-radius: 6px; padding: 8px 12px; color: #FFF; font-size: 13px;">
+                <option value="N5">JLPT N5</option>
+                <option value="N4">JLPT N4</option>
+                <option value="N3" selected>JLPT N3</option>
+                <option value="N2">JLPT N2</option>
+                <option value="N1">JLPT N1</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px;">
+            <button class="btn btn-secondary btn-sm" onclick="closeImportModal()">Hủy</button>
+            <button class="btn btn-primary btn-sm" id="btnSubmitImportUrl" onclick="submitImportUrl()">
+              🚀 Cào truyện &amp; Lưu vào Thư viện ➔
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. TAB MANUAL IMPORT (TXT / JSON) -->
+        <div id="importTabManual" style="display: none;">
+          <div style="display: flex; gap: 12px; margin-top: 6px;">
+            <div style="flex: 2;">
+              <label style="font-size: 12px; font-weight: 600; color: var(--text-dim); display: block; margin-bottom: 6px;">Tiêu đề tác phẩm</label>
+              <input type="text" id="importTitle" placeholder="Ví dụ: 羅生門 (Rashomon)" style="width: 100%; background: var(--bg-surface); border: 1px solid var(--border-medium); border-radius: 6px; padding: 8px 12px; color: #FFF; font-size: 13px;">
+            </div>
+            <div style="flex: 1;">
+              <label style="font-size: 12px; font-weight: 600; color: var(--text-dim); display: block; margin-bottom: 6px;">Độ khó</label>
+              <select id="importLevel" style="width: 100%; background: var(--bg-surface); border: 1px solid var(--border-medium); border-radius: 6px; padding: 8px 12px; color: #FFF; font-size: 13px;">
+                <option value="N5">JLPT N5</option>
+                <option value="N4">JLPT N4</option>
+                <option value="N3" selected>JLPT N3</option>
+                <option value="N2">JLPT N2</option>
+                <option value="N1">JLPT N1</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="margin-top: 10px;">
+            <label style="font-size: 12px; font-weight: 600; color: var(--text-dim); display: block; margin-bottom: 6px;">Tác giả</label>
+            <input type="text" id="importAuthor" placeholder="Ví dụ: 芥川龍之介 (Akutagawa Ryunosuke)" style="width: 100%; background: var(--bg-surface); border: 1px solid var(--border-medium); border-radius: 6px; padding: 8px 12px; color: #FFF; font-size: 13px;">
+          </div>
+
+          <div style="margin-top: 10px;">
+            <label style="font-size: 12px; font-weight: 600; color: var(--text-dim); display: block; margin-bottom: 6px;">Nội dung văn bản (TXT hoặc JSON)</label>
+            <textarea id="importContent" rows="7" placeholder="Dán nội dung truyện tiếng Nhật hoặc file JSON cấu trúc..." style="width: 100%; background: var(--bg-surface); border: 1px solid var(--border-medium); border-radius: 6px; padding: 10px 12px; color: #FFF; font-family: var(--font-mincho); font-size: 14px; line-height: 1.6; resize: vertical;"></textarea>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 12px;">
+            <button class="btn btn-secondary btn-sm" onclick="closeImportModal()">Hủy</button>
+            <button class="btn btn-primary btn-sm" id="btnSubmitImport" onclick="submitImportNovel()">
+              📥 Lưu vào Thư viện SQLite ➔
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Kotoba Odyssey Modular Scripts -->
+  <script src="js/utils.js?v=13.0"></script>
+  <script src="js/audio.js?v=13.0"></script>
+  <script src="js/data.js?v=13.0"></script>
+  <script src="js/chapters-data.js?v=13.0"></script>
+  <script src="js/navigation.js?v=13.0"></script>
+  <script src="js/reader.js?v=13.0"></script>
+  <script src="js/srs.js?v=13.0"></script>
+  <script src="js/quiz.js?v=13.0"></script>
+  <script src="js/api.js?v=13.0"></script>
+  <script src="js/visual-novel.js?v=13.0"></script>
+  <script src="app.js?v=13.0"></script>
 </body>
 </html>
